@@ -34,9 +34,15 @@ void drawpixel(Display* di, Window wi, GC gc, int x, int y, int color)
 
 void Master::receive_from_nodes(){
 
+	MPI_Status status[proc_count-1];
+	MPI_Request request[proc_count-1];
+
 	for(int i=1;i<proc_count;i++){
-		MPI_Status status;
-		MPI_Recv(tab[i-1], node_size*node_size,MPI_INT,i,1,MPI_COMM_WORLD,&status);
+		MPI_Irecv(tab[i-1], node_size*node_size,MPI_INT,i,1,MPI_COMM_WORLD,&request[i]);
+	}
+
+	for(int i=1;i<proc_count;i++){
+		MPI_Wait(&request[i], &status[i]);
 	}
 	
 }
