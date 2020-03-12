@@ -7,6 +7,10 @@ class Master{
 	int node_size;
 	int proc_count;
 
+	int** tab;
+
+	void receive_from_nodes();
+
 public:
 
 	Master(int proc_count, int grid_size, int node_size);

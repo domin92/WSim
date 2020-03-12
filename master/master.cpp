@@ -10,9 +10,19 @@ Master::Master(int proc_count, int grid_size, int node_size){
 	this->grid_size = grid_size;
 	this->node_size = node_size;
 
+	tab = new int*[proc_count-1];
+	for(int i=0;i<proc_count-1;i++){
+		tab[i] = new int[node_size*node_size];
+	}
+
 }
 
 Master::~Master(){
+
+	for(int i=0;i<proc_count-1;i++){
+		delete[] tab[i];
+	}
+	delete[] tab;
 
 }
 
@@ -22,32 +32,31 @@ void drawpixel(Display* di, Window wi, GC gc, int x, int y, int color)
 	XDrawPoint(di, wi, gc, x, y);
 }
 
-void Master::main(){
+void Master::receive_from_nodes(){
 
-	int** tab = new int*[proc_count-1];
-	for(int i=0;i<proc_count-1;i++){
-		tab[i] = new int[node_size*node_size];
+	for(int i=1;i<proc_count;i++){
+		MPI_Status status;
+		MPI_Recv(tab[i-1], node_size*node_size,MPI_INT,i,1,MPI_COMM_WORLD,&status);
 	}
 	
-	Display *di = XOpenDisplay("");
+}
+
+void Master::main(){
 	
+	// X11
+	Display *di = XOpenDisplay("");	
 	int const x = 0, y = 0, width = 800, height = 800, border_width = 1;
 	int sc    = DefaultScreen(di);
 	Window ro = DefaultRootWindow(di);
 	Window wi = XCreateSimpleWindow(di, ro, x, y, width, height, border_width, BlackPixel(di, sc), WhitePixel(di, sc));
-	
 	XMapRaised(di, wi); //Make window visible
 	XStoreName(di, wi, "Game of Life"); // Set window title
+	GC gc = XCreateGC(di, ro, 0, NULL); //Prepare the window for drawing
+	//
 
-	//Prepare the window for drawing
-	GC gc = XCreateGC(di, ro, 0, NULL);
-	
 	while (true) {
 		
-		for(int i=1;i<proc_count;i++){
-			MPI_Status status;
-			MPI_Recv(tab[i-1], node_size*node_size,MPI_INT,i,1,MPI_COMM_WORLD,&status);
-		}
+		receive_from_nodes();
 		
 		for(int i=0;i<grid_size;i++){
 			for(int j=0;j<grid_size;j++){
@@ -72,11 +81,15 @@ void Master::main(){
 				}
 			}
 		}
+
 	}
 	
+	// X11
 	XFreeGC(di, gc);
 	XDestroyWindow(di, wi);
 	XCloseDisplay(di);
+	//
+
 }
 
 /*void display(int** tab, int size, int side_size) { // Old display on console
