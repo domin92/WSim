@@ -13,8 +13,6 @@ Node::Node(int rank, int grid_size, int node_size){
 	row = (rank-1)/grid_size;
 	col = (rank-1)%grid_size;
 
-	this->tab = new int**[2];
-
 	tab[0] = new int*[node_size+2];
 	for(int i=0;i<node_size+2;i++){
 		tab[0][i] = new int[node_size+2];
@@ -48,9 +46,17 @@ Node::Node(int rank, int grid_size, int node_size){
 
 Node::~Node(){
 
-	delete share_output_column;
-	delete share_input_column;
-	delete output_send_tab;
+	delete[] share_output_column;
+	delete[] share_input_column;
+	delete[] output_send_tab;
+
+	for(int i=0;i<node_size+2;i++){
+		delete[] tab[0][i];
+		delete[] tab[1][i];
+	}
+
+	delete[] tab[0];
+	delete[] tab[1];
 }
 
 void Node::share(){
@@ -303,22 +309,20 @@ void Node::iter() {
 	current_tab_idx ^= 1;
 }
 
-void Node::main(){
-	
-	while (true) {
-		
-		share();
-		
-		iter();
-		
-		for(int y=0;y<node_size;y++){
-			for(int x=0;x<node_size;x++){
-				output_send_tab[y*node_size+x]=tab[current_tab_idx][y+1][x+1];
-			}
+void Node::send_to_master(){
+	for(int y=0;y<node_size;y++){
+		for(int x=0;x<node_size;x++){
+			output_send_tab[y*node_size+x]=tab[current_tab_idx][y+1][x+1];
 		}
-		
-		MPI_Send(output_send_tab, node_size*node_size,MPI_INT,0,1,MPI_COMM_WORLD);
-		
 	}
+	
+	MPI_Send(output_send_tab, node_size*node_size,MPI_INT,0,1,MPI_COMM_WORLD);
+}
 
+void Node::main(){
+	while (true) {
+		share();
+		iter();
+		send_to_master();	
+	}
 }

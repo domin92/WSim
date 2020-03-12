@@ -6,7 +6,7 @@ class Node{
 	int grid_size;
 	int node_size;
 
-	int ***tab; // Two 2D arrays - input, output
+	int **tab[2]; // Two 2D arrays - input, output
 	int current_tab_idx; // Index of the current input tab
 
 	int *share_output_column;
@@ -19,6 +19,7 @@ class Node{
 
 	void iter();
 	void share();
+	void send_to_master();
 public:
 
 	Node(int rank, int grid_size, int node_size);
