@@ -1,2 +1,2 @@
 #!/bin/bash
-mpirun -np 5 ./WSim
+mpirun -np 17 ./WSim

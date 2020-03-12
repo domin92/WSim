@@ -5,6 +5,8 @@
 #include<cmath>
 #include<X11/Xlib.h>
 
+#include"node/node.hpp"
+
 using namespace std;
 
 int my_sqrt(int a){
@@ -19,262 +21,6 @@ int my_sqrt(int a){
 	}else{
 		return 0;
 	}
-}
-
-void share(int** tab, int size /* width/height of the group */, int grid_size /* width/height of the grid */, int rank){
-	
-	int row = (rank-1)/grid_size;
-	int col = (rank-1)%grid_size;
-	
-	MPI_Status status;
-	
-	// Horizontal
-	if(row%2==0){
-		if(row - 1 >= 0){
-			MPI_Recv(tab[0] + 1, size, MPI_INT, rank - grid_size, 1, MPI_COMM_WORLD, &status);
-		}
-	}else{
-		if(row + 1 < grid_size){
-			MPI_Send(tab[size] + 1, size, MPI_INT, rank + grid_size, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(row%2==0){
-		if(row + 1 < grid_size){
-			MPI_Recv(tab[size + 1] + 1, size, MPI_INT, rank + grid_size, 1, MPI_COMM_WORLD, &status);
-		}
-	}else{
-		if(row - 1 >= 0){
-			MPI_Send(tab[1] + 1, size, MPI_INT, rank - grid_size, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(row%2==1){
-		if(row - 1 >= 0){
-			MPI_Recv(tab[0] + 1, size, MPI_INT, rank - grid_size, 1, MPI_COMM_WORLD, &status);
-		}
-	}else{
-		if(row + 1 < grid_size){
-			MPI_Send(tab[size] + 1, size, MPI_INT, rank + grid_size, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(row%2==1){
-		if(row + 1 < grid_size){
-			MPI_Recv(tab[size + 1] + 1, size, MPI_INT, rank + grid_size, 1, MPI_COMM_WORLD, &status);
-		}
-	}else{
-		if(row - 1 >= 0){
-			MPI_Send(tab[1] + 1, size, MPI_INT, rank - grid_size, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	// Vertical
-	int *output_column = new int[size];
-	int *input_column = new int[size];
-	
-	if(col%2==0){
-		if(col - 1 >= 0){
-			MPI_Recv(input_column, size, MPI_INT, rank - 1, 1, MPI_COMM_WORLD, &status);
-			
-			for(int i=0;i<size;i++){
-				tab[i + 1][0] = input_column[i];
-			}
-		}
-	}else{
-		if(col + 1 < grid_size){
-			for(int i=0;i<size;i++){
-				output_column[i] = tab[i + 1][size];
-			}
-			MPI_Send(output_column, size, MPI_INT, rank + 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(col%2==0){
-		if(col + 1 < grid_size){
-			MPI_Recv(input_column, size, MPI_INT, rank + 1, 1, MPI_COMM_WORLD, &status);
-			
-			for(int i=0;i<size;i++){
-				tab[i + 1][size + 1] = input_column[i];
-			}
-		}
-	}else{
-		if(col - 1 >= 0){
-			for(int i=0;i<size;i++){
-				output_column[i] = tab[i + 1][1];
-			}
-			
-			MPI_Send(output_column, size, MPI_INT, rank - 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(col%2==1){
-		if(col - 1 >= 0){
-			MPI_Recv(input_column, size, MPI_INT, rank - 1, 1, MPI_COMM_WORLD, &status);
-			
-			for(int i=0;i<size;i++){
-				tab[i + 1][0] = input_column[i];
-			}
-		}
-	}else{
-		if(col + 1 < grid_size){
-			for(int i=0;i<size;i++){
-				output_column[i] = tab[i + 1][size];
-			}
-			MPI_Send(output_column, size, MPI_INT, rank + 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(col%2==1){
-		if(col + 1 < grid_size){
-			MPI_Recv(input_column, size, MPI_INT, rank + 1, 1, MPI_COMM_WORLD, &status);
-			
-			for(int i=0;i<size;i++){
-				tab[i + 1][size + 1] = input_column[i];
-			}
-		}
-	}else{
-		if(col - 1 >= 0){
-			for(int i=0;i<size;i++){
-				output_column[i] = tab[i + 1][1];
-			}
-			
-			MPI_Send(output_column, size, MPI_INT, rank - 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	delete output_column;
-	delete input_column;
-	
-	// Corners
-	if(row%2==0){ // Top Left
-		if(row - 1 >= 0 && col - 1 >= 0){
-			MPI_Recv(&tab[0][0], 1, MPI_INT, rank - grid_size - 1, 1, MPI_COMM_WORLD, &status);
-		}
-	}else{
-		if(row + 1 < grid_size && col + 1 < grid_size){
-			MPI_Send(&tab[size][size], 1, MPI_INT, rank + grid_size + 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(row%2==0){ // Top Right
-		if(row - 1 >= 0 && col + 1 < grid_size){
-			MPI_Recv(&tab[0][size + 1], 1, MPI_INT, rank - grid_size + 1, 1, MPI_COMM_WORLD, &status);
-		}
-	}else{
-		if(row + 1 < grid_size && col - 1 >= 0){
-			MPI_Send(&tab[size][1], 1, MPI_INT, rank + grid_size - 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(row%2==0){ // Bottom Left
-		if(row + 1 < grid_size && col - 1 >= 0){
-			MPI_Recv(&tab[size + 1][0], 1, MPI_INT, rank + grid_size - 1, 1, MPI_COMM_WORLD, &status);
-		}
-	}else{
-		if(row - 1 >= 0 && col + 1 < grid_size){
-			MPI_Send(&tab[1][size], 1, MPI_INT, rank - grid_size + 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(row%2==0){ // Bottom Right
-		if(row + 1 < grid_size && col + 1 < grid_size){
-			MPI_Recv(&tab[size + 1][size + 1], 1, MPI_INT, rank + grid_size + 1, 1, MPI_COMM_WORLD, &status);
-		}
-	}else{
-		if(row - 1 >= 0 && col - 1 >= 0){
-			MPI_Send(&tab[1][1], 1, MPI_INT, rank - grid_size - 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(row%2==1){ // Top Left
-		if(row - 1 >= 0 && col - 1 >= 0){
-			MPI_Recv(&tab[0][0], 1, MPI_INT, rank - grid_size - 1, 1, MPI_COMM_WORLD, &status);
-		}
-	}else{
-		if(row + 1 < grid_size && col + 1 < grid_size){
-			MPI_Send(&tab[size][size], 1, MPI_INT, rank + grid_size + 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(row%2==1){ // Top Right
-		if(row - 1 >= 0 && col + 1 < grid_size){
-			MPI_Recv(&tab[0][size + 1], 1, MPI_INT, rank - grid_size + 1, 1, MPI_COMM_WORLD, &status);
-		}
-	}else{
-		if(row + 1 < grid_size && col - 1 >= 0){
-			MPI_Send(&tab[size][1], 1, MPI_INT, rank + grid_size - 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(row%2==1){ // Bottom Left
-		if(row + 1 < grid_size && col - 1 >= 0){
-			MPI_Recv(&tab[size + 1][0], 1, MPI_INT, rank + grid_size - 1, 1, MPI_COMM_WORLD, &status);
-		}
-	}else{
-		if(row - 1 >= 0 && col + 1 < grid_size){
-			MPI_Send(&tab[1][size], 1, MPI_INT, rank - grid_size + 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(row%2==1){ // Bottom Right
-		if(row + 1 < grid_size && col + 1 < grid_size){
-			MPI_Recv(&tab[size + 1][size + 1], 1, MPI_INT, rank + grid_size + 1, 1, MPI_COMM_WORLD, &status);
-		}
-	}else{
-		if(row - 1 >= 0 && col - 1 >= 0){
-			MPI_Send(&tab[1][1], 1, MPI_INT, rank - grid_size - 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-}
-
-void iter(int ***tab, int size, int &current_tab_idx) {
-
-	int** input_tab = tab[current_tab_idx];
-	int** output_tab = tab[current_tab_idx ^ 1];
-
-	for (int y = 1; y < size+1; y++) {
-		for (int x = 1; x < size+1; x++) {
-			
-			int val = 0;
-
-			// sum 8 neighbours
-			for (int i = -1; i <= 1; i++) {
-				for (int j = -1; j <= 1; j++) {
-
-					if (i==0 && j==0) {
-						continue;
-					}
-					
-					val += input_tab[y+i][x+j];
-					
-				}
-			}
-
-			// game of life rules
-			if (input_tab[y][x] == 0) {
-				if (val == 3) {
-					output_tab[y][x] = 1;
-				}
-				else {
-					output_tab[y][x] = 0;
-				}
-			}
-			else {
-				if (val == 2 || val == 3) {
-					output_tab[y][x] = 1;
-				}
-				else {
-					output_tab[y][x] = 0;
-				}
-			}
-			
-			
-		}
-	}
-
-	current_tab_idx ^= 1;
 }
 
 void display(int** tab, int size, int side_size) { // Old display on console
@@ -316,9 +62,9 @@ int main(int argc, char **argv) {
 	
 	int side_size=my_sqrt(proccount-1);
 	
-	int size = 200;
+	int size = 100;
 	
-	if(myrank==0){ //Display
+	if(myrank==0){ // Master
 		
 		int** tab = new int*[proccount-1];
 		for(int i=0;i<proccount-1;i++){
@@ -375,54 +121,12 @@ int main(int argc, char **argv) {
 		XDestroyWindow(di, wi);
 		XCloseDisplay(di);
 		
-	}else{ //Worker
+	}else{ // Node
 		
-		int*** tab;
-		tab = new int**[2];
+		Node node(myrank, side_size, size);
 
-		tab[0] = new int*[size+2];
-		for(int i=0;i<size+2;i++){
-			tab[0][i] = new int[size+2];
-			for(int j=0;j<size+2;j++){
-				tab[0][i][j]=0;
-			}
-		}
+		node.main();
 
-		tab[1] = new int*[size+2];
-		for(int i=0;i<size+2;i++){
-			tab[1][i] = new int[size+2];
-			for(int j=0;j<size+2;j++){
-				tab[1][i][j]=0;
-			}
-		}
-
-		for(int i=1;i<size-1;i++){
-			for(int j=1;j<size-1;j++){
-				int r = myrank*rand()%100;
-				if(r>50){
-					tab[0][i][j]=1;
-				}
-			}
-		}
-		
-		int *output_send_tab = new int[size*size];
-		
-		int current_tab_idx = 0;
-		
-		while (true) {
-			share(tab[current_tab_idx], size, side_size, myrank);
-			
-			iter(tab, size, current_tab_idx);
-			
-			for(int y=0;y<size;y++){
-				for(int x=0;x<size;x++){
-					output_send_tab[y*size+x]=tab[current_tab_idx][y+1][x+1];
-				}
-			}
-			
-			MPI_Send(output_send_tab, size*size,MPI_INT,0,1,MPI_COMM_WORLD);
-			
-		}
 	}
 
     // Shut down MPI
