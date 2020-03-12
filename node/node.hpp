@@ -2,6 +2,7 @@
 #define NODE_HPP
 
 class Node{
+
 	int rank;
 	int grid_size;
 	int node_size;
@@ -20,6 +21,7 @@ class Node{
 	void iter();
 	void share();
 	void send_to_master();
+	
 public:
 
 	Node(int rank, int grid_size, int node_size);
