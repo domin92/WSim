@@ -22,6 +22,7 @@ public:
     RaiiWrapper &operator=(RaiiWrapper &&other) {
         value = other.value;
         other.value = 0;
+        return *this;
     }
     operator ClType() const { return value; }
     virtual ~RaiiWrapper() {}
@@ -73,20 +74,9 @@ struct Vec3 {
 };
 void enqueueKernel3D(cl_command_queue commandQueue, cl_kernel kernel, Vec3 globalWorkOffset, Vec3 globalWorkSize, Vec3 localWorkSize);
 void enqueueKernel3D(cl_command_queue commandQueue, cl_kernel kernel, Vec3 globalWorkSize);
-template <typename T>
-inline void setKernelArg(cl_kernel kernel, cl_uint argIndex, const T &arg) {
-    ASSERT_CL_SUCCESS(clSetKernelArg(kernel, argIndex, sizeof(T), &arg));
-}
-inline void setKernelArg(cl_kernel kernel, cl_uint argIndex, const Mem &mem) {
-    const cl_mem clMem = mem;
-    setKernelArg(kernel, argIndex, clMem);
-}
-inline void setKernelArgFloat(cl_kernel kernel, cl_uint argIndex, float arg) {
-    setKernelArg(kernel, argIndex, arg);
-}
-inline void setKernelArgInt(cl_kernel kernel, cl_uint argIndex, int arg) {
-    setKernelArg(kernel, argIndex, arg);
-}
+void setKernelArgMem(cl_kernel kernel, cl_uint argIndex, const Mem &mem);
+void setKernelArgFlt(cl_kernel kernel, cl_uint argIndex, float arg);
+void setKernelArgInt(cl_kernel kernel, cl_uint argIndex, int arg);
 
 // Enqueue builtins
 void enqueueReadImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, size_t outRowPitch, size_t outSlicePitch, void *outPtr);
@@ -102,6 +92,11 @@ Mem createReadWriteImage3D(cl_context context, Vec3 size, const cl_image_format 
 } // namespace OCL
 
 namespace OCL::detail {
+template <typename T>
+inline void setKernelArg(cl_kernel kernel, cl_uint argIndex, const T &arg) {
+    ASSERT_CL_SUCCESS(clSetKernelArg(kernel, argIndex, sizeof(T), &arg));
+}
+
 struct PlatformInfo {
     std::string profile;
     std::string version;

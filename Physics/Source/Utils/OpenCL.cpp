@@ -111,14 +111,26 @@ void enqueueKernel3D(cl_command_queue commandQueue, cl_kernel kernel, Vec3 globa
     ASSERT_CL_SUCCESS(retVal);
 }
 
+void setKernelArgMem(cl_kernel kernel, cl_uint argIndex, const Mem &mem) {
+    const cl_mem clMem = mem;
+    detail::setKernelArg(kernel, argIndex, clMem);
+}
+
+void setKernelArgFlt(cl_kernel kernel, cl_uint argIndex, float arg) {
+    detail::setKernelArg(kernel, argIndex, arg);
+}
+
+void setKernelArgInt(cl_kernel kernel, cl_uint argIndex, int arg) {
+    detail::setKernelArg(kernel, argIndex, arg);
+}
+
 void enqueueReadImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, size_t outRowPitch, size_t outSlicePitch, void *outPtr) {
     Vec3 zeros{};
     cl_int retVal = clEnqueueReadImage(commandQueue, image, blocking, zeros.ptr, imageSize.ptr, outRowPitch, outSlicePitch, outPtr, 0, nullptr, nullptr);
     ASSERT_CL_SUCCESS(retVal);
 }
 
-size_t calculateSizeOfImage3D(Vec3 imageSize, size_t rowPitch, size_t slicePitch)
-{
+size_t calculateSizeOfImage3D(Vec3 imageSize, size_t rowPitch, size_t slicePitch) {
     assert(rowPitch >= imageSize.x);
     assert(slicePitch >= rowPitch * imageSize.y);
     return slicePitch * imageSize.z;
