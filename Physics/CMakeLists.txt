@@ -1,6 +1,6 @@
 # General setup
-cmake_minimum_required(VERSION 3.16)
-project(WSimPhysics)
+cmake_minimum_required(VERSION 3.15.0)
+project(WSim)
 find_package(OpenCL REQUIRED)
 
 # Get source files
