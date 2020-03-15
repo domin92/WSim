@@ -46,7 +46,7 @@ Context createContext(cl_platform_id platform, cl_device_id device) {
 
 CommandQueue createCommandQueue(cl_context context, cl_device_id device) {
     cl_int retVal{};
-    CommandQueue commandQueue = clCreateCommandQueue(context, device, 0, &retVal);
+    CommandQueue commandQueue = clCreateCommandQueueWithProperties(context, device, nullptr, &retVal);
     ASSERT_CL_SUCCESS(retVal);
     return commandQueue;
 }
