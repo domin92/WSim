@@ -2,10 +2,15 @@
 
 #define CL_TARGET_OPENCL_VERSION 200
 #include <CL/cl.h>
-#include <string>
 #include <assert.h>
+#include <iostream>
+#include <string>
 
-#define ASSERT_CL_SUCCESS(retVal) assert(retVal == CL_SUCCESS);
+#define ASSERT_CL_SUCCESS(retVal)                   \
+    if (retVal != CL_SUCCESS) {                     \
+        std::cerr << "retVal = " << retVal << '\n'; \
+        assert(false);                              \
+    }
 
 namespace OCL {
 // RAII Wrappers

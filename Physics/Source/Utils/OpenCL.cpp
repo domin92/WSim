@@ -62,8 +62,9 @@ Program createProgram(cl_device_id device, cl_context context, const std::string
     }
 
     const std::string source{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
-    const char *sourceString = source.c_str();
-    const size_t sourceLength = source.size();
+    const std::string sourceWithExtensions = "#pragma OPENCL EXTENSION cl_khr_3d_image_writes : enable\n" + source;
+    const char *sourceString = sourceWithExtensions.c_str();
+    const size_t sourceLength = sourceWithExtensions.size();
     cl_int retVal{};
     Program program = clCreateProgramWithSource(context, 1, &sourceString, &sourceLength, &retVal);
     ASSERT_CL_SUCCESS(retVal);
@@ -163,7 +164,7 @@ Mem createReadWriteImage3D(cl_context context, Vec3 size, const cl_image_format 
 
 namespace OCL::detail {
 PlatformInfo getPlatformInfo(cl_platform_id platform) {
-    char buffer[1024];
+    char buffer[4096];
     size_t actualSize{};
     PlatformInfo info{};
     cl_int retVal{};
