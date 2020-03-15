@@ -1,6 +1,7 @@
 #include "OpenGL.h"
 
 #include <chrono>
+#include <thread>
 
 namespace OGL::detail {
 void display() {
@@ -76,7 +77,7 @@ void mainLoop(OnUpdateFunction onUpdate) {
         auto deltaTime = thisFrameTime - lastFrameTime;
         if (minFrameTime > deltaTime) {
             auto lackingDeltaTime = minFrameTime - deltaTime;
-            Sleep(std::chrono::duration_cast<std::chrono::milliseconds>(lackingDeltaTime).count());
+            std::this_thread::sleep_for(lackingDeltaTime);
         }
         lastFrameTime = thisFrameTime;
 

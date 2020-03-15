@@ -16,10 +16,7 @@ cl_platform_id createPlatform() {
     retVal = clGetPlatformIDs(platformsNum, platforms.get(), nullptr);
     ASSERT_CL_SUCCESS(retVal);
 
-    auto a = detail::getPlatformInfo(platforms[0]);
-    auto b = detail::getPlatformInfo(platforms[1]);
-    auto c = detail::getPlatformInfo(platforms[2]);
-
+    const auto platformInfo = detail::getPlatformInfo(platforms[0]);
     return platforms[0];
 }
 
@@ -81,7 +78,7 @@ Program createProgram(cl_device_id device, cl_context context, const std::string
         retVal = clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, length, log.get(), nullptr);
         ASSERT_CL_SUCCESS(retVal);
 
-        std::cerr << log << '\n';
+        std::cerr << log.get() << '\n';
         if (compilationMustSuceed) {
             assert(false);
         }

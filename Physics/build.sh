@@ -1,6 +1,6 @@
 mkdir .build -p
 cd .build
-cmake ..
+cmake .. -DCMAKE_BUILD_TYPE=Debug
 
 if [ $? != 0 ]; then
     read _
