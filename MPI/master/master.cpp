@@ -10,41 +10,28 @@ Master::Master(int proc_count, int grid_size, int node_size){
 	this->grid_size = grid_size;
 	this->node_size = node_size;
 
+	all_tab = new int[(proc_count-1)*node_size*node_size];
+
 	tab = new int*[proc_count-1];
+
 	for(int i=0;i<proc_count-1;i++){
-		tab[i] = new int[node_size*node_size];
+		tab[i] = all_tab + i*node_size*node_size;
 	}
 
 }
 
 Master::~Master(){
-
-	for(int i=0;i<proc_count-1;i++){
-		delete[] tab[i];
-	}
 	delete[] tab;
-
+	delete[] all_tab;
 }
 
-void drawpixel(Display* di, Window wi, GC gc, int x, int y, int color)
-{
+void drawpixel(Display* di, Window wi, GC gc, int x, int y, int color){
 	XSetForeground(di, gc, color);
 	XDrawPoint(di, wi, gc, x, y);
 }
 
 void Master::receive_from_nodes(){
-
-	MPI_Status status[proc_count-1];
-	MPI_Request request[proc_count-1];
-
-	for(int i=1;i<proc_count;i++){
-		MPI_Irecv(tab[i-1], node_size*node_size,MPI_INT,i,1,MPI_COMM_WORLD,&request[i]);
-	}
-
-	for(int i=1;i<proc_count;i++){
-		MPI_Wait(&request[i], &status[i]);
-	}
-	
+	MPI_Gather(NULL, 0, MPI_INT, all_tab - node_size*node_size, node_size*node_size, MPI_INT, 0, MPI_COMM_WORLD);
 }
 
 void Master::main(){
@@ -97,27 +84,3 @@ void Master::main(){
 	//
 
 }
-
-/*void display(int** tab, int size, int side_size) { // Old display on console
-	
-	for(int i=0;i<side_size;i++){
-		for(int j=0;j<side_size;j++){
-			
-			for (int y = 0; y < size; y++) {
-				for (int x = 0; x < size; x++) {
-
-					int idx = i*side_size+j;
-					
-					printf("\033[%d;%dH",(i*size+y)+1,(j*size+x)+1);// Move cursor
-					
-					if(tab[idx][y*size+x]==1){
-						cout << idx;
-					}else{
-						cout << " ";
-					}
-				}
-			}
-			
-		}
-	}
-}*/

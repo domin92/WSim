@@ -316,7 +316,7 @@ void Node::send_to_master(){
 		}
 	}
 	
-	MPI_Send(output_send_tab, node_size*node_size,MPI_INT,0,1,MPI_COMM_WORLD);
+	MPI_Gather(output_send_tab, node_size*node_size, MPI_INT, NULL, node_size*node_size, MPI_INT, 0, MPI_COMM_WORLD);
 }
 
 void Node::main(){

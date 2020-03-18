@@ -6,7 +6,9 @@
 using namespace std;
 
 int my_sqrt(int a){
-	if(a==4){
+	if(a==1){
+		return 1;
+	}else if(a==4){
 		return 2;
 	}else if(a==9){
 		return 3;
@@ -29,20 +31,13 @@ int main(int argc, char **argv) {
 	int grid_size = my_sqrt(proc_count-1);
 	int node_size = 400 / grid_size;
 	
-	if(my_rank==0){ // Master
-		
+	if(my_rank==0){
 		Master master(proc_count, grid_size, node_size);
-
 		master.main();
-		
-	}else{ // Node
-		
+	}else{ 
 		Node node(my_rank, grid_size, node_size);
-
 		node.main();
-
 	}
 
-    // Shut down MPI
     MPI_Finalize();
 }

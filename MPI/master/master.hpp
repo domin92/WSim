@@ -9,6 +9,8 @@ class Master{
 
 	int** tab;
 
+	int* all_tab;
+
 	void receive_from_nodes();
 
 public:
