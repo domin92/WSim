@@ -19,6 +19,12 @@ class Node{
 	int *output_send_tab;
 
 	void iter();
+
+	void share_horizontal();
+	void share_vertical();
+	void share_depth();
+	void share_corners();
+
 	void share();
 	void send_to_master();
 	
