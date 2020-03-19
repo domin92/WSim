@@ -33,7 +33,11 @@ void update(float deltaTime) {
     ASSERT_GL_NO_ERROR();
 }
 
+#include "Tests/GTest.h"
+
 int main() {
+    testing::runTests();
+
     // Create simulation
     OCL::Vec3 imageSize{100, 100, 1};
     Simulation simulation{imageSize};

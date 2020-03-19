@@ -1,0 +1,59 @@
+#include "KernelTests/KernelTest.h"
+#include "TestUtils/TestUtils.h"
+
+struct AdvectionKernelTest : KernelTest {
+    auto createAdvectionKernel() {
+        return createKernel("advection.cl", "advection3f");
+    }
+
+    void performTest(OCL::Vec3 imageSize, cl_kernel kernelAdvection, float deltaTime, const float *inputData, const float *expectedOutputData) {
+        auto velocitySrc = OCL::createReadWriteImage3D(context, imageSize, vectorFieldFormat);
+        auto velocityDst = OCL::createReadWriteImage3D(context, imageSize, vectorFieldFormat);
+        OCL::enqueueWriteImage3D(queue, velocitySrc, CL_FALSE, imageSize, 0, 0, inputData);
+        OCL::setKernelArgMem(kernelAdvection, 0, velocitySrc); // inField
+        OCL::setKernelArgMem(kernelAdvection, 1, velocitySrc); // inVelocity
+        OCL::setKernelArgFlt(kernelAdvection, 2, deltaTime);   // inDeltaTime
+        OCL::setKernelArgFlt(kernelAdvection, 3, 1.f);         // inDissipation
+        OCL::setKernelArgMem(kernelAdvection, 4, velocityDst); // outField
+        OCL::enqueueKernel3D(queue, kernelAdvection, imageSize);
+
+        const auto requiredBufferSize = imageSize.getRequiredBufferSize(4u);
+        auto outputData = std::make_unique<float[]>(requiredBufferSize);
+        OCL::enqueueReadImage3D(queue, velocityDst, CL_TRUE, imageSize, 0, 0, outputData.get());
+        EXPECT_MEM_EQ(expectedOutputData, outputData.get(), requiredBufferSize);
+    }
+};
+
+TEST_F(AdvectionKernelTest, velocityAdvectionSimple) {
+    auto kernelAdvection = createKernel("advection.cl", "advection3f");
+
+    const OCL::Vec3 testImageSize{4, 4, 1};
+    const float inputData[] = {
+        -2, 0, 0, 0, /**/ +1, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1, 0, 0, 0,
+        +2, 0, 0, 0, /**/ +2, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 3, 0, 0, 0,
+        +1, 0, 0, 0, /**/ -1, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1, 0, 0, 0,
+        -1, 0, 0, 0, /**/ -1, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1, 0, 0, 0};
+    const float expectedOutputData[] = {
+        +0, 0, 0, 0, /**/ -2, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0, 0, 0, 0,
+        +2, 0, 0, 0, /**/ +2, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0, 0, 0, 0,
+        +1, 0, 0, 0, /**/ +0, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0, 0, 0, 0,
+        -1, 0, 0, 0, /**/ +0, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0, 0, 0, 0};
+    performTest(testImageSize, kernelAdvection, 1.f, inputData, expectedOutputData);
+}
+
+TEST_F(AdvectionKernelTest, velocityAdvectionBilinearInterpolation) {
+    auto kernelAdvection = createKernel("advection.cl", "advection3f");
+
+    const OCL::Vec3 testImageSize{4, 4, 1};
+    const float inputData[] = {
+        -2, 0, 0, 0, /**/ +1, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1, 0, 0, 0,
+        +2, 0, 0, 0, /**/ +2, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 3, 0, 0, 0,
+        +1, 0, 0, 0, /**/ -1, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1, 0, 0, 0,
+        -1, 0, 0, 0, /**/ -1, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1, 0, 0, 0};
+    const float expectedOutputData[] = {
+        +1, 0, 0, 0, /**/ -0.5, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0.5, 0, 0, 0,
+        +2, 0, 0, 0, /**/ +2.0, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1.0, 0, 0, 0,
+        +1, 0, 0, 0, /**/ -0.5, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0.5, 0, 0, 0,
+        -1, 0, 0, 0, /**/ -0.5, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0.5, 0, 0, 0};
+    performTest(testImageSize, kernelAdvection, 0.5f, inputData, expectedOutputData);
+}

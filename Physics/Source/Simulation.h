@@ -27,6 +27,12 @@ public:
     auto &getCommandQueue() { return commandQueue; }
     auto &getColor() { return color; }
     auto &getVelocity() { return velocity; }
+    auto &getKernelFillVelocity() { return kernelFillVelocity; }
+    auto &getKernelFillColor() { return kernelFillColor; }
+    auto &getKernelAdvection() { return kernelAdvection; }
+    auto &getKernelDivergence() { return kernelDivergence; }
+    auto &getKernelPressureJacobi() { return kernelPressureJacobi; }
+    auto &getKernelApplyPressure() { return kernelApplyPressure; }
 
 private:
     // General data

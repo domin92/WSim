@@ -86,6 +86,7 @@ void setKernelArgInt(cl_kernel kernel, cl_uint argIndex, int arg);
 
 // Enqueue builtins
 void enqueueReadImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, size_t outRowPitch, size_t outSlicePitch, void *outPtr);
+void enqueueWriteImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, size_t inRowPitch, size_t inSlicePitch, const void *data);
 
 // Misc
 size_t calculateSizeOfImage3D(Vec3 imageSize, size_t rowPitch, size_t slicePitch);

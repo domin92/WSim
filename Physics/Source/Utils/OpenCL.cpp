@@ -1,10 +1,10 @@
 #include "OpenCL.h"
 
-#include <memory>
-#include <string>
 #include <fstream>
-#include <streambuf>
 #include <iostream>
+#include <memory>
+#include <streambuf>
+#include <string>
 
 namespace OCL {
 cl_platform_id createPlatform() {
@@ -125,6 +125,12 @@ void setKernelArgInt(cl_kernel kernel, cl_uint argIndex, int arg) {
 void enqueueReadImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, size_t outRowPitch, size_t outSlicePitch, void *outPtr) {
     Vec3 zeros{};
     cl_int retVal = clEnqueueReadImage(commandQueue, image, blocking, zeros.ptr, imageSize.ptr, outRowPitch, outSlicePitch, outPtr, 0, nullptr, nullptr);
+    ASSERT_CL_SUCCESS(retVal);
+}
+
+void enqueueWriteImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, size_t inRowPitch, size_t inSlicePitch, const void *data) {
+    Vec3 zeros{};
+    cl_int retVal = clEnqueueWriteImage(commandQueue, image, blocking, zeros.ptr, imageSize.ptr, inRowPitch, inSlicePitch, data, 0, nullptr, nullptr);
     ASSERT_CL_SUCCESS(retVal);
 }
 
