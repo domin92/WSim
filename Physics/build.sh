@@ -79,7 +79,7 @@ build_path=`realpath .build -m`/"$architecture"_"$configuration"
 if [ $target == "Dependencies" -o $target == "All" ]; then
     # Gtest
     build "ThirdParty/googletest" "$build_path/googletest" $architecture $configuration \
-        -Dgtest_force_shared_crt=ON                                                     \
+        -Dgtest_force_shared_crt=OFF                                                     \
         -DBUILD_GMOCK=OFF
     cmake --build "$build_path/googletest" --target gtest --config $configuration
 fi

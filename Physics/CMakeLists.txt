@@ -3,8 +3,12 @@ cmake_minimum_required(VERSION 3.0.0)
 if(POLICY CMP0072)
     cmake_policy(SET CMP0072 NEW)
 endif()
+if(POLICY CMP0091)
+    cmake_policy(SET CMP0091 NEW)
+endif()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 project(WSim)
 
 # Find dependencies
@@ -15,7 +19,7 @@ if (GLUT_FOUND)
     set(GLUT_LIB GLUT::GLUT)
 else()
     find_package(FREEGLUT REQUIRED)
-    set(GLUT_LIB FreeGLUT::freeglut_static)
+    set(GLUT_LIB FreeGLUT::freeglut)
 endif()
 
 
