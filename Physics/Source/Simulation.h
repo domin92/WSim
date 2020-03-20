@@ -1,21 +1,7 @@
 #pragma once
 
+#include "Utils/ImagePair.h"
 #include "Utils/OpenCL.h"
-
-struct Image3DPair {
-    explicit Image3DPair(cl_context context, OCL::Vec3 size, const cl_image_format &format) {
-        images[0] = OCL::createReadWriteImage3D(context, size, format);
-        images[1] = OCL::createReadWriteImage3D(context, size, format);
-    }
-
-    OCL::Mem &getSource() { return images[sourceResourceIndex]; }
-    OCL::Mem &getDestination() { return images[1 - sourceResourceIndex]; }
-    void swap() { sourceResourceIndex = 1 - sourceResourceIndex; }
-
-protected:
-    int sourceResourceIndex = 0;
-    OCL::Mem images[2] = {};
-};
 
 const static cl_image_format vectorFieldFormat = {CL_RGBA, CL_FLOAT};
 const static cl_image_format scalarFieldFormat = {CL_R, CL_FLOAT};
