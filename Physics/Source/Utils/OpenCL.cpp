@@ -52,7 +52,7 @@ CommandQueue createCommandQueue(cl_context context, cl_device_id device) {
 }
 
 // Compile kernels
-Program createProgram(cl_device_id device, cl_context context, const std::string &sourceFilePath, bool compilationMustSuceed) {
+Program createProgramFromFile(cl_device_id device, cl_context context, const std::string &sourceFilePath, bool compilationMustSuceed) {
     std::ifstream file(std::string{SHADERS_DIR} + "/" + sourceFilePath);
     if (!file.good()) {
         if (compilationMustSuceed) {
@@ -62,6 +62,9 @@ Program createProgram(cl_device_id device, cl_context context, const std::string
     }
 
     const std::string source{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
+    return createProgramFromSource(device, context, source, compilationMustSuceed);
+}
+Program createProgramFromSource(cl_device_id device, cl_context context, const std::string &source, bool compilationMustSuceed) {
     const std::string sourceWithExtensions = "#pragma OPENCL EXTENSION cl_khr_3d_image_writes : enable\n" + source;
     const char *sourceString = sourceWithExtensions.c_str();
     const size_t sourceLength = sourceWithExtensions.size();

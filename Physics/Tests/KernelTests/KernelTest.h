@@ -14,7 +14,7 @@ struct KernelTest : ::testing::Test {
     }
 
     cl_kernel createKernel(const std::string &programPath, const std::string &kernelName) {
-        program = OCL::createProgram(device, context, programPath, true);
+        program = OCL::createProgramFromFile(device, context, programPath, true);
         kernel = OCL::createKernel(program, kernelName.c_str());
         return kernel;
     }

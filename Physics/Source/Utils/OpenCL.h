@@ -61,7 +61,8 @@ Context createContext(cl_platform_id platform, cl_device_id device);
 CommandQueue createCommandQueue(cl_context context, cl_device_id device);
 
 // Compile kernels
-Program createProgram(cl_device_id device, cl_context context, const std::string &sourceFilePath, bool compilationMustSuceed);
+Program createProgramFromFile(cl_device_id device, cl_context context, const std::string &sourceFilePath, bool compilationMustSuceed);
+Program createProgramFromSource(cl_device_id device, cl_context context, const std::string &source, bool compilationMustSuceed);
 Kernel createKernel(cl_program program, const char *kernelName);
 
 // Enqueue kernels
