@@ -2,11 +2,13 @@
 #include "TestUtils/TestUtils.h"
 
 struct AdvectionKernelTest : KernelTest {
-    auto createAdvectionKernel() {
-        return createKernel("advection.cl", "advection3f");
+    void SetUp() override {
+        KernelTest::SetUp();
+        kernelAdvection = createKernelFromFile("advection.cl", "advection3f");
     }
+    cl_kernel kernelAdvection;
 
-    void performTest(OCL::Vec3 imageSize, cl_kernel kernelAdvection, float deltaTime, const float *inputData, const float *expectedOutputData) {
+    void performTest(OCL::Vec3 imageSize, float deltaTime, const float *inputData, const float *expectedOutputData) {
         auto velocitySrc = OCL::createReadWriteImage3D(context, imageSize, vectorFieldFormat);
         auto velocityDst = OCL::createReadWriteImage3D(context, imageSize, vectorFieldFormat);
         OCL::enqueueWriteImage3D(queue, velocitySrc, CL_FALSE, imageSize, 0, 0, inputData);
@@ -25,8 +27,6 @@ struct AdvectionKernelTest : KernelTest {
 };
 
 TEST_F(AdvectionKernelTest, velocityAdvectionSimple) {
-    auto kernelAdvection = createKernel("advection.cl", "advection3f");
-
     const OCL::Vec3 testImageSize{4, 4, 1};
     const float inputData[] = {
         -2, 0, 0, 0, /**/ +1, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1, 0, 0, 0,
@@ -38,12 +38,10 @@ TEST_F(AdvectionKernelTest, velocityAdvectionSimple) {
         +2, 0, 0, 0, /**/ +2, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0, 0, 0, 0,
         +1, 0, 0, 0, /**/ +0, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0, 0, 0, 0,
         -1, 0, 0, 0, /**/ +0, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0, 0, 0, 0};
-    performTest(testImageSize, kernelAdvection, 1.f, inputData, expectedOutputData);
+    performTest(testImageSize, 1.f, inputData, expectedOutputData);
 }
 
 TEST_F(AdvectionKernelTest, velocityAdvectionBilinearInterpolation) {
-    auto kernelAdvection = createKernel("advection.cl", "advection3f");
-
     const OCL::Vec3 testImageSize{4, 4, 1};
     const float inputData[] = {
         -2, 0, 0, 0, /**/ +1, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1, 0, 0, 0,
@@ -55,5 +53,5 @@ TEST_F(AdvectionKernelTest, velocityAdvectionBilinearInterpolation) {
         +2, 0, 0, 0, /**/ +2.0, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1.0, 0, 0, 0,
         +1, 0, 0, 0, /**/ -0.5, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0.5, 0, 0, 0,
         -1, 0, 0, 0, /**/ -0.5, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 0.5, 0, 0, 0};
-    performTest(testImageSize, kernelAdvection, 0.5f, inputData, expectedOutputData);
+    performTest(testImageSize, 0.5f, inputData, expectedOutputData);
 }
