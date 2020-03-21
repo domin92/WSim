@@ -1,4 +1,5 @@
-__kernel void fillVelocity(__write_only image3d_t out, float inImageSize) {
+__kernel void fillVelocity(float inImageSize,
+                           __write_only image3d_t outVelocity) {
     const int4 threadPosition = (int4)((int)get_global_id(0), (int)get_global_id(1), (int)get_global_id(2), 0);
     const float4 center = (float4)(inImageSize) / 2;
     float4 r = convert_float4(threadPosition) - center;
@@ -20,10 +21,11 @@ __kernel void fillVelocity(__write_only image3d_t out, float inImageSize) {
     }
 
     velocity *= 0;
-    write_imagef(out, threadPosition, velocity);
+    write_imagef(outVelocity, threadPosition, velocity);
 }
 
-__kernel void fillColor(__write_only image3d_t out, float inImageSize) {
+__kernel void fillColor(float inImageSize,
+                        __write_only image3d_t outColor) {
     const int4 threadPosition = (int4)((int)get_global_id(0), (int)get_global_id(1), (int)get_global_id(2), 0);
     const float squaresPerLine = 4;
     const float divider = inImageSize / squaresPerLine;
@@ -44,5 +46,5 @@ __kernel void fillColor(__write_only image3d_t out, float inImageSize) {
         color.z = 1;
     }
 
-    write_imagef(out, threadPosition, color);
+    write_imagef(outColor, threadPosition, color);
 }

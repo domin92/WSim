@@ -66,29 +66,22 @@ void mouseClick(int button, int state, int x, int y) {
 
 void mouseMove(int x, int y) {
     transformCoordsToSimulationSpace(x, y);
-
     if (!OGL::renderData.clicked || x < 0 || y < 0 || x > 400 || y > 400) {
         return;
     }
+
     int deltaX = OGL::renderData.lastMouseX - x;
     int deltaY = OGL::renderData.lastMouseY - y;
-
-    deltaX;
-    deltaY;
-
+    OGL::renderData.lastMouseX = x;
+    OGL::renderData.lastMouseY = y;
     if (deltaX == 0 && deltaY == 0) {
         return;
     }
 
-    OGL::renderData.lastMouseX = x;
-    OGL::renderData.lastMouseY = y;
-
-    std::cout << "[" << x << " , " << y << "] apply (" << deltaX << " , " << deltaY << ")\n";
     OGL::renderData.simulation->applyForce(x, y, deltaX, deltaY, 10);
 }
 
 int main() {
-
     // Create simulation
     OCL::Vec3 imageSize{100, 100, 1};
     Simulation simulation{imageSize};
