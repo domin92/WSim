@@ -325,9 +325,12 @@ void Node::post_share_copy(){
 
 	int** share_tab = tab[current_tab_idx];
 
-	for(int i=0;i<node_size;i++){
-		share_tab[0][i+1] = sh_vertical_U_in[i];
+	if(row - 1 >= 0){
+		for(int i=0;i<node_size;i++){
+			share_tab[0][i+1] = sh_vertical_U_in[i];
+		}
 	}
+
 }
 
 void Node::iter() {
