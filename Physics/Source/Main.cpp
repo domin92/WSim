@@ -1,6 +1,7 @@
+#include "Simulation.h"
+
 #include "Utils/OpenCL.h"
 #include "Utils/OpenGL.h"
-#include "Simulation.h"
 
 void update(float deltaTime) {
     auto &simulation = *OGL::renderData.simulation;
@@ -33,7 +34,54 @@ void update(float deltaTime) {
     ASSERT_GL_NO_ERROR();
 }
 
+void transformCoordsToSimulationSpace(int &x, int &y) {
+    // Translate
+    x -= 100;
+    y -= 100;
 
+    // Invert y
+    y = 400 - y;
+
+    // Scale
+    x /= 4;
+    y /= 4;
+}
+
+void mouseClick(int button, int state, int x, int y) {
+    if (button != GLUT_LEFT_BUTTON) {
+        return;
+    }
+    OGL::renderData.clicked = (state == GLUT_DOWN);
+
+    if (OGL::renderData.clicked) {
+        transformCoordsToSimulationSpace(x, y);
+        OGL::renderData.lastMouseX = x;
+        OGL::renderData.lastMouseY = y;
+    }
+}
+
+void mouseMove(int x, int y) {
+    transformCoordsToSimulationSpace(x, y);
+
+    if (!OGL::renderData.clicked || x < 0 || y < 0 || x > 400 || y > 400) {
+        return;
+    }
+    int deltaX = OGL::renderData.lastMouseX - x;
+    int deltaY = OGL::renderData.lastMouseY - y;
+
+    deltaX;
+    deltaY;
+
+    if (deltaX == 0 && deltaY == 0) {
+        return;
+    }
+
+    OGL::renderData.lastMouseX = x;
+    OGL::renderData.lastMouseY = y;
+
+    std::cout << "[" << x << " , " << y << "] apply (" << deltaX << " , " << deltaY << ")\n";
+    OGL::renderData.simulation->applyForce(x, y, deltaX, deltaY, 10);
+}
 
 int main() {
 
@@ -47,7 +95,9 @@ int main() {
     OGL::renderData.colorPixels = std::make_unique<float[]>(imageSize.getRequiredBufferSize(4 * sizeof(float)));
     OGL::renderData.velocityPixels = std::make_unique<float[]>(imageSize.getRequiredBufferSize(4 * sizeof(float)));
     OGL::renderData.imageSize = imageSize;
+    glGenTextures(1, &OGL::renderData.colorTexture);
+    glGenTextures(1, &OGL::renderData.velocityTexture);
 
     // Rendering loop
-    OGL::mainLoop(update);
+    OGL::mainLoop(update, mouseMove, mouseClick);
 }

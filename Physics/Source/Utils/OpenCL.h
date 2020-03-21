@@ -83,6 +83,7 @@ void enqueueKernel3D(cl_command_queue commandQueue, cl_kernel kernel, Vec3 globa
 void enqueueKernel3D(cl_command_queue commandQueue, cl_kernel kernel, Vec3 globalWorkSize);
 void setKernelArgMem(cl_kernel kernel, cl_uint argIndex, const Mem &mem);
 void setKernelArgFlt(cl_kernel kernel, cl_uint argIndex, float arg);
+void setKernelArgVec(cl_kernel kernel, cl_uint argIndex, float x, float y, float z);
 void setKernelArgInt(cl_kernel kernel, cl_uint argIndex, int arg);
 
 // Enqueue builtins

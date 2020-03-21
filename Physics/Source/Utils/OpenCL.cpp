@@ -121,6 +121,11 @@ void setKernelArgFlt(cl_kernel kernel, cl_uint argIndex, float arg) {
     detail::setKernelArg(kernel, argIndex, arg);
 }
 
+void setKernelArgVec(cl_kernel kernel, cl_uint argIndex, float x, float y, float z) {
+    float vec4[] = {x, y, z, 0};
+    ASSERT_CL_SUCCESS(clSetKernelArg(kernel, argIndex, sizeof(float) * 4, vec4));
+}
+
 void setKernelArgInt(cl_kernel kernel, cl_uint argIndex, int arg) {
     detail::setKernelArg(kernel, argIndex, arg);
 }

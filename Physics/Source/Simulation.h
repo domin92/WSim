@@ -9,6 +9,21 @@ class Simulation {
 public:
     Simulation(OCL::Vec3 imageSize);
     void stepSimulation(float deltaTime);
+    void applyForce(float positionX, float positionY, float changeX, float changeY, float radius) {
+     //  positionX = 3;
+       // positionY = 3;
+
+        OCL::setKernelArgMem(kernelApplyVelocity, 0, velocity.getSource());    // inVelocity
+        OCL::setKernelArgVec(kernelApplyVelocity, 1, positionX, positionY, 0); // inCenter
+        OCL::setKernelArgVec(kernelApplyVelocity, 2, changeX, changeY, 0);     // inVelocityChange
+        OCL::setKernelArgFlt(kernelApplyVelocity, 3, radius);                  // inRadius
+        OCL::setKernelArgMem(kernelApplyVelocity, 4, velocity.getDestination());
+        OCL::enqueueKernel3D(commandQueue, kernelApplyVelocity, imageSize);
+        velocity.swap();
+
+        auto buff = std::make_unique<float[]>(imageSize.getRequiredBufferSize(16u));
+        OCL::enqueueReadImage3D(commandQueue, velocity.getSource(), CL_TRUE, imageSize, 0, 0, buff.get());
+    }
 
     auto &getCommandQueue() { return commandQueue; }
     auto &getColor() { return color; }
@@ -34,6 +49,7 @@ private:
     OCL::Program programDivergence;
     OCL::Program programPressureJacobi;
     OCL::Program programApplyPressure;
+    OCL::Program programApplyVelocity;
 
     // Kernels
     OCL::Kernel kernelFillVelocity;
@@ -42,6 +58,7 @@ private:
     OCL::Kernel kernelDivergence;
     OCL::Kernel kernelPressureJacobi;
     OCL::Kernel kernelApplyPressure;
+    OCL::Kernel kernelApplyVelocity;
 
     // Buffers
     Image3DPair velocity;

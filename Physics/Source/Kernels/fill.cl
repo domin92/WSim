@@ -19,7 +19,7 @@ __kernel void fillVelocity(__write_only image3d_t out, float inImageSize) {
         velocity.y -= 3;
     }
 
-    velocity *= 4;
+    velocity *= 0;
     write_imagef(out, threadPosition, velocity);
 }
 
