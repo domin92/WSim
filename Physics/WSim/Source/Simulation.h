@@ -1,21 +1,7 @@
 #pragma once
 
+#include "Utils/ImagePair.h"
 #include "Utils/OpenCL.h"
-
-struct Image3DPair {
-    explicit Image3DPair(cl_context context, OCL::Vec3 size, const cl_image_format &format) {
-        images[0] = OCL::createReadWriteImage3D(context, size, format);
-        images[1] = OCL::createReadWriteImage3D(context, size, format);
-    }
-
-    OCL::Mem &getSource() { return images[sourceResourceIndex]; }
-    OCL::Mem &getDestination() { return images[1 - sourceResourceIndex]; }
-    void swap() { sourceResourceIndex = 1 - sourceResourceIndex; }
-
-protected:
-    int sourceResourceIndex = 0;
-    OCL::Mem images[2] = {};
-};
 
 const static cl_image_format vectorFieldFormat = {CL_RGBA, CL_FLOAT};
 const static cl_image_format scalarFieldFormat = {CL_R, CL_FLOAT};
@@ -23,10 +9,18 @@ class Simulation {
 public:
     Simulation(OCL::Vec3 imageSize);
     void stepSimulation(float deltaTime);
+    void applyForce(float positionX, float positionY, float changeX, float changeY, float radius);
+    void stop();
 
     auto &getCommandQueue() { return commandQueue; }
     auto &getColor() { return color; }
     auto &getVelocity() { return velocity; }
+    auto &getKernelFillVelocity() { return kernelFillVelocity; }
+    auto &getKernelFillColor() { return kernelFillColor; }
+    auto &getKernelAdvection() { return kernelAdvection; }
+    auto &getKernelDivergence() { return kernelDivergence; }
+    auto &getKernelPressureJacobi() { return kernelPressureJacobi; }
+    auto &getKernelApplyPressure() { return kernelApplyPressure; }
 
 private:
     // General data
@@ -42,6 +36,7 @@ private:
     OCL::Program programDivergence;
     OCL::Program programPressureJacobi;
     OCL::Program programApplyPressure;
+    OCL::Program programControls;
 
     // Kernels
     OCL::Kernel kernelFillVelocity;
@@ -50,6 +45,8 @@ private:
     OCL::Kernel kernelDivergence;
     OCL::Kernel kernelPressureJacobi;
     OCL::Kernel kernelApplyPressure;
+    OCL::Kernel kernelApplyVelocity;
+    OCL::Kernel kernelStop;
 
     // Buffers
     Image3DPair velocity;

@@ -6,31 +6,34 @@ Simulation::Simulation(OCL::Vec3 imageSize)
       device(OCL::createDevice(platform)),
       context(OCL::createContext(platform, device)),
       commandQueue(OCL::createCommandQueue(context, device)),
-      programFill(OCL::createProgram(device, context, "fill.cl", true)),
-      programAdvection(OCL::createProgram(device, context, "advection.cl", true)),
-      programDivergence(OCL::createProgram(device, context, "pressure/divergence.cl", true)),
-      programPressureJacobi(OCL::createProgram(device, context, "pressure/jacobi.cl", true)),
-      programApplyPressure(OCL::createProgram(device, context, "pressure/apply_pressure.cl", true)),
+      programFill(OCL::createProgramFromFile(device, context, "fill.cl", true)),
+      programAdvection(OCL::createProgramFromFile(device, context, "advection.cl", true)),
+      programDivergence(OCL::createProgramFromFile(device, context, "pressure/divergence.cl", true)),
+      programPressureJacobi(OCL::createProgramFromFile(device, context, "pressure/jacobi.cl", true)),
+      programApplyPressure(OCL::createProgramFromFile(device, context, "pressure/apply_pressure.cl", true)),
+      programControls(OCL::createProgramFromFile(device, context, "controls.cl", true)),
       kernelFillVelocity(OCL::createKernel(programFill, "fillVelocity")),
       kernelFillColor(OCL::createKernel(programFill, "fillColor")),
       kernelAdvection(OCL::createKernel(programAdvection, "advection3f")),
       kernelDivergence(OCL::createKernel(programDivergence, "calculate_divergence")),
       kernelPressureJacobi(OCL::createKernel(programPressureJacobi, "solve_jacobi_iteration")),
       kernelApplyPressure(OCL::createKernel(programApplyPressure, "apply_pressure")),
+      kernelApplyVelocity(OCL::createKernel(programControls, "applyVelocity")),
+      kernelStop(OCL::createKernel(programControls, "stop")),
       velocity(context, imageSize, vectorFieldFormat),
       divergence(context, imageSize, scalarFieldFormat),
       pressure(context, imageSize, scalarFieldFormat),
       color(context, imageSize, vectorFieldFormat) {
 
     // Fill velocity buffer
-    OCL::setKernelArgMem(kernelFillVelocity, 0, velocity.getDestination());
-    OCL::setKernelArgFlt(kernelFillVelocity, 1, imageSize.x);
+    OCL::setKernelArgFlt(kernelFillVelocity, 0, imageSize.x);               // inImageSize
+    OCL::setKernelArgMem(kernelFillVelocity, 1, velocity.getDestination()); // outVelocity
     OCL::enqueueKernel3D(commandQueue, kernelFillVelocity, imageSize);
     velocity.swap();
 
     // Fill color buffer
-    OCL::setKernelArgMem(kernelFillColor, 0, color.getDestination());
-    OCL::setKernelArgFlt(kernelFillColor, 1, imageSize.x);
+    OCL::setKernelArgFlt(kernelFillColor, 0, imageSize.x);            // inImageSize
+    OCL::setKernelArgMem(kernelFillColor, 1, color.getDestination()); // outColor
     OCL::enqueueKernel3D(commandQueue, kernelFillColor, imageSize);
     color.swap();
 }
@@ -75,4 +78,21 @@ void Simulation::stepSimulation(float deltaTime) {
     OCL::setKernelArgMem(kernelAdvection, 4, color.getDestination()); // outField
     OCL::enqueueKernel3D(commandQueue, kernelAdvection, imageSize);
     color.swap();
+}
+
+void Simulation::applyForce(float positionX, float positionY, float changeX, float changeY, float radius) {
+    OCL::setKernelArgMem(kernelApplyVelocity, 0, velocity.getSource());    // inVelocity
+    OCL::setKernelArgVec(kernelApplyVelocity, 1, positionX, positionY, 0); // inCenter
+    OCL::setKernelArgVec(kernelApplyVelocity, 2, changeX, changeY, 0);     // inVelocityChange
+    OCL::setKernelArgFlt(kernelApplyVelocity, 3, radius);                  // inRadius
+    OCL::setKernelArgMem(kernelApplyVelocity, 4, velocity.getDestination());
+    OCL::enqueueKernel3D(commandQueue, kernelApplyVelocity, imageSize);
+    velocity.swap();
+}
+
+void Simulation::stop() {
+    OCL::setKernelArgMem(kernelStop, 0, velocity.getSource());      // inVelocity
+    OCL::setKernelArgMem(kernelStop, 1, velocity.getDestination()); // outVelocity
+    OCL::enqueueKernel3D(commandQueue, kernelStop, imageSize);
+    velocity.swap();
 }

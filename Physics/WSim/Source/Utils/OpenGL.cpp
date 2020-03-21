@@ -4,6 +4,19 @@
 #include <thread>
 
 namespace OGL::detail {
+static PrivateRenderData privateRenderData{};
+
+void idle() {
+    const auto frameTime = PrivateRenderData::clock::now();
+    const auto deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(frameTime - privateRenderData.lastFrameTime);
+    if (std::chrono::milliseconds(16) > deltaTime) {
+        auto lackingDeltaTime = std::chrono::milliseconds(16) - deltaTime;
+        std::this_thread::sleep_for(lackingDeltaTime);
+    }
+    privateRenderData.onUpdate(deltaTime.count() / 1000000.f);
+    privateRenderData.lastFrameTime = frameTime;
+}
+
 void display() {
     // Start rendering
     glClear(GL_COLOR_BUFFER_BIT);
@@ -40,8 +53,8 @@ void display() {
     // End Rendering
     glDisable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
-    glFlush(); //don't need this with GLUT_DOUBLE and glutSwapBuffers
-    glutSwapBuffers();
+    glFlush();
+    glutPostRedisplay();
 }
 
 } // namespace OGL::detail
@@ -57,34 +70,25 @@ void init(int windowWidth, int windowHeight) {
     glutInitDisplayMode(GLUT_SINGLE);
     glutInitWindowSize(windowWidth, windowHeight);
     glutInitWindowPosition(100, 100);
-    glutCreateWindow("Hello world :D");
+    glutCreateWindow("WSim");
     glMatrixMode(GL_PROJECTION);
     glOrtho(0, windowWidth, 0, windowHeight, -1, 1);
     glMatrixMode(GL_MODELVIEW);
-
-    // Create resources
-    glGenTextures(1, &renderData.colorTexture);
-    glGenTextures(1, &renderData.velocityTexture);
-    ASSERT_GL_NO_ERROR();
 }
 
-void mainLoop(OnUpdateFunction onUpdate) {
-    const auto minFrameTime = std::chrono::milliseconds(16);
-    std::chrono::steady_clock clock{};
-    decltype(clock)::time_point lastFrameTime = clock.now();
-    while (1) {
-        auto thisFrameTime = clock.now();
-        auto deltaTime = thisFrameTime - lastFrameTime;
-        if (minFrameTime > deltaTime) {
-            auto lackingDeltaTime = minFrameTime - deltaTime;
-            std::this_thread::sleep_for(lackingDeltaTime);
-        }
-        lastFrameTime = thisFrameTime;
+void mainLoop(OnUpdateFunction onUpdate, OnMouseMoveFunction onMouseMove, OnMouseClickFunction onMouseClick) {
+    // Initialize render data
+    detail::privateRenderData.onUpdate = onUpdate;
+    detail::privateRenderData.lastFrameTime = detail::PrivateRenderData::clock::now();
 
-        const float deltaTimeFloat = std::chrono::duration_cast<std::chrono::microseconds>(deltaTime).count() / 1000000.f;
-        onUpdate(deltaTimeFloat);
-        detail::display();
-    }
+    // Setup callbacks
+    glutMotionFunc(onMouseMove);
+    glutMouseFunc(onMouseClick);
+    glutIdleFunc(detail::idle);
+    glutDisplayFunc(detail::display);
+
+    // Main loop
+    glutMainLoop();
 }
 
 } // namespace OGL

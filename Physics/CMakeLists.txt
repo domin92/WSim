@@ -1,39 +1,31 @@
-# General setup
-cmake_minimum_required(VERSION 3.0.0)
+# Global general settings
+set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
 if(POLICY CMP0072)
     cmake_policy(SET CMP0072 NEW)
 endif()
-project(WSim)
-
-# Find dependencies
-find_package(OpenCL REQUIRED)
-find_package(OpenGL REQUIRED)
-find_package(GLUT)
-if (GLUT_FOUND)
-    set(GLUT_LIB GLUT::GLUT)
-else()
-    find_package(FREEGLUT REQUIRED)
-    set(GLUT_LIB FreeGLUT::freeglut_static)
+if(POLICY CMP0091)
+    cmake_policy(SET CMP0091 NEW)
 endif()
+cmake_minimum_required(VERSION 3.0.0)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# Get source files
-set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Source")
-file(GLOB_RECURSE SOURCE_FILES
-    "${SOURCE_DIR}/*/CMakeLists.txt"
-    "${SOURCE_DIR}/*.cmake"
-    "${SOURCE_DIR}/*.h"
-    "${SOURCE_DIR}/*.cpp"
-    "${SOURCE_DIR}/*.cl"
-)
-source_group (TREE ${SOURCE_DIR} FILES ${SOURCE_FILES})
+# Paths
+set(DIR_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+set(DIR_WSIM ${CMAKE_CURRENT_SOURCE_DIR}/WSim)
+set(DIR_GTEST ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/googletest)
+set(DIR_FREEGLUT ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/FreeGLUT/freeglut/freeglut)
 
-# Define target
-set(TARGET_NAME WSimPhysics)
-add_executable(${TARGET_NAME} ${SOURCE_FILES})
-target_link_libraries(${TARGET_NAME} PRIVATE OpenCL::OpenCL  OpenGL::GL ${GLUT_LIB})
-target_include_directories(${TARGET_NAME} PRIVATE ${SOURCE_DIR})
-target_compile_definitions(${TARGET_NAME} PRIVATE SHADERS_DIR="${SOURCE_DIR}/Kernels")
-set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 17)
+# Target names
+set(TARGET_WSIM_CORE_LIB WSimCore)
+set(TARGET_WSIM WSim)
+set(TARGET_WSIM_TESTS WSimTests)
+
+# Define project and subprojects
+project(WSimWithDependencies)
+set(gtest_force_shared_crt on)
+add_subdirectory(${DIR_GTEST})
+add_subdirectory(${DIR_FREEGLUT})
+add_subdirectory(${DIR_WSIM})
 
 # Set startup project
-set_directory_properties(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTIES VS_STARTUP_PROJECT ${TARGET_NAME})
+set_directory_properties(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTIES VS_STARTUP_PROJECT WSim)
