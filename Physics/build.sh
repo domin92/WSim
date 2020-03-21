@@ -47,7 +47,7 @@ function getParameters() {
     done
 }
 
-function build() (
+function run_cmake() (
     # Get args
     src_dir=`realpath "$1" -m`
     build_dir=`realpath "$2" -m`
@@ -59,9 +59,13 @@ function build() (
     mkdir -p "$build_dir"
     cd "$build_dir"
 
+    # Do not set architecture flag on Linux
+    is_unix=`uname -a | grep -E "Linux|Unix" | wc -l`
+    if [ is_unix == 0 ]; then architecture_flag="-A x64"; fi
+
     # Run CMake
-    echo "Building \"$src_dir\" in \"$build_dir\""
-    cmake "$src_dir" -A $architecture -DCMAKE_BUILD_TYPE=$configuration -DCMAKE_CONFIGURATION_TYPES=$configuration $@
+    echo "Running CMake for \"$src_dir\" in \"$build_dir\""
+    cmake "$src_dir" -DCMAKE_BUILD_TYPE=$configuration -DCMAKE_CONFIGURATION_TYPES=$configuration $@
     if [ $? != 0 ]; then
         exit 1
     fi
@@ -73,10 +77,8 @@ getParameters $@
 git submodule update --init --recursive
 build_path=`realpath .build -m`/"$architecture"_"$configuration"
 
-# Run CMake
-build "." "$build_path" $architecture $configuration
-
-# Build dependenceis
+# Build
+run_cmake "." "$build_path" $architecture $configuration
 if [ "$build_dependencies" == 1 ]; then
     cmake --build "$build_path" --target gtest --config $configuration
 fi
