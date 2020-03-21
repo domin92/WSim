@@ -81,4 +81,5 @@ build_path=`realpath .build -m`/"$architecture"_"$configuration"
 run_cmake "." "$build_path" $architecture $configuration
 if [ "$build_dependencies" == 1 ]; then
     cmake --build "$build_path" --target gtest --config $configuration
+    cmake --build "$build_path" --target freeglut_static --config $configuration
 fi

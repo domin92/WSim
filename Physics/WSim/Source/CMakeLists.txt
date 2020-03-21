@@ -18,7 +18,7 @@ add_library(${TARGET_WSIM_CORE_LIB} STATIC ${SOURCE_FILES})
 target_link_libraries(${TARGET_WSIM_CORE_LIB} PRIVATE 
     OpenCL::OpenCL 
     OpenGL::GL
-    ${GLUT_LIB}
+    freeglut_static
 )
 target_include_directories(${TARGET_WSIM_CORE_LIB} PRIVATE ${SOURCE_DIR})
 set_target_properties(${TARGET_WSIM_CORE_LIB} PROPERTIES CXX_STANDARD 17)

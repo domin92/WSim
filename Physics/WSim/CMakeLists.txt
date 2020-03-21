@@ -8,12 +8,6 @@ if(UNIX)
     # hence the manual call.
     find_package(Threads)
 endif()
-if (GLUT_FOUND)
-    set(GLUT_LIB GLUT::GLUT)
-else()
-    find_package(FREEGLUT REQUIRED)
-    set(GLUT_LIB FreeGLUT::freeglut)
-endif()
 
 # General setup
 project(WSim)
