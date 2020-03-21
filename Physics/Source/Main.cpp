@@ -12,7 +12,7 @@ void update(float deltaTime) {
     // Upload velocity
     OCL::enqueueReadImage3D(OGL::renderData.simulation->getCommandQueue(),
                             simulation.getVelocity().getSource(),
-                            CL_TRUE, imageSize, 0, 0,
+                            CL_TRUE, imageSize,
                             OGL::renderData.velocityPixels.get());
     glBindTexture(GL_TEXTURE_2D, OGL::renderData.velocityTexture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -24,7 +24,7 @@ void update(float deltaTime) {
     // Upload color
     OCL::enqueueReadImage3D(simulation.getCommandQueue(),
                             simulation.getColor().getSource(),
-                            CL_TRUE, imageSize, 0, 0,
+                            CL_TRUE, imageSize,
                             OGL::renderData.colorPixels.get());
     glBindTexture(GL_TEXTURE_2D, OGL::renderData.colorTexture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

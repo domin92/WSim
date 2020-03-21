@@ -6,6 +6,50 @@
 #include <streambuf>
 #include <string>
 
+namespace OCL::detail {
+template <typename T>
+inline void setKernelArg(cl_kernel kernel, cl_uint argIndex, const T &arg) {
+    ASSERT_CL_SUCCESS(clSetKernelArg(kernel, argIndex, sizeof(T), &arg));
+}
+
+struct PlatformInfo {
+    std::string profile;
+    std::string version;
+    std::string name;
+    std::string vendor;
+    std::string extensions;
+};
+
+PlatformInfo getPlatformInfo(cl_platform_id platform) {
+    char buffer[4096];
+    size_t actualSize{};
+    PlatformInfo info{};
+    cl_int retVal{};
+
+    retVal = clGetPlatformInfo(platform, CL_PLATFORM_PROFILE, sizeof(buffer), buffer, &actualSize);
+    ASSERT_CL_SUCCESS(retVal);
+    info.profile = std::string{buffer, actualSize};
+
+    retVal = clGetPlatformInfo(platform, CL_PLATFORM_VERSION, sizeof(buffer), buffer, &actualSize);
+    ASSERT_CL_SUCCESS(retVal);
+    info.version = std::string{buffer, actualSize};
+
+    retVal = clGetPlatformInfo(platform, CL_PLATFORM_NAME, sizeof(buffer), buffer, &actualSize);
+    ASSERT_CL_SUCCESS(retVal);
+    info.name = std::string{buffer, actualSize};
+
+    retVal = clGetPlatformInfo(platform, CL_PLATFORM_VENDOR, sizeof(buffer), buffer, &actualSize);
+    ASSERT_CL_SUCCESS(retVal);
+    info.vendor = std::string{buffer, actualSize};
+
+    retVal = clGetPlatformInfo(platform, CL_PLATFORM_EXTENSIONS, sizeof(buffer), buffer, &actualSize);
+    ASSERT_CL_SUCCESS(retVal);
+    info.extensions = std::string{buffer, actualSize};
+
+    return info;
+}
+} // namespace OCL::detail
+
 namespace OCL {
 cl_platform_id createPlatform() {
     cl_uint platformsNum{};
@@ -51,7 +95,6 @@ CommandQueue createCommandQueue(cl_context context, cl_device_id device) {
     return commandQueue;
 }
 
-// Compile kernels
 Program createProgramFromFile(cl_device_id device, cl_context context, const std::string &sourceFilePath, bool compilationMustSuceed) {
     std::ifstream file(std::string{SHADERS_DIR} + "/" + sourceFilePath);
     if (!file.good()) {
@@ -130,22 +173,16 @@ void setKernelArgInt(cl_kernel kernel, cl_uint argIndex, int arg) {
     detail::setKernelArg(kernel, argIndex, arg);
 }
 
-void enqueueReadImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, size_t outRowPitch, size_t outSlicePitch, void *outPtr) {
+void enqueueReadImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, void *outPtr) {
     Vec3 zeros{};
-    cl_int retVal = clEnqueueReadImage(commandQueue, image, blocking, zeros.ptr, imageSize.ptr, outRowPitch, outSlicePitch, outPtr, 0, nullptr, nullptr);
+    cl_int retVal = clEnqueueReadImage(commandQueue, image, blocking, zeros.ptr, imageSize.ptr, 0, 0, outPtr, 0, nullptr, nullptr);
     ASSERT_CL_SUCCESS(retVal);
 }
 
-void enqueueWriteImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, size_t inRowPitch, size_t inSlicePitch, const void *data) {
+void enqueueWriteImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, const void *data) {
     Vec3 zeros{};
-    cl_int retVal = clEnqueueWriteImage(commandQueue, image, blocking, zeros.ptr, imageSize.ptr, inRowPitch, inSlicePitch, data, 0, nullptr, nullptr);
+    cl_int retVal = clEnqueueWriteImage(commandQueue, image, blocking, zeros.ptr, imageSize.ptr, 0, 0, data, 0, nullptr, nullptr);
     ASSERT_CL_SUCCESS(retVal);
-}
-
-size_t calculateSizeOfImage3D(Vec3 imageSize, size_t rowPitch, size_t slicePitch) {
-    assert(rowPitch >= imageSize.x);
-    assert(slicePitch >= rowPitch * imageSize.y);
-    return slicePitch * imageSize.z;
 }
 
 void finish(cl_command_queue commandQueue) {
@@ -175,34 +212,3 @@ Mem createReadWriteImage3D(cl_context context, Vec3 size, const cl_image_format 
     return image;
 }
 } // namespace OCL
-
-namespace OCL::detail {
-PlatformInfo getPlatformInfo(cl_platform_id platform) {
-    char buffer[4096];
-    size_t actualSize{};
-    PlatformInfo info{};
-    cl_int retVal{};
-
-    retVal = clGetPlatformInfo(platform, CL_PLATFORM_PROFILE, sizeof(buffer), buffer, &actualSize);
-    ASSERT_CL_SUCCESS(retVal);
-    info.profile = std::string{buffer, actualSize};
-
-    retVal = clGetPlatformInfo(platform, CL_PLATFORM_VERSION, sizeof(buffer), buffer, &actualSize);
-    ASSERT_CL_SUCCESS(retVal);
-    info.version = std::string{buffer, actualSize};
-
-    retVal = clGetPlatformInfo(platform, CL_PLATFORM_NAME, sizeof(buffer), buffer, &actualSize);
-    ASSERT_CL_SUCCESS(retVal);
-    info.name = std::string{buffer, actualSize};
-
-    retVal = clGetPlatformInfo(platform, CL_PLATFORM_VENDOR, sizeof(buffer), buffer, &actualSize);
-    ASSERT_CL_SUCCESS(retVal);
-    info.vendor = std::string{buffer, actualSize};
-
-    retVal = clGetPlatformInfo(platform, CL_PLATFORM_EXTENSIONS, sizeof(buffer), buffer, &actualSize);
-    ASSERT_CL_SUCCESS(retVal);
-    info.extensions = std::string{buffer, actualSize};
-
-    return info;
-}
-} // namespace OCL::detail

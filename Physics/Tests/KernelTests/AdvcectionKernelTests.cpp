@@ -11,7 +11,7 @@ struct AdvectionKernelTest : KernelTest {
     void performTest(OCL::Vec3 imageSize, float deltaTime, const float *inputData, const float *expectedOutputData) {
         auto velocitySrc = OCL::createReadWriteImage3D(context, imageSize, vectorFieldFormat);
         auto velocityDst = OCL::createReadWriteImage3D(context, imageSize, vectorFieldFormat);
-        OCL::enqueueWriteImage3D(queue, velocitySrc, CL_FALSE, imageSize, 0, 0, inputData);
+        OCL::enqueueWriteImage3D(queue, velocitySrc, CL_FALSE, imageSize, inputData);
         OCL::setKernelArgMem(kernelAdvection, 0, velocitySrc); // inField
         OCL::setKernelArgMem(kernelAdvection, 1, velocitySrc); // inVelocity
         OCL::setKernelArgFlt(kernelAdvection, 2, deltaTime);   // inDeltaTime
@@ -21,7 +21,7 @@ struct AdvectionKernelTest : KernelTest {
 
         const auto requiredBufferSize = imageSize.getRequiredBufferSize(4u);
         auto outputData = std::make_unique<float[]>(requiredBufferSize);
-        OCL::enqueueReadImage3D(queue, velocityDst, CL_TRUE, imageSize, 0, 0, outputData.get());
+        OCL::enqueueReadImage3D(queue, velocityDst, CL_TRUE, imageSize, outputData.get());
         EXPECT_MEM_EQ(expectedOutputData, outputData.get(), requiredBufferSize);
     }
 };
