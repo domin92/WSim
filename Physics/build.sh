@@ -19,30 +19,28 @@ function getParameters() {
     function printHelp() (
         echo "Usage: build.sh [options]"
         echo "Options:"
-        echo "  -a <x86|x64>"
-        echo "  -c <Debug|Release>"
-        echo "  -t <All|WSim|Dependencies>"
+        echo "  -a <x86|x64>        - select architecture"
+        echo "  -c <Debug|Release>  - select configuration"
+        echo "  -d                  - do not build dependencies"
     )
 
     # Available option values
     architectures=(x64 x86)
     configurations=(Debug Release)
-    targets=(All WSim Dependencies)
 
     # Set default values
     architecture=${architectures[0]}
     configuration=${configurations[0]}
-    target=${targets[0]}
+    build_dependencies=1
 
     # Override values
-    while getopts "a:c:t:h" opt; do
+    while getopts "a:c:dh" opt; do
       case ${opt} in
         a ) validateOption "${architectures[*]}" "$OPTARG"
             architecture="$OPTARG" ;;
         c ) validateOption "${configurations[*]}" "$OPTARG"
             configuration="$OPTARG" ;;
-        t ) validateOption "${targets[*]}" "$OPTARG"
-            target="$OPTARG" ;;
+        d ) build_dependencies=0 ;;
         h ) printHelp; exit 0 ;;
         \?) printHelp; exit 1 ;;
       esac
@@ -75,19 +73,10 @@ getParameters $@
 git submodule update --init --recursive
 build_path=`realpath .build -m`/"$architecture"_"$configuration"
 
-# Build and compile dependencies
-if [ $target == "Dependencies" -o $target == "All" ]; then
-    # Gtest
-    build "ThirdParty/googletest" "$build_path/googletest" $architecture $configuration \
-        -Dgtest_force_shared_crt=OFF                                                     \
-        -DBUILD_GMOCK=OFF
-    cmake --build "$build_path/googletest" --target gtest --config $configuration
-fi
+# Run CMake
+build "." "$build_path" $architecture $configuration
 
-# Build WSim
-if [ $target == "WSim" -o $target == "All" ];  then
-    if [ $configuration == 'Debug' ]; then debug_suffix='d'; fi
-    build "." "$build_path/WSim" $architecture $configuration                    \
-        -DGTEST_INCLUDE_PATH=`realpath ThirdParty/googletest/googletest/include` \
-        -DGTEST_LIBRARY_PATH="$build_path/googletest/lib/$configuration/gtest$debug_suffix.lib"
+# Build dependenceis
+if [ "$build_dependencies" == 1 ]; then
+    cmake --build "$build_path" --target gtest --config $configuration
 fi
