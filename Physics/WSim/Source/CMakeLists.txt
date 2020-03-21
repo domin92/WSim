@@ -20,7 +20,7 @@ target_link_libraries(${TARGET_WSIM_CORE_LIB} PRIVATE
     OpenGL::GL
     freeglut_static
 )
-target_include_directories(${TARGET_WSIM_CORE_LIB} PRIVATE ${SOURCE_DIR})
+target_include_directories(${TARGET_WSIM_CORE_LIB} PRIVATE ${SOURCE_DIR} ${DIR_FREEGLUT}/include)
 set_target_properties(${TARGET_WSIM_CORE_LIB} PROPERTIES CXX_STANDARD 17)
 target_compile_definitions(${TARGET_WSIM_CORE_LIB} PRIVATE SHADERS_DIR="${SOURCE_DIR}/Kernels")
 
@@ -30,3 +30,6 @@ target_link_libraries(${TARGET_WSIM} ${TARGET_WSIM_CORE_LIB})
 target_link_libraries(${TARGET_WSIM} $<TARGET_PROPERTY:${TARGET_WSIM_CORE_LIB},LINK_LIBRARIES>)
 target_include_directories(${TARGET_WSIM} PRIVATE $<TARGET_PROPERTY:${TARGET_WSIM_CORE_LIB},INCLUDE_DIRECTORIES>)
 set_target_properties(${TARGET_WSIM} PROPERTIES CXX_STANDARD 17)
+
+# Generate run.sh script
+file(GENERATE OUTPUT ${DIR_ROOT}/run.sh CONTENT $<TARGET_FILE:${TARGET_WSIM}>)

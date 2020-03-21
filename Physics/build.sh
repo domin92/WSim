@@ -21,7 +21,8 @@ function getParameters() {
         echo "Options:"
         echo "  -a <x86|x64>        - select architecture"
         echo "  -c <Debug|Release>  - select configuration"
-        echo "  -d                  - do not build dependencies"
+        echo "  -d                  - do not compile dependencies automatically"
+        echo "  -w                  - do not compile WSim automatically"
     )
 
     # Available option values
@@ -32,15 +33,17 @@ function getParameters() {
     architecture=${architectures[0]}
     configuration=${configurations[0]}
     build_dependencies=1
+    build_wsim=1
 
     # Override values
-    while getopts "a:c:dh" opt; do
+    while getopts "a:c:dwh" opt; do
       case ${opt} in
         a ) validateOption "${architectures[*]}" "$OPTARG"
             architecture="$OPTARG" ;;
         c ) validateOption "${configurations[*]}" "$OPTARG"
             configuration="$OPTARG" ;;
         d ) build_dependencies=0 ;;
+        w ) build_wsim=0 ;;
         h ) printHelp; exit 0 ;;
         \?) printHelp; exit 1 ;;
       esac
@@ -83,3 +86,9 @@ if [ "$build_dependencies" == 1 ]; then
     cmake --build "$build_path" --target gtest --config $configuration
     cmake --build "$build_path" --target freeglut_static --config $configuration
 fi
+if [ "$build_wsim" == 1 ]; then
+    cmake --build "$build_path" --target WSim --config $configuration
+fi
+
+# CMake created run.sh script, set execute permissions
+chmod +x run.sh
