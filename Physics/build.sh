@@ -68,11 +68,16 @@ function run_cmake() (
 
     # Run CMake
     echo "Running CMake for \"$src_dir\" in \"$build_dir\""
-    cmake "$src_dir" -DCMAKE_BUILD_TYPE=$configuration -DCMAKE_CONFIGURATION_TYPES=$configuration $@
+    cmake "$src_dir" $architecture_flag -DCMAKE_BUILD_TYPE=$configuration -DCMAKE_CONFIGURATION_TYPES=$configuration $@
     if [ $? != 0 ]; then
         exit 1
     fi
     echo
+)
+
+function compile() (
+    target_name="$1"
+    cmake --build "$build_path" --target $target_name --config $configuration
 )
 
 # Initialize
@@ -83,11 +88,11 @@ build_path=`realpath .build -m`/"$architecture"_"$configuration"
 # Build
 run_cmake "." "$build_path" $architecture $configuration
 if [ "$build_dependencies" == 1 ]; then
-    cmake --build "$build_path" --target gtest --config $configuration
-    cmake --build "$build_path" --target freeglut_static --config $configuration
+    compile gtest
+    compile freeglut_static
 fi
 if [ "$build_wsim" == 1 ]; then
-    cmake --build "$build_path" --target WSim --config $configuration
+    compile WSim
 fi
 
 # CMake created run.sh script, set execute permissions
