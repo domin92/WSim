@@ -48,15 +48,19 @@ void transformCoordsToSimulationSpace(int &x, int &y) {
 }
 
 void mouseClick(int button, int state, int x, int y) {
-    if (button != GLUT_LEFT_BUTTON) {
-        return;
-    }
-    OGL::renderData.clicked = (state == GLUT_DOWN);
+    switch (button) {
+    case GLUT_LEFT_BUTTON:
+        OGL::renderData.clicked = (state == GLUT_DOWN);
+        if (OGL::renderData.clicked) {
+            transformCoordsToSimulationSpace(x, y);
+            OGL::renderData.lastMouseX = x;
+            OGL::renderData.lastMouseY = y;
+        }
+        break;
 
-    if (OGL::renderData.clicked) {
-        transformCoordsToSimulationSpace(x, y);
-        OGL::renderData.lastMouseX = x;
-        OGL::renderData.lastMouseY = y;
+    case GLUT_RIGHT_BUTTON:
+        OGL::renderData.simulation->stop();
+        break;
     }
 }
 
