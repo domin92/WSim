@@ -7,6 +7,18 @@ Node::Node(int rank, int grid_size, int node_size){
 	this->grid_size = grid_size;
 	this->node_size = node_size;
 
+	this->share_thickness = 1;
+
+	sh_horizontal_L_in = new int[node_size * share_thickness];
+	sh_horizontal_L_out = new int[node_size * share_thickness];
+	sh_horizontal_R_in = new int[node_size * share_thickness];
+	sh_horizontal_R_out = new int[node_size * share_thickness];
+	sh_vertical_U_in = new int[node_size * share_thickness];
+	sh_vertical_U_out = new int[node_size * share_thickness];
+	sh_vertical_D_in = new int[node_size * share_thickness];
+	sh_vertical_D_out = new int[node_size * share_thickness];
+
+
 	share_output_column = new int[node_size];
 	share_input_column = new int[node_size];
 
@@ -31,10 +43,18 @@ Node::Node(int rank, int grid_size, int node_size){
 
 
 	// Fill random pixels
-	for(int i=1;i<node_size-1;i++){
+	/*for(int i=1;i<node_size-1;i++){
 		for(int j=1;j<node_size-1;j++){
 			int r = rank*rand()%100;
 			if(r>50){
+				tab[0][i][j]=1;
+			}
+		}
+	}*/
+
+	for(int i=1;i<node_size+1;i++){
+		for(int j=1;j<node_size+1;j++){
+			if(i%2==j%2){
 				tab[0][i][j]=1;
 			}
 		}
@@ -47,6 +67,15 @@ Node::Node(int rank, int grid_size, int node_size){
 }
 
 Node::~Node(){
+
+	delete[] sh_horizontal_L_in;
+	delete[] sh_horizontal_L_out;
+	delete[] sh_horizontal_R_in;
+	delete[] sh_horizontal_R_out;
+	delete[] sh_vertical_U_in;
+	delete[] sh_vertical_U_out;
+	delete[] sh_vertical_D_in;
+	delete[] sh_vertical_D_out;
 
 	delete[] share_output_column;
 	delete[] share_input_column;
@@ -61,7 +90,7 @@ Node::~Node(){
 	delete[] tab[1];
 }
 
-void Node::share_horizontal(){
+void Node::share_vertical(){
 
 	int** share_tab = tab[current_tab_idx];
 
@@ -69,14 +98,15 @@ void Node::share_horizontal(){
 
 	if(row%2==0){
 		if(row - 1 >= 0){
-			MPI_Recv(share_tab[0] + 1, node_size, MPI_INT, rank - grid_size, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_vertical_U_in, node_size, MPI_INT, rank - grid_size, 1, MPI_COMM_WORLD, &status);
+			//MPI_Recv(share_tab[0] + 1, node_size, MPI_INT, rank - grid_size, 1, MPI_COMM_WORLD, &status);
 		}
 	}else{
 		if(row + 1 < grid_size){
 			MPI_Send(share_tab[node_size] + 1, node_size, MPI_INT, rank + grid_size, 1, MPI_COMM_WORLD);
 		}
 	}
-	
+
 	if(row%2==0){
 		if(row + 1 < grid_size){
 			MPI_Recv(share_tab[node_size + 1] + 1, node_size, MPI_INT, rank + grid_size, 1, MPI_COMM_WORLD, &status);
@@ -87,9 +117,11 @@ void Node::share_horizontal(){
 		}
 	}
 	
+	
 	if(row%2==1){
 		if(row - 1 >= 0){
-			MPI_Recv(share_tab[0] + 1, node_size, MPI_INT, rank - grid_size, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_vertical_U_in, node_size, MPI_INT, rank - grid_size, 1, MPI_COMM_WORLD, &status);
+			//MPI_Recv(share_tab[0] + 1, node_size, MPI_INT, rank - grid_size, 1, MPI_COMM_WORLD, &status);
 		}
 	}else{
 		if(row + 1 < grid_size){
@@ -109,7 +141,7 @@ void Node::share_horizontal(){
 
 }
 
-void Node::share_vertical(){
+void Node::share_horizontal(){
 
 	int** share_tab = tab[current_tab_idx];
 	
@@ -279,10 +311,23 @@ void Node::share_corners(){
 }
 
 void Node::share(){
-	share_horizontal();
 	share_vertical();
+	share_horizontal();
 	share_depth();
 	share_corners();
+}
+
+void Node::pre_share_copy(){
+
+}
+
+void Node::post_share_copy(){
+
+	int** share_tab = tab[current_tab_idx];
+
+	for(int i=0;i<node_size;i++){
+		share_tab[0][i+1] = sh_vertical_U_in[i];
+	}
 }
 
 void Node::iter() {
@@ -347,7 +392,9 @@ void Node::send_to_master(){
 
 void Node::main(){
 	while (true) {
+		pre_share_copy();
 		share();
+		post_share_copy();
 		iter();
 		send_to_master();	
 	}

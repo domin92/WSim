@@ -7,18 +7,30 @@ class Node{
 	int grid_size;
 	int node_size;
 
+	int share_thickness; // Thickness of shared areas
+
 	int **tab[2]; // Two 2D arrays - input, output
 	int current_tab_idx; // Index of the current input tab
 
 	int *share_output_column;
 	int *share_input_column;
 
+	// Position in grid
 	int row;
 	int col;
 
+	// Share arrays
+	int *sh_horizontal_L_in; // Left
+	int *sh_horizontal_L_out;
+	int *sh_horizontal_R_in; // Right
+	int *sh_horizontal_R_out;
+	int *sh_vertical_U_in; // Up
+	int *sh_vertical_U_out;
+	int *sh_vertical_D_in; // Down
+	int *sh_vertical_D_out;
+
 	int *output_send_tab;
 
-	void iter();
 
 	void share_horizontal();
 	void share_vertical();
@@ -26,6 +38,12 @@ class Node{
 	void share_corners();
 
 	void share();
+
+	void pre_share_copy();
+	void post_share_copy();
+
+	void iter();
+
 	void send_to_master();
 	
 public:
