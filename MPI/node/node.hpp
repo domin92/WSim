@@ -12,18 +12,18 @@ class Node{
 	int **tab[2]; // Two 2D arrays - input, output
 	int current_tab_idx; // Index of the current input tab
 
-	int *share_output_column;
-	int *share_input_column;
-
 	// Position in grid
 	int row;
 	int col;
 
 	// Share arrays
+	int sh_horizontal_size;
 	int *sh_horizontal_L_in; // Left
 	int *sh_horizontal_L_out;
 	int *sh_horizontal_R_in; // Right
 	int *sh_horizontal_R_out;
+
+	int sh_vertical_size;
 	int *sh_vertical_U_in; // Up
 	int *sh_vertical_U_out;
 	int *sh_vertical_D_in; // Down
