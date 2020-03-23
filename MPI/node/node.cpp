@@ -21,6 +21,16 @@ Node::Node(int rank, int grid_size, int node_size){
 	sh_vertical_D_in = new int[sh_vertical_size];
 	sh_vertical_D_out = new int[sh_vertical_size];
 
+	sh_corner_size = share_thickness * share_thickness;
+	sh_corner_UL_in = new int[sh_corner_size];
+	sh_corner_UL_out = new int[sh_corner_size];
+	sh_corner_UR_in = new int[sh_corner_size];
+	sh_corner_UR_out = new int[sh_corner_size];
+	sh_corner_DL_in = new int[sh_corner_size];
+	sh_corner_DL_out = new int[sh_corner_size];
+	sh_corner_DR_in = new int[sh_corner_size];
+	sh_corner_DR_out = new int[sh_corner_size];
+
 	row = (rank-1)/grid_size;
 	col = (rank-1)%grid_size;
 
@@ -39,7 +49,6 @@ Node::Node(int rank, int grid_size, int node_size){
 			tab[1][i][j]=0;
 		}
 	}
-
 
 	// Fill random pixels
 	/*for(int i=1;i<node_size-1;i++){
@@ -75,10 +84,18 @@ Node::~Node(){
 	delete[] sh_vertical_U_out;
 	delete[] sh_vertical_D_in;
 	delete[] sh_vertical_D_out;
+	delete[] sh_corner_UL_in;
+	delete[] sh_corner_UL_out;
+	delete[] sh_corner_UR_in;
+	delete[] sh_corner_UR_out;
+	delete[] sh_corner_DL_in;
+	delete[] sh_corner_DL_out;
+	delete[] sh_corner_DR_in;
+	delete[] sh_corner_DR_out;
 
 	delete[] output_send_tab;
 
-	for(int i=0;i<node_size+2;i++){
+	for(int i=0;i<node_size+2*(share_thickness);i++){
 		delete[] tab[0][i];
 		delete[] tab[1][i];
 	}
@@ -89,11 +106,9 @@ Node::~Node(){
 
 void Node::share_vertical(){
 
-	MPI_Status status;
-
 	if(row%2==0){
 		if(row - 1 >= 0){
-			MPI_Recv(sh_vertical_U_in, sh_vertical_size, MPI_INT, rank - grid_size, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_vertical_U_in, sh_vertical_size, MPI_INT, rank - grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(row + 1 < grid_size){
@@ -103,7 +118,7 @@ void Node::share_vertical(){
 
 	if(row%2==0){
 		if(row + 1 < grid_size){
-			MPI_Recv(sh_vertical_D_in, sh_vertical_size, MPI_INT, rank + grid_size, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_vertical_D_in, sh_vertical_size, MPI_INT, rank + grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(row - 1 >= 0){
@@ -113,7 +128,7 @@ void Node::share_vertical(){
 	
 	if(row%2==1){
 		if(row - 1 >= 0){
-			MPI_Recv(sh_vertical_U_in, sh_vertical_size, MPI_INT, rank - grid_size, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_vertical_U_in, sh_vertical_size, MPI_INT, rank - grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(row + 1 < grid_size){
@@ -123,7 +138,7 @@ void Node::share_vertical(){
 	
 	if(row%2==1){
 		if(row + 1 < grid_size){
-			MPI_Recv(sh_vertical_D_in, sh_vertical_size, MPI_INT, rank + grid_size, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_vertical_D_in, sh_vertical_size, MPI_INT, rank + grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(row - 1 >= 0){
@@ -134,12 +149,10 @@ void Node::share_vertical(){
 }
 
 void Node::share_horizontal(){
-	
-	MPI_Status status;
 
 	if(col%2==0){
 		if(col - 1 >= 0){
-			MPI_Recv(sh_horizontal_L_in, sh_horizontal_size, MPI_INT, rank - 1, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_horizontal_L_in, sh_horizontal_size, MPI_INT, rank - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(col + 1 < grid_size){
@@ -149,7 +162,7 @@ void Node::share_horizontal(){
 	
 	if(col%2==0){
 		if(col + 1 < grid_size){
-			MPI_Recv(sh_horizontal_R_in, sh_horizontal_size, MPI_INT, rank + 1, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_horizontal_R_in, sh_horizontal_size, MPI_INT, rank + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(col - 1 >= 0){
@@ -159,7 +172,7 @@ void Node::share_horizontal(){
 	
 	if(col%2==1){
 		if(col - 1 >= 0){
-			MPI_Recv(sh_horizontal_L_in, sh_horizontal_size, MPI_INT, rank - 1, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_horizontal_L_in, sh_horizontal_size, MPI_INT, rank - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(col + 1 < grid_size){
@@ -169,7 +182,7 @@ void Node::share_horizontal(){
 	
 	if(col%2==1){
 		if(col + 1 < grid_size){
-			MPI_Recv(sh_horizontal_R_in, sh_horizontal_size, MPI_INT, rank + 1, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_horizontal_R_in, sh_horizontal_size, MPI_INT, rank + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(col - 1 >= 0){
@@ -186,86 +199,84 @@ void Node::share_depth(){
 void Node::share_corners(){
 
 	int** share_tab = tab[current_tab_idx];
-	
-	MPI_Status status;
 
-	if(row%2==0){ // Top Left
+	if(row%2==0){ // Upper Left
 		if(row - 1 >= 0 && col - 1 >= 0){
-			MPI_Recv(&share_tab[0][0], 1, MPI_INT, rank - grid_size - 1, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_corner_UL_in, 1, MPI_INT, rank - grid_size - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(row + 1 < grid_size && col + 1 < grid_size){
-			MPI_Send(&share_tab[node_size][node_size], 1, MPI_INT, rank + grid_size + 1, 1, MPI_COMM_WORLD);
+			MPI_Send(sh_corner_DR_out, 1, MPI_INT, rank + grid_size + 1, 1, MPI_COMM_WORLD);
 		}
 	}
 	
-	if(row%2==0){ // Top Right
+	if(row%2==0){ // Upper Right
 		if(row - 1 >= 0 && col + 1 < grid_size){
-			MPI_Recv(&share_tab[0][node_size + 1], 1, MPI_INT, rank - grid_size + 1, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_corner_UR_in, 1, MPI_INT, rank - grid_size + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(row + 1 < grid_size && col - 1 >= 0){
-			MPI_Send(&share_tab[node_size][1], 1, MPI_INT, rank + grid_size - 1, 1, MPI_COMM_WORLD);
+			MPI_Send(sh_corner_DL_out, 1, MPI_INT, rank + grid_size - 1, 1, MPI_COMM_WORLD);
 		}
 	}
 	
 	if(row%2==0){ // Bottom Left
 		if(row + 1 < grid_size && col - 1 >= 0){
-			MPI_Recv(&share_tab[node_size + 1][0], 1, MPI_INT, rank + grid_size - 1, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_corner_DL_in, 1, MPI_INT, rank + grid_size - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(row - 1 >= 0 && col + 1 < grid_size){
-			MPI_Send(&share_tab[1][node_size], 1, MPI_INT, rank - grid_size + 1, 1, MPI_COMM_WORLD);
+			MPI_Send(sh_corner_UR_out, 1, MPI_INT, rank - grid_size + 1, 1, MPI_COMM_WORLD);
 		}
 	}
 	
 	if(row%2==0){ // Bottom Right
 		if(row + 1 < grid_size && col + 1 < grid_size){
-			MPI_Recv(&share_tab[node_size + 1][node_size + 1], 1, MPI_INT, rank + grid_size + 1, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_corner_DR_in, 1, MPI_INT, rank + grid_size + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(row - 1 >= 0 && col - 1 >= 0){
-			MPI_Send(&share_tab[1][1], 1, MPI_INT, rank - grid_size - 1, 1, MPI_COMM_WORLD);
+			MPI_Send(sh_corner_UL_out, 1, MPI_INT, rank - grid_size - 1, 1, MPI_COMM_WORLD);
 		}
 	}
-	
-	if(row%2==1){ // Top Left
+
+	if(row%2==1){ // Upper Left
 		if(row - 1 >= 0 && col - 1 >= 0){
-			MPI_Recv(&share_tab[0][0], 1, MPI_INT, rank - grid_size - 1, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_corner_UL_in, 1, MPI_INT, rank - grid_size - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(row + 1 < grid_size && col + 1 < grid_size){
-			MPI_Send(&share_tab[node_size][node_size], 1, MPI_INT, rank + grid_size + 1, 1, MPI_COMM_WORLD);
+			MPI_Send(sh_corner_DR_out, 1, MPI_INT, rank + grid_size + 1, 1, MPI_COMM_WORLD);
 		}
 	}
 	
-	if(row%2==1){ // Top Right
+	if(row%2==1){ // Upper Right
 		if(row - 1 >= 0 && col + 1 < grid_size){
-			MPI_Recv(&share_tab[0][node_size + 1], 1, MPI_INT, rank - grid_size + 1, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_corner_UR_in, 1, MPI_INT, rank - grid_size + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(row + 1 < grid_size && col - 1 >= 0){
-			MPI_Send(&share_tab[node_size][1], 1, MPI_INT, rank + grid_size - 1, 1, MPI_COMM_WORLD);
+			MPI_Send(sh_corner_DL_out, 1, MPI_INT, rank + grid_size - 1, 1, MPI_COMM_WORLD);
 		}
 	}
 	
 	if(row%2==1){ // Bottom Left
 		if(row + 1 < grid_size && col - 1 >= 0){
-			MPI_Recv(&share_tab[node_size + 1][0], 1, MPI_INT, rank + grid_size - 1, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_corner_DL_in, 1, MPI_INT, rank + grid_size - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(row - 1 >= 0 && col + 1 < grid_size){
-			MPI_Send(&share_tab[1][node_size], 1, MPI_INT, rank - grid_size + 1, 1, MPI_COMM_WORLD);
+			MPI_Send(sh_corner_UR_out, 1, MPI_INT, rank - grid_size + 1, 1, MPI_COMM_WORLD);
 		}
 	}
 	
 	if(row%2==1){ // Bottom Right
 		if(row + 1 < grid_size && col + 1 < grid_size){
-			MPI_Recv(&share_tab[node_size + 1][node_size + 1], 1, MPI_INT, rank + grid_size + 1, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(sh_corner_DR_in, 1, MPI_INT, rank + grid_size + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}else{
 		if(row - 1 >= 0 && col - 1 >= 0){
-			MPI_Send(&share_tab[1][1], 1, MPI_INT, rank - grid_size - 1, 1, MPI_COMM_WORLD);
+			MPI_Send(sh_corner_UL_out, 1, MPI_INT, rank - grid_size - 1, 1, MPI_COMM_WORLD);
 		}
 	}
 }
@@ -307,6 +318,23 @@ void Node::pre_share_copy(){
 		}
 	}
 
+	// Corners
+	if(row + 1 < grid_size && col + 1 < grid_size){
+		sh_corner_DR_out[0] = share_tab[node_size][node_size];
+	}
+
+	if(row + 1 < grid_size && col - 1 >= 0){
+		sh_corner_DL_out[0] = share_tab[node_size][1];
+	}
+
+	if(row - 1 >= 0 && col + 1 < grid_size){
+		sh_corner_UR_out[0] = share_tab[1][node_size];
+	}
+
+	if(row - 1 >= 0 && col - 1 >= 0){
+		sh_corner_UL_out[0] = share_tab[1][1];
+	}
+
 }
 
 void Node::post_share_copy(){
@@ -337,6 +365,23 @@ void Node::post_share_copy(){
 		for(int i=0;i<node_size;i++){
 			share_tab[i + 1][node_size + 1] = sh_horizontal_R_in[i];
 		}
+	}
+
+	// Corners
+	if(row - 1 >= 0 && col - 1 >= 0){
+		share_tab[0][0] = sh_corner_UL_in[0];
+	}
+
+	if(row - 1 >= 0 && col + 1 < grid_size){
+		share_tab[0][node_size + 1] = sh_corner_UR_in[0];
+	}
+
+	if(row + 1 < grid_size && col - 1 >= 0){
+		share_tab[node_size + 1][0] = sh_corner_DL_in[0];
+	}
+
+	if(row + 1 < grid_size && col + 1 < grid_size){
+		share_tab[node_size + 1][node_size + 1] = sh_corner_DR_in[0];
 	}
 
 }

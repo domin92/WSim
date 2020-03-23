@@ -29,8 +29,17 @@ class Node{
 	int *sh_vertical_D_in; // Down
 	int *sh_vertical_D_out;
 
-	int *output_send_tab;
+	int sh_corner_size;
+	int *sh_corner_UL_in; // Upper Left
+	int *sh_corner_UL_out;
+	int *sh_corner_UR_in; // Upper Right
+	int *sh_corner_UR_out;
+	int *sh_corner_DL_in; // Down Left
+	int *sh_corner_DL_out;
+	int *sh_corner_DR_in; // Down Right
+	int *sh_corner_DR_out;
 
+	int *output_send_tab;
 
 	void share_horizontal();
 	void share_vertical();
