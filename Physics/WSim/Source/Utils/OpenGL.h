@@ -26,13 +26,15 @@ struct RenderData {
     GLuint velocityTexture;
     Simulation *simulation;
     OCL::Vec3 imageSize;
-    int lastMouseX;
-    int lastMouseY;
+    float lastMouseX; // simulation space
+    float lastMouseY; // simulation space
     bool clicked = false;
 };
 extern RenderData renderData;
 
 void init(int windowWidth, int windowHeight);
+float transformCoordsFromAbsoluteSpaceToSimulationSpaceX(int x);
+float transformCoordsFromAbsoluteSpaceToSimulationSpaceY(int y);
 void mainLoop(OnUpdateFunction onUpdate, OnMouseMoveFunction onMouseMove, OnMouseClickFunction onMouseClick);
 } // namespace OGL
 

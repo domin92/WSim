@@ -76,6 +76,27 @@ void init(int windowWidth, int windowHeight) {
     glMatrixMode(GL_MODELVIEW);
 }
 
+float transformCoordsFromAbsoluteSpaceToSimulationSpaceX(int x) {
+    // To texture space
+    x -= 100;
+
+    // To simulation space
+    const auto simulationWidth = static_cast<float>(OGL::renderData.imageSize.x);
+    const auto textureWidth = 400.f;
+    return x * (simulationWidth / textureWidth);
+}
+
+float transformCoordsFromAbsoluteSpaceToSimulationSpaceY(int y) {
+    // To texture space
+    y -= 100;
+    y = 400 - y;
+
+    // To simulation space
+    const auto simulationHeight = static_cast<float>(OGL::renderData.imageSize.y);
+    const auto textureHeight = 400.f;
+    return y * (simulationHeight / textureHeight);
+}
+
 void mainLoop(OnUpdateFunction onUpdate, OnMouseMoveFunction onMouseMove, OnMouseClickFunction onMouseClick) {
     // Initialize render data
     detail::privateRenderData.onUpdate = onUpdate;

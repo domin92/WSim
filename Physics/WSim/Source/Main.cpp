@@ -34,28 +34,13 @@ void update(float deltaTime) {
     ASSERT_GL_NO_ERROR();
 }
 
-void transformCoordsFromAbsoluteSpaceToRenderSpace(int &x, int &y) {
-    // Translate
-    x -= 100;
-    y -= 100;
-
-    // Invert y
-    y = 400 - y;
-}
-
-void transformCoordsFromRenderSpaceToSimulationSpace(float &x, float &y) {
-    x *= (OGL::renderData.imageSize.x / 400.f);
-    y *= (OGL::renderData.imageSize.y / 400.f);
-}
-
 void mouseClick(int button, int state, int x, int y) {
     switch (button) {
     case GLUT_LEFT_BUTTON:
         OGL::renderData.clicked = (state == GLUT_DOWN);
         if (OGL::renderData.clicked) {
-            transformCoordsFromAbsoluteSpaceToRenderSpace(x, y);
-            OGL::renderData.lastMouseX = x;
-            OGL::renderData.lastMouseY = y;
+            OGL::renderData.lastMouseX = OGL::transformCoordsFromAbsoluteSpaceToSimulationSpaceX(x);
+            OGL::renderData.lastMouseY = OGL::transformCoordsFromAbsoluteSpaceToSimulationSpaceY(y);
         }
         break;
 
@@ -65,30 +50,33 @@ void mouseClick(int button, int state, int x, int y) {
     }
 }
 
-void mouseMove(int x, int y) {
-    transformCoordsFromAbsoluteSpaceToRenderSpace(x, y);
-    if (!OGL::renderData.clicked || x < 0 || y < 0 || x > 400 || y > 400) {
+void mouseMove(int mouseX, int mouseY) {
+    auto &simulation = *OGL::renderData.simulation;
+
+    // Calculate position in simulation space and abort if it's out of bounds
+    const float x = OGL::transformCoordsFromAbsoluteSpaceToSimulationSpaceX(mouseX);
+    const float y = OGL::transformCoordsFromAbsoluteSpaceToSimulationSpaceY(mouseY);
+    if (!OGL::renderData.clicked || x < 0 || y < 0 || x > simulation.getSimulationSize().x || y > simulation.getSimulationSize().y) {
         return;
     }
 
-    float deltaX = OGL::renderData.lastMouseX - x;
-    float deltaY = OGL::renderData.lastMouseY - y;
+    // Calculate the mouse movement and abort if mouse did not move
+    const float deltaX = OGL::renderData.lastMouseX - x;
+    const float deltaY = OGL::renderData.lastMouseY - y;
     OGL::renderData.lastMouseX = x;
     OGL::renderData.lastMouseY = y;
     if (deltaX == 0 && deltaY == 0) {
         return;
     }
-    float centerX = x;
-    float centerY = y;
 
-    transformCoordsFromRenderSpaceToSimulationSpace(centerX, centerY);
-    transformCoordsFromRenderSpaceToSimulationSpace(deltaX, deltaY);
-    OGL::renderData.simulation->applyForce(centerX, centerY, deltaX, deltaY, 20);
+    // Apply force at given point
+    const float radius = simulation.getSimulationSize().x / 10;
+    OGL::renderData.simulation->applyForce(x, y, deltaX, deltaY, radius);
 }
 
 int main() {
     // Create simulation
-    OCL::Vec3 imageSize{200, 200, 1};
+    OCL::Vec3 imageSize{100, 100, 1};
     Simulation simulation{imageSize};
 
     // Initialize rendering

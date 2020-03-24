@@ -12,6 +12,7 @@ public:
     void applyForce(float positionX, float positionY, float changeX, float changeY, float radius);
     void stop();
 
+    auto getSimulationSize() const { return imageSize; }
     auto &getCommandQueue() { return commandQueue; }
     auto &getColor() { return color; }
     auto &getVelocity() { return velocity; }
