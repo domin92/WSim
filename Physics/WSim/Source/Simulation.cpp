@@ -6,24 +6,25 @@ Simulation::Simulation(OCL::Vec3 imageSize)
       device(OCL::createDevice(platform)),
       context(OCL::createContext(platform, device)),
       commandQueue(OCL::createCommandQueue(context, device)),
-      programFill(OCL::createProgramFromFile(device, context, "fill.cl", true)),
-      programAdvection(OCL::createProgramFromFile(device, context, "advection.cl", true)),
-      programDivergence(OCL::createProgramFromFile(device, context, "pressure/divergence.cl", true)),
-      programPressureJacobi(OCL::createProgramFromFile(device, context, "pressure/jacobi.cl", true)),
-      programApplyPressure(OCL::createProgramFromFile(device, context, "pressure/apply_pressure.cl", true)),
-      programControls(OCL::createProgramFromFile(device, context, "controls.cl", true)),
-      kernelFillVelocity(OCL::createKernel(programFill, "fillVelocity")),
-      kernelFillColor(OCL::createKernel(programFill, "fillColor")),
-      kernelAdvection(OCL::createKernel(programAdvection, "advection3f")),
-      kernelDivergence(OCL::createKernel(programDivergence, "calculate_divergence")),
-      kernelPressureJacobi(OCL::createKernel(programPressureJacobi, "solve_jacobi_iteration")),
-      kernelApplyPressure(OCL::createKernel(programApplyPressure, "apply_pressure")),
-      kernelApplyVelocity(OCL::createKernel(programControls, "applyVelocity")),
-      kernelStop(OCL::createKernel(programControls, "stop")),
       velocity(context, imageSize, vectorFieldFormat),
       divergence(context, imageSize, scalarFieldFormat),
       pressure(context, imageSize, scalarFieldFormat),
       color(context, imageSize, vectorFieldFormat) {
+
+    // Load kernels
+    this->programs.push_back(OCL::createProgramFromFile(device, context, "fill.cl", true));
+    this->kernelFillVelocity = OCL::createKernel(programs.back(), "fillVelocity");
+    this->kernelFillColor = OCL::createKernel(programs.back(), "fillColor");
+    this->programs.push_back(OCL::createProgramFromFile(device, context, "advection.cl", true));
+    this->kernelAdvection = OCL::createKernel(programs.back(), "advection3f");
+    this->programs.push_back(OCL::createProgramFromFile(device, context, "pressure/divergence.cl", true));
+    this->kernelDivergence = OCL::createKernel(programs.back(), "calculate_divergence");
+    this->programs.push_back(OCL::createProgramFromFile(device, context, "pressure/jacobi.cl", true));
+    this->kernelPressureJacobi = OCL::createKernel(programs.back(), "solve_jacobi_iteration");
+    this->programs.push_back(OCL::createProgramFromFile(device, context, "pressure/apply_pressure.cl", true));
+    this->kernelApplyPressure = OCL::createKernel(programs.back(), "apply_pressure");
+    this->programs.push_back(OCL::createProgramFromFile(device, context, "addVelocity.cl", true));
+    this->kernelAddVelocity = OCL::createKernel(programs.back(), "addVelocity");
 
     // Fill velocity buffer
     OCL::setKernelArgFlt(kernelFillVelocity, 0, imageSize.x);               // inImageSize
@@ -85,18 +86,15 @@ void Simulation::applyForce(float positionX, float positionY, float changeX, flo
     changeX *= imageSize.x * coefficient;
     changeY *= imageSize.y * coefficient;
 
-    OCL::setKernelArgMem(kernelApplyVelocity, 0, velocity.getSource());    // inVelocity
-    OCL::setKernelArgVec(kernelApplyVelocity, 1, positionX, positionY, 0); // inCenter
-    OCL::setKernelArgVec(kernelApplyVelocity, 2, changeX, changeY, 0);     // inVelocityChange
-    OCL::setKernelArgFlt(kernelApplyVelocity, 3, radius);                  // inRadius
-    OCL::setKernelArgMem(kernelApplyVelocity, 4, velocity.getDestination());
-    OCL::enqueueKernel3D(commandQueue, kernelApplyVelocity, imageSize);
+    OCL::setKernelArgMem(kernelAddVelocity, 0, velocity.getSource());    // inVelocity
+    OCL::setKernelArgVec(kernelAddVelocity, 1, positionX, positionY, 0); // inCenter
+    OCL::setKernelArgVec(kernelAddVelocity, 2, changeX, changeY, 0);     // inVelocityChange
+    OCL::setKernelArgFlt(kernelAddVelocity, 3, radius);                  // inRadius
+    OCL::setKernelArgMem(kernelAddVelocity, 4, velocity.getDestination());
+    OCL::enqueueKernel3D(commandQueue, kernelAddVelocity, imageSize);
     velocity.swap();
 }
 
 void Simulation::stop() {
-    OCL::setKernelArgMem(kernelStop, 0, velocity.getSource());      // inVelocity
-    OCL::setKernelArgMem(kernelStop, 1, velocity.getDestination()); // outVelocity
-    OCL::enqueueKernel3D(commandQueue, kernelStop, imageSize);
-    velocity.swap();
+    OCL::enqueueZeroImage3D(commandQueue, velocity.getSource(), imageSize);
 }

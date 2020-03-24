@@ -3,6 +3,8 @@
 #include "Utils/ImagePair.h"
 #include "Utils/OpenCL.h"
 
+#include <vector>
+
 const static cl_image_format vectorFieldFormat = {CL_RGBA, CL_FLOAT};
 const static cl_image_format scalarFieldFormat = {CL_R, CL_FLOAT};
 class Simulation {
@@ -31,27 +33,19 @@ private:
     OCL::Context context;
     OCL::CommandQueue commandQueue;
 
-    // Programs
-    OCL::Program programFill;
-    OCL::Program programAdvection;
-    OCL::Program programDivergence;
-    OCL::Program programPressureJacobi;
-    OCL::Program programApplyPressure;
-    OCL::Program programControls;
+    // Buffers
+    Image3DPair velocity;
+    Image3DPair divergence;
+    Image3DPair pressure;
+    Image3DPair color;
 
     // Kernels
+    std::vector<OCL::Program> programs{}; // held so all objects are properly free
     OCL::Kernel kernelFillVelocity;
     OCL::Kernel kernelFillColor;
     OCL::Kernel kernelAdvection;
     OCL::Kernel kernelDivergence;
     OCL::Kernel kernelPressureJacobi;
     OCL::Kernel kernelApplyPressure;
-    OCL::Kernel kernelApplyVelocity;
-    OCL::Kernel kernelStop;
-
-    // Buffers
-    Image3DPair velocity;
-    Image3DPair divergence;
-    Image3DPair pressure;
-    Image3DPair color;
+    OCL::Kernel kernelAddVelocity;
 };

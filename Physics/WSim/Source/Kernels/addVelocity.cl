@@ -1,4 +1,4 @@
-__kernel void applyVelocity(__read_only image3d_t inVelocity,
+__kernel void addVelocity(__read_only image3d_t inVelocity,
                             float4 inCenter,
                             float4 inVelocityChange,
                             float inRadius,
@@ -18,11 +18,4 @@ __kernel void applyVelocity(__read_only image3d_t inVelocity,
     // Write to output buffer
     float4 newVelocity = currentVelocity + velocityChange;
     write_imagef(outVelocity, threadPosition, newVelocity);
-}
-
-__kernel void stop(__read_only image3d_t inVelocity,
-                   __write_only image3d_t outVelocity) {
-    // Get current position
-    const int4 threadPosition = (int4)((int)get_global_id(0), (int)get_global_id(1), (int)get_global_id(2), 0);
-    write_imagef(outVelocity, threadPosition, (float4)(0, 0, 0, 0));
 }

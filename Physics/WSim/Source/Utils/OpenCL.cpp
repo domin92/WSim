@@ -185,6 +185,12 @@ void enqueueWriteImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool bl
     ASSERT_CL_SUCCESS(retVal);
 }
 
+void enqueueZeroImage3D(cl_command_queue queue, cl_mem image, Vec3 imageSize) {
+    Vec3 regionOrigin{};
+    float pixel[4] = {0, 0, 0, 0};
+    cl_int retVal = clEnqueueFillImage(queue, image, pixel, regionOrigin.ptr, imageSize.ptr, 0, nullptr, nullptr);
+}
+
 void finish(cl_command_queue commandQueue) {
     ASSERT_CL_SUCCESS(clFinish(commandQueue));
 }
