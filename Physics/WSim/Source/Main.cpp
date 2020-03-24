@@ -34,17 +34,18 @@ void update(float deltaTime) {
     ASSERT_GL_NO_ERROR();
 }
 
-void transformCoordsToSimulationSpace(int &x, int &y) {
+void transformCoordsFromAbsoluteSpaceToRenderSpace(int &x, int &y) {
     // Translate
     x -= 100;
     y -= 100;
 
     // Invert y
     y = 400 - y;
+}
 
-    // Scale
-    x /= 4;
-    y /= 4;
+void transformCoordsFromRenderSpaceToSimulationSpace(float &x, float &y) {
+    x *= (OGL::renderData.imageSize.x / 400.f);
+    y *= (OGL::renderData.imageSize.y / 400.f);
 }
 
 void mouseClick(int button, int state, int x, int y) {
@@ -52,7 +53,7 @@ void mouseClick(int button, int state, int x, int y) {
     case GLUT_LEFT_BUTTON:
         OGL::renderData.clicked = (state == GLUT_DOWN);
         if (OGL::renderData.clicked) {
-            transformCoordsToSimulationSpace(x, y);
+            transformCoordsFromAbsoluteSpaceToRenderSpace(x, y);
             OGL::renderData.lastMouseX = x;
             OGL::renderData.lastMouseY = y;
         }
@@ -65,25 +66,29 @@ void mouseClick(int button, int state, int x, int y) {
 }
 
 void mouseMove(int x, int y) {
-    transformCoordsToSimulationSpace(x, y);
+    transformCoordsFromAbsoluteSpaceToRenderSpace(x, y);
     if (!OGL::renderData.clicked || x < 0 || y < 0 || x > 400 || y > 400) {
         return;
     }
 
-    int deltaX = OGL::renderData.lastMouseX - x;
-    int deltaY = OGL::renderData.lastMouseY - y;
+    float deltaX = OGL::renderData.lastMouseX - x;
+    float deltaY = OGL::renderData.lastMouseY - y;
     OGL::renderData.lastMouseX = x;
     OGL::renderData.lastMouseY = y;
     if (deltaX == 0 && deltaY == 0) {
         return;
     }
+    float centerX = x;
+    float centerY = y;
 
-    OGL::renderData.simulation->applyForce(x, y, deltaX, deltaY, 10);
+    transformCoordsFromRenderSpaceToSimulationSpace(centerX, centerY);
+    transformCoordsFromRenderSpaceToSimulationSpace(deltaX, deltaY);
+    OGL::renderData.simulation->applyForce(centerX, centerY, deltaX, deltaY, 20);
 }
 
 int main() {
     // Create simulation
-    OCL::Vec3 imageSize{100, 100, 1};
+    OCL::Vec3 imageSize{200, 200, 1};
     Simulation simulation{imageSize};
 
     // Initialize rendering

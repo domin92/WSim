@@ -81,6 +81,10 @@ void Simulation::stepSimulation(float deltaTime) {
 }
 
 void Simulation::applyForce(float positionX, float positionY, float changeX, float changeY, float radius) {
+    const float coefficient = 0.01f; // arbitrarily set
+    changeX *= imageSize.x * coefficient;
+    changeY *= imageSize.y * coefficient;
+
     OCL::setKernelArgMem(kernelApplyVelocity, 0, velocity.getSource());    // inVelocity
     OCL::setKernelArgVec(kernelApplyVelocity, 1, positionX, positionY, 0); // inCenter
     OCL::setKernelArgVec(kernelApplyVelocity, 2, changeX, changeY, 0);     // inVelocityChange
