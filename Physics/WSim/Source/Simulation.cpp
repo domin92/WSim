@@ -19,12 +19,10 @@ Simulation::Simulation(OCL::Vec3 simulationSize, size_t borderWidth)
     this->kernelFillColor = OCL::createKernel(programs.back(), "fillColor");
     this->programs.push_back(OCL::createProgramFromFile(device, context, "advection.cl", true));
     this->kernelAdvection = OCL::createKernel(programs.back(), "advection3f");
-    this->programs.push_back(OCL::createProgramFromFile(device, context, "pressure/divergence.cl", true));
-    this->kernelDivergence = OCL::createKernel(programs.back(), "calculate_divergence");
-    this->programs.push_back(OCL::createProgramFromFile(device, context, "pressure/jacobi.cl", true));
-    this->kernelPressureJacobi = OCL::createKernel(programs.back(), "solve_jacobi_iteration");
-    this->programs.push_back(OCL::createProgramFromFile(device, context, "pressure/apply_pressure.cl", true));
-    this->kernelApplyPressure = OCL::createKernel(programs.back(), "apply_pressure");
+    this->programs.push_back(OCL::createProgramFromFile(device, context, "pressure.cl", true));
+    this->kernelDivergence = OCL::createKernel(programs.back(), "calculateDivergence");
+    this->kernelPressureJacobi = OCL::createKernel(programs.back(), "calculatePressureWithJacobiIteration");
+    this->kernelProjectVelocityToDivergenceFree = OCL::createKernel(programs.back(), "projectVelocityToDivergenceFree");
     this->programs.push_back(OCL::createProgramFromFile(device, context, "addVelocity.cl", true));
     this->kernelAddVelocity = OCL::createKernel(programs.back(), "addVelocity");
 
@@ -66,11 +64,11 @@ void Simulation::stepSimulation(float deltaTime) {
     }
 
     // Apply pressure
-    OCL::setKernelArgMem(kernelApplyPressure, 0, velocity.getSource());                           // inVelocity
-    OCL::setKernelArgMem(kernelApplyPressure, 1, pressure.getSource());                           // inPressure
-    OCL::setKernelArgVec(kernelApplyPressure, 2, borderOffset.x, borderOffset.y, borderOffset.z); // inVelocityOffset
-    OCL::setKernelArgMem(kernelApplyPressure, 3, velocity.getDestination());                      // outVelocity
-    OCL::enqueueKernel3D(commandQueue, kernelApplyPressure, simulationSize);
+    OCL::setKernelArgMem(kernelProjectVelocityToDivergenceFree, 0, velocity.getSource());                           // inVelocity
+    OCL::setKernelArgMem(kernelProjectVelocityToDivergenceFree, 1, pressure.getSource());                           // inPressure
+    OCL::setKernelArgVec(kernelProjectVelocityToDivergenceFree, 2, borderOffset.x, borderOffset.y, borderOffset.z); // inVelocityOffset
+    OCL::setKernelArgMem(kernelProjectVelocityToDivergenceFree, 3, velocity.getDestination());                      // outVelocity
+    OCL::enqueueKernel3D(commandQueue, kernelProjectVelocityToDivergenceFree, simulationSize);
     velocity.swap();
 
     // Advect Color - including the border

@@ -6,7 +6,7 @@
 struct DivergenceKernelTest : KernelTest {
     void SetUp() override {
         KernelTest::SetUp();
-        kernelDivergence = createKernelFromFile("pressure/divergence.cl", "calculate_divergence");
+        kernelDivergence = createKernelFromFile("pressure.cl", "calculateDivergence");
     }
     cl_kernel kernelDivergence;
 

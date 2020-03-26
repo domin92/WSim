@@ -25,7 +25,7 @@ public:
     auto &getKernelAdvection() { return kernelAdvection; }
     auto &getKernelDivergence() { return kernelDivergence; }
     auto &getKernelPressureJacobi() { return kernelPressureJacobi; }
-    auto &getKernelApplyPressure() { return kernelApplyPressure; }
+    auto &getKernelProjectVelocityToDivergenceFree() { return kernelProjectVelocityToDivergenceFree; }
 
 private:
     // Sizes
@@ -53,6 +53,6 @@ private:
     OCL::Kernel kernelAdvection;
     OCL::Kernel kernelDivergence;
     OCL::Kernel kernelPressureJacobi;
-    OCL::Kernel kernelApplyPressure;
+    OCL::Kernel kernelProjectVelocityToDivergenceFree;
     OCL::Kernel kernelAddVelocity;
 };
