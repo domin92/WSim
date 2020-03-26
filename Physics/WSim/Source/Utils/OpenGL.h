@@ -34,6 +34,7 @@ void init(int windowWidth, int windowHeight);
 float transformCoordsFromAbsoluteSpaceToSimulationSpaceX(int x);
 float transformCoordsFromAbsoluteSpaceToSimulationSpaceY(int y);
 void mainLoop(OnUpdateFunction onUpdate, OnMouseMoveFunction onMouseMove, OnMouseClickFunction onMouseClick);
+void drawFrame(float* pixels, size_t width, size_t height);
 } // namespace OGL
 
 namespace OGL::detail {

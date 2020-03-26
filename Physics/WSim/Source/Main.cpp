@@ -78,10 +78,15 @@ void mouseMove(int mouseX, int mouseY) {
 }
 
 int main() {
+    // Mocked grid parameters
+    const OCL::Vec3 gridId{1, 1, 0};
+    const OCL::Vec3 gridSize{3, 3, 1};
+
     // Create simulation
-    OCL::Vec3 imageSize{100, 100, 1};
-    const size_t borderWidth = 0;
-    Simulation simulation{imageSize, borderWidth};
+    const OCL::Vec3 imageSize{100, 100, 1};
+    const size_t borderWidth = 5;
+    const PositionInGrid positionInGrid{gridId, gridSize};
+    Simulation simulation{imageSize, borderWidth, positionInGrid};
 
     // Initialize rendering
     OGL::init(1100, 600);

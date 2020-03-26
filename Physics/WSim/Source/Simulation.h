@@ -2,6 +2,7 @@
 
 #include "Utils/ImagePair.h"
 #include "Utils/OpenCL.h"
+#include "Utils/PositionInGrid.h"
 
 #include <vector>
 
@@ -9,7 +10,7 @@ const static cl_image_format vectorFieldFormat = {CL_RGBA, CL_FLOAT};
 const static cl_image_format scalarFieldFormat = {CL_R, CL_FLOAT};
 class Simulation {
 public:
-    Simulation(OCL::Vec3 simulationSize, size_t borderWidth);
+    Simulation(OCL::Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid);
     void stepSimulation(float deltaTime);
     void applyForce(float positionX, float positionY, float changeX, float changeY, float radius);
     void stop();
@@ -27,8 +28,12 @@ public:
     auto &getKernelPressureJacobi() { return kernelPressureJacobi; }
     auto &getKernelProjectVelocityToDivergenceFree() { return kernelProjectVelocityToDivergenceFree; }
 
-private:
+protected:
+    static OCL::Vec3 calculateSimulationSizeWithBorder(OCL::Vec3 simulationSize, PositionInGrid positionInGrid, size_t borderWidth);
+    static OCL::Vec3 calculateBorderOffset(PositionInGrid positionInGrid, size_t borderWidth);
+
     // Sizes
+    const PositionInGrid positionInGrid;
     const OCL::Vec3 borderOffset;             // offset to be applied to extended images
     const OCL::Vec3 simulationSize;           // size for which simulation kernels are launched
     const OCL::Vec3 simulationSizeWithBorder; // simulationSize increased by additional border space

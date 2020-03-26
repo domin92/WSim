@@ -112,4 +112,23 @@ void mainLoop(OnUpdateFunction onUpdate, OnMouseMoveFunction onMouseMove, OnMous
     glutMainLoop();
 }
 
+void drawFrame(float *pixels, size_t width, size_t height) {
+    for (int x = 0; x < width; x++) {
+        auto y1 = 0;
+        auto y2 = height - 1;
+        auto a1 = pixels + 4 * (y1 * height + x);
+        auto a2 = pixels + 4 * (y2 * height + x);
+        std::fill_n(a1, 4, 1.f);
+        std::fill_n(a2, 4, 1.f);
+    }
+    for (int y = 0; y < width; y++) {
+        auto x1 = 0;
+        auto x2 = width - 1;
+        auto a1 = pixels + 4 * (y * height + x1);
+        auto a2 = pixels + 4 * (y * height + x2);
+        std::fill_n(a1, 4, 1.f);
+        std::fill_n(a2, 4, 1.f);
+    }
+}
+
 } // namespace OGL

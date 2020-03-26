@@ -1,9 +1,10 @@
 #include "Simulation.h"
 
-Simulation::Simulation(OCL::Vec3 simulationSize, size_t borderWidth)
-    : borderOffset(borderWidth, borderWidth, 0), // TODO: this is only 2D
+Simulation::Simulation(OCL::Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid)
+    : positionInGrid(positionInGrid),
+      borderOffset(calculateBorderOffset(positionInGrid, borderWidth)),
       simulationSize(simulationSize),
-      simulationSizeWithBorder(simulationSize.x + 2 * borderOffset.x, simulationSize.y + 2 * borderOffset.y, simulationSize.z + 2 * borderOffset.z),
+      simulationSizeWithBorder(calculateSimulationSizeWithBorder(simulationSize, positionInGrid, borderWidth)),
       platform(OCL::createPlatform()),
       device(OCL::createDevice(platform)),
       context(OCL::createContext(platform, device)),
@@ -31,8 +32,9 @@ Simulation::Simulation(OCL::Vec3 simulationSize, size_t borderWidth)
     OCL::setKernelArgMem(kernelFillVelocity, 1, velocity.getDestination()); // outVelocity
     OCL::enqueueKernel3D(commandQueue, kernelFillVelocity, simulationSizeWithBorder);
     velocity.swap();
-    OCL::setKernelArgFlt(kernelFillColor, 0, simulationSize.x);       // inImageSize
-    OCL::setKernelArgMem(kernelFillColor, 1, color.getDestination()); // outColor
+    OCL::setKernelArgVec(kernelFillColor, 0, simulationSize.x, simulationSize.y, simulationSize.z); // inImageSize
+    OCL::setKernelArgVec(kernelFillColor, 1, borderOffset.x, borderOffset.y, borderOffset.z);       // inOffset
+    OCL::setKernelArgMem(kernelFillColor, 2, color.getDestination());                               // outColor
     OCL::enqueueKernel3D(commandQueue, kernelFillColor, simulationSizeWithBorder);
     color.swap();
 }
@@ -91,10 +93,36 @@ void Simulation::applyForce(float positionX, float positionY, float changeX, flo
     OCL::setKernelArgVec(kernelAddVelocity, 2, changeX, changeY, 0);     // inVelocityChange
     OCL::setKernelArgFlt(kernelAddVelocity, 3, radius);                  // inRadius
     OCL::setKernelArgMem(kernelAddVelocity, 4, velocity.getDestination());
-    OCL::enqueueKernel3D(commandQueue, kernelAddVelocity, simulationSize);
+    OCL::enqueueKernel3D(commandQueue, kernelAddVelocity, simulationSizeWithBorder);
     velocity.swap();
 }
 
 void Simulation::stop() {
     OCL::enqueueZeroImage3D(commandQueue, velocity.getSource(), simulationSizeWithBorder);
+}
+
+OCL::Vec3 Simulation::calculateSimulationSizeWithBorder(OCL::Vec3 simulationSize, PositionInGrid positionInGrid, size_t borderWidth) {
+
+    const auto borderX = 2 - static_cast<int>(positionInGrid.edgeL) - static_cast<int>(positionInGrid.edgeR);
+    const auto borderY = 2 - static_cast<int>(positionInGrid.edgeU) - static_cast<int>(positionInGrid.edgeD);
+    const auto borderZ = 2 - static_cast<int>(positionInGrid.edgeF) - static_cast<int>(positionInGrid.edgeB);
+    OCL::Vec3 result = {
+        simulationSize.x + borderX * borderWidth,
+        simulationSize.y + borderY * borderWidth,
+        simulationSize.z + borderZ * borderWidth};
+    return result;
+}
+
+OCL::Vec3 Simulation::calculateBorderOffset(PositionInGrid positionInGrid, size_t borderWidth) {
+    OCL::Vec3 result{};
+    if (!positionInGrid.edgeL) {
+        result.x = borderWidth;
+    }
+    if (!positionInGrid.edgeU) {
+        result.y = borderWidth;
+    }
+    if (!positionInGrid.edgeF) {
+        result.z = borderWidth;
+    }
+    return result;
 }
