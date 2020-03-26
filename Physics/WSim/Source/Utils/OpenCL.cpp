@@ -141,9 +141,9 @@ Kernel createKernel(cl_program program, const char *kernelName) {
     return kernel;
 }
 
-void enqueueKernel3D(cl_command_queue commandQueue, cl_kernel kernel, Vec3 globalWorkOffset, Vec3 globalWorkSize, Vec3 localWorkSize) {
+void enqueueKernel3D(cl_command_queue commandQueue, cl_kernel kernel, Vec3 globalWorkOffset, Vec3 globalWorkSize) {
     cl_int retVal = clEnqueueNDRangeKernel(commandQueue, kernel, 3,
-                                           globalWorkOffset.ptr, globalWorkSize.ptr, localWorkSize.ptr,
+                                           globalWorkOffset.ptr, globalWorkSize.ptr, nullptr,
                                            0, nullptr, nullptr);
     ASSERT_CL_SUCCESS(retVal);
 }
@@ -169,6 +169,11 @@ void setKernelArgVec(cl_kernel kernel, cl_uint argIndex, float x, float y, float
     ASSERT_CL_SUCCESS(clSetKernelArg(kernel, argIndex, sizeof(float) * 4, vec4));
 }
 
+void setKernelArgVec(cl_kernel kernel, cl_uint argIndex, size_t x, size_t y, size_t z) {
+    int vec4[] = {x, y, z, 0};
+    ASSERT_CL_SUCCESS(clSetKernelArg(kernel, argIndex, sizeof(int) * 4, vec4));
+}
+
 void setKernelArgInt(cl_kernel kernel, cl_uint argIndex, int arg) {
     detail::setKernelArg(kernel, argIndex, arg);
 }
@@ -176,6 +181,11 @@ void setKernelArgInt(cl_kernel kernel, cl_uint argIndex, int arg) {
 void enqueueReadImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, void *outPtr) {
     Vec3 zeros{};
     cl_int retVal = clEnqueueReadImage(commandQueue, image, blocking, zeros.ptr, imageSize.ptr, 0, 0, outPtr, 0, nullptr, nullptr);
+    ASSERT_CL_SUCCESS(retVal);
+}
+
+void enqueueReadImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 origin, Vec3 size, void *outPtr) {
+    cl_int retVal = clEnqueueReadImage(commandQueue, image, blocking, origin.ptr, size.ptr, 0, 0, outPtr, 0, nullptr, nullptr);
     ASSERT_CL_SUCCESS(retVal);
 }
 

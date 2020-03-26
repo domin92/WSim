@@ -72,15 +72,17 @@ Program createProgramFromSource(cl_device_id device, cl_context context, const s
 Kernel createKernel(cl_program program, const char *kernelName);
 
 // Enqueue kernels
-void enqueueKernel3D(cl_command_queue commandQueue, cl_kernel kernel, Vec3 globalWorkOffset, Vec3 globalWorkSize, Vec3 localWorkSize);
+void enqueueKernel3D(cl_command_queue commandQueue, cl_kernel kernel, Vec3 globalWorkOffset, Vec3 globalWorkSize);
 void enqueueKernel3D(cl_command_queue commandQueue, cl_kernel kernel, Vec3 globalWorkSize);
 void setKernelArgMem(cl_kernel kernel, cl_uint argIndex, const Mem &mem);
 void setKernelArgFlt(cl_kernel kernel, cl_uint argIndex, float arg);
 void setKernelArgVec(cl_kernel kernel, cl_uint argIndex, float x, float y, float z);
+void setKernelArgVec(cl_kernel kernel, cl_uint argIndex, size_t x, size_t y, size_t z);
 void setKernelArgInt(cl_kernel kernel, cl_uint argIndex, int arg);
 
 // Enqueue builtins
 void enqueueReadImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, void *outPtr);
+void enqueueReadImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 origin, Vec3 size, void *outPtr);
 void enqueueWriteImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, const void *data);
 void enqueueZeroImage3D(cl_command_queue queue, cl_mem image, Vec3 imageSize);
 

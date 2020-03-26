@@ -22,10 +22,8 @@ struct RenderData {
     // Used by application
     std::unique_ptr<float[]> colorPixels;
     std::unique_ptr<float[]> velocityPixels;
-    GLuint colorTexture;
-    GLuint velocityTexture;
+    GLuint textures[2];
     Simulation *simulation;
-    OCL::Vec3 imageSize;
     float lastMouseX; // simulation space
     float lastMouseY; // simulation space
     bool clicked = false;

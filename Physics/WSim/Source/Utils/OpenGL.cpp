@@ -23,7 +23,7 @@ void display() {
     glEnable(GL_TEXTURE_2D);
 
     // Render color texture
-    glBindTexture(GL_TEXTURE_2D, renderData.colorTexture);
+    glBindTexture(GL_TEXTURE_2D, renderData.textures[0]);
     glBegin(GL_QUADS);
     glTexCoord2i(0, 0);
     glVertex2i(100, 100);
@@ -37,7 +37,7 @@ void display() {
     glBindTexture(GL_TEXTURE_2D, 0);
 
     // Render velocity texture
-    glBindTexture(GL_TEXTURE_2D, renderData.velocityTexture);
+    glBindTexture(GL_TEXTURE_2D, renderData.textures[1]);
     glBegin(GL_QUADS);
     glTexCoord2i(0, 0);
     glVertex2i(600, 100);
@@ -81,7 +81,7 @@ float transformCoordsFromAbsoluteSpaceToSimulationSpaceX(int x) {
     x -= 100;
 
     // To simulation space
-    const auto simulationWidth = static_cast<float>(OGL::renderData.imageSize.x);
+    const auto simulationWidth = static_cast<float>(OGL::renderData.simulation->getSimulationSize().x);
     const auto textureWidth = 400.f;
     return x * (simulationWidth / textureWidth);
 }
@@ -92,7 +92,7 @@ float transformCoordsFromAbsoluteSpaceToSimulationSpaceY(int y) {
     y = 400 - y;
 
     // To simulation space
-    const auto simulationHeight = static_cast<float>(OGL::renderData.imageSize.y);
+    const auto simulationHeight = static_cast<float>(OGL::renderData.simulation->getSimulationSize().y);
     const auto textureHeight = 400.f;
     return y * (simulationHeight / textureHeight);
 }
