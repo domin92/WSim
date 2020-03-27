@@ -12,13 +12,9 @@ inline void setKernelArg(cl_kernel kernel, cl_uint argIndex, const T &arg) {
     ASSERT_CL_SUCCESS(clSetKernelArg(kernel, argIndex, sizeof(T), &arg));
 }
 
-struct PlatformInfo {
-    std::string profile;
-    std::string version;
-    std::string name;
-    std::string vendor;
-    std::string extensions;
-};
+} // namespace OCL::detail
+
+namespace OCL {
 
 PlatformInfo getPlatformInfo(cl_platform_id platform) {
     char buffer[4096];
@@ -48,32 +44,71 @@ PlatformInfo getPlatformInfo(cl_platform_id platform) {
 
     return info;
 }
-} // namespace OCL::detail
 
-namespace OCL {
-cl_platform_id createPlatform() {
+DeviceInfo getDeviceInfo(cl_device_id device) {
+    char buffer[4096];
+    size_t actualSize{};
+    DeviceInfo info{};
+    cl_int retVal{};
+
+    retVal = clGetDeviceInfo(device, CL_DEVICE_NAME, sizeof(buffer), buffer, &actualSize);
+    ASSERT_CL_SUCCESS(retVal);
+    info.name = std::string{buffer, actualSize};
+
+    retVal = clGetDeviceInfo(device, CL_DEVICE_PROFILE, sizeof(buffer), buffer, &actualSize);
+    ASSERT_CL_SUCCESS(retVal);
+    info.profile = std::string{buffer, actualSize};
+
+    retVal = clGetDeviceInfo(device, CL_DEVICE_EXTENSIONS, sizeof(buffer), buffer, &actualSize);
+    ASSERT_CL_SUCCESS(retVal);
+    info.extensions = std::string{buffer, actualSize};
+
+    retVal = clGetDeviceInfo(device, CL_DEVICE_TYPE, sizeof(cl_device_type), &info.deviceType, &actualSize);
+    ASSERT_CL_SUCCESS(retVal);
+
+    retVal = clGetDeviceInfo(device, CL_DEVICE_IMAGE3D_MAX_WIDTH, sizeof(size_t), &info.image3DMaxSize.x, &actualSize);
+    ASSERT_CL_SUCCESS(retVal);
+    retVal = clGetDeviceInfo(device, CL_DEVICE_IMAGE3D_MAX_HEIGHT, sizeof(size_t), &info.image3DMaxSize.y, &actualSize);
+    ASSERT_CL_SUCCESS(retVal);
+    retVal = clGetDeviceInfo(device, CL_DEVICE_IMAGE3D_MAX_DEPTH, sizeof(size_t), &info.image3DMaxSize.z, &actualSize);
+    ASSERT_CL_SUCCESS(retVal);
+
+    retVal = clGetDeviceInfo(device, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(size_t), &info.maxComputeUnits, &actualSize);
+    ASSERT_CL_SUCCESS(retVal);
+
+    return info;
+}
+
+cl_platform_id createPlatform(size_t index) {
     cl_uint platformsNum{};
     cl_int retVal = clGetPlatformIDs(0, nullptr, &platformsNum);
     ASSERT_CL_SUCCESS(retVal);
+
+    if (index >= platformsNum) {
+        return nullptr;
+    }
 
     auto platforms = std::make_unique<cl_platform_id[]>(platformsNum);
     retVal = clGetPlatformIDs(platformsNum, platforms.get(), nullptr);
     ASSERT_CL_SUCCESS(retVal);
 
-    const auto platformInfo = detail::getPlatformInfo(platforms[0]);
-    return platforms[0];
+    return platforms[index];
 }
 
-Device createDevice(cl_platform_id platform) {
+Device createDevice(cl_platform_id platform, cl_device_type deviceType, size_t index) {
     cl_uint devicesNum{};
-    cl_int retVal = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 0, nullptr, &devicesNum);
+    cl_int retVal = clGetDeviceIDs(platform, deviceType, 0, nullptr, &devicesNum);
     ASSERT_CL_SUCCESS(retVal);
+
+    if (index > devicesNum) {
+        return nullptr;
+    }
 
     auto devices = std::make_unique<cl_device_id[]>(devicesNum);
-    retVal = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, devicesNum, devices.get(), nullptr);
+    retVal = clGetDeviceIDs(platform, deviceType, devicesNum, devices.get(), nullptr);
     ASSERT_CL_SUCCESS(retVal);
 
-    return devices[0];
+    return devices[index];
 }
 
 Context createContext(cl_platform_id platform, cl_device_id device) {

@@ -60,9 +60,28 @@ DEFINE_RAII_WRAPPER(Mem, cl_mem, clReleaseMemObject);
 DEFINE_RAII_WRAPPER(Program, cl_program, clReleaseProgram);
 DEFINE_RAII_WRAPPER(Kernel, cl_kernel, clReleaseKernel);
 
+// Querying info
+struct PlatformInfo {
+    std::string profile;
+    std::string version;
+    std::string name;
+    std::string vendor;
+    std::string extensions;
+};
+struct DeviceInfo {
+    std::string name;
+    std::string profile;
+    std::string extensions;
+    cl_device_type deviceType;
+    Vec3 image3DMaxSize;
+    size_t maxComputeUnits;
+};
+PlatformInfo getPlatformInfo(cl_platform_id platform);
+DeviceInfo getDeviceInfo(cl_device_id device);
+
 // Init
-cl_platform_id createPlatform();
-Device createDevice(cl_platform_id platform);
+cl_platform_id createPlatform(size_t index = 0);
+Device createDevice(cl_platform_id platform, cl_device_type deviceType = CL_DEVICE_TYPE_GPU, size_t index = 0);
 Context createContext(cl_platform_id platform, cl_device_id device);
 CommandQueue createCommandQueue(cl_context context, cl_device_id device);
 

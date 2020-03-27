@@ -13,6 +13,9 @@ source_group (TREE ${SOURCE_DIR} FILES ${SOURCE_FILES})
 set(EXE_ONLY_FILES "${SOURCE_DIR}/Main.cpp")
 list(REMOVE_ITEM SOURCE_FILES ${SOURCE_DIR}/Main.cpp)
 
+# Some directories define their own utility targets - exclude them from WSim)
+list(FILTER SOURCE_FILES EXCLUDE REGEX "^${SOURCE_DIR}/ComputeInfo/*")
+
 # Define core library
 add_library(${TARGET_WSIM_CORE_LIB} STATIC ${SOURCE_FILES})
 target_link_libraries(${TARGET_WSIM_CORE_LIB} PRIVATE 
@@ -30,6 +33,9 @@ target_link_libraries(${TARGET_WSIM} ${TARGET_WSIM_CORE_LIB})
 target_link_libraries(${TARGET_WSIM} $<TARGET_PROPERTY:${TARGET_WSIM_CORE_LIB},LINK_LIBRARIES>)
 target_include_directories(${TARGET_WSIM} PRIVATE $<TARGET_PROPERTY:${TARGET_WSIM_CORE_LIB},INCLUDE_DIRECTORIES>)
 set_target_properties(${TARGET_WSIM} PROPERTIES CXX_STANDARD 17)
+
+# Define utility targets
+add_subdirectory(ComputeInfo)
 
 # Generate run.sh script
 file(GENERATE OUTPUT ${DIR_ROOT}/run.sh CONTENT $<TARGET_FILE:${TARGET_WSIM}>)
