@@ -1,10 +1,11 @@
 #define FREEGLUT_LIB_PRAGMAS 0
-#include "Simulation.h"
 
 #include <GL/freeglut.h>
 #include <cassert>
 #include <chrono>
 #include <memory>
+
+class Simulation;
 
 #define ASSERT_GL_NO_ERROR()        \
     {                               \

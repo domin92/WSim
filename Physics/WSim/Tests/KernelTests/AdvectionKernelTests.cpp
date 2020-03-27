@@ -1,5 +1,6 @@
+#include "Test.h"
+
 #include "KernelTests/KernelTest.h"
-#include "TestUtils/TestUtils.h"
 
 struct AdvectionKernelTest : KernelTest {
     void SetUp() override {

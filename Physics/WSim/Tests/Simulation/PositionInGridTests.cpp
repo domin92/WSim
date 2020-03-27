@@ -1,4 +1,4 @@
-#include "Utils/PositionInGrid.h"
+#include "Simulation/PositionInGrid.h"
 
 #include <gtest/gtest.h>
 

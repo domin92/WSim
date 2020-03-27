@@ -1,5 +1,4 @@
-#include "Simulation.h"
-
+#include "Simulation/Simulation.h"
 #include "Utils/OpenCL.h"
 #include "Utils/OpenGL.h"
 
