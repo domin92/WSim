@@ -11,6 +11,7 @@ source_group (TREE ${SOURCE_DIR} FILES ${SOURCE_FILES})
 
 # Define tests executable
 add_executable(${TARGET_WSIM_TESTS} ${SOURCE_FILES})
+add_dependencies(${TARGET_WSIM_TESTS} ${TARGET_WSIM_CORE_LIB})
 target_link_libraries(${TARGET_WSIM_TESTS} 
     $<TARGET_FILE:gtest>
     $<TARGET_FILE:${TARGET_WSIM_CORE_LIB}>

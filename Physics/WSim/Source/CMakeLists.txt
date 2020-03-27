@@ -32,6 +32,7 @@ target_compile_definitions(${TARGET_WSIM_CORE_LIB}
 
 # Define executable
 add_executable(${TARGET_WSIM} ${EXE_ONLY_FILES})
+add_dependencies(${TARGET_WSIM} ${TARGET_WSIM_CORE_LIB})
 target_link_libraries(${TARGET_WSIM} ${TARGET_WSIM_CORE_LIB})
 target_link_libraries(${TARGET_WSIM} $<GENEX_EVAL:$<TARGET_PROPERTY:${TARGET_WSIM_CORE_LIB},LINK_LIBRARIES>>)
 target_include_directories(${TARGET_WSIM} PRIVATE $<TARGET_PROPERTY:${TARGET_WSIM_CORE_LIB},INCLUDE_DIRECTORIES>)
