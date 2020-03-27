@@ -3,7 +3,7 @@
 #include "Source/Utils/OpenCL.h"
 
 struct PositionInGrid {
-    struct PositionInGrid(OCL::Vec3 positionInGrid, OCL::Vec3 gridSize) {
+    PositionInGrid(OCL::Vec3 positionInGrid, OCL::Vec3 gridSize) {
         isBorder(positionInGrid.x, gridSize.x, edgeL, edgeR);
         isBorder(positionInGrid.y, gridSize.y, edgeD, edgeU);
         isBorder(positionInGrid.z, gridSize.z, edgeF, edgeB);
