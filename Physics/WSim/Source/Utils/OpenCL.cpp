@@ -170,7 +170,7 @@ void setKernelArgVec(cl_kernel kernel, cl_uint argIndex, float x, float y, float
 }
 
 void setKernelArgVec(cl_kernel kernel, cl_uint argIndex, size_t x, size_t y, size_t z) {
-    int vec4[] = {x, y, z, 0};
+    size_t vec4[] = {x, y, z, 0u};
     ASSERT_CL_SUCCESS(clSetKernelArg(kernel, argIndex, sizeof(int) * 4, vec4));
 }
 

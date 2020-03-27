@@ -17,7 +17,7 @@ void update(float deltaTime) {
     glBindTexture(GL_TEXTURE_2D, OGL::renderData.textures[0]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageSize.x, imageSize.y, 0, GL_RGBA, GL_FLOAT, OGL::renderData.velocityPixels.get());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(imageSize.x), static_cast<GLsizei>(imageSize.y), 0, GL_RGBA, GL_FLOAT, OGL::renderData.velocityPixels.get());
     glBindTexture(GL_TEXTURE_2D, 0);
     ASSERT_GL_NO_ERROR();
 
@@ -31,7 +31,7 @@ void update(float deltaTime) {
     glBindTexture(GL_TEXTURE_2D, OGL::renderData.textures[1]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageSize.x, imageSize.y, 0, GL_RGBA, GL_FLOAT, OGL::renderData.colorPixels.get());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(imageSize.x), static_cast<GLsizei>(imageSize.y), 0, GL_RGBA, GL_FLOAT, OGL::renderData.colorPixels.get());
     glBindTexture(GL_TEXTURE_2D, 0);
     ASSERT_GL_NO_ERROR();
 }
@@ -72,7 +72,7 @@ void mouseMove(int mouseX, int mouseY) {
     }
 
     // Apply force at given point
-    const float radius = simulation.getSimulationSize().x / 10;
+    const float radius = static_cast<float>(simulation.getSimulationSize().x) / 10.f;
     OGL::renderData.simulation->applyForce(x, y, deltaX, deltaY, radius);
 }
 

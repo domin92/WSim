@@ -28,8 +28,8 @@ Simulation::Simulation(OCL::Vec3 simulationSize, size_t borderWidth, PositionInG
     this->kernelAddVelocity = OCL::createKernel(programs.back(), "addVelocity");
 
     // DEBUG: fill velocity and color buffers, including their border
-    OCL::setKernelArgFlt(kernelFillVelocity, 0, simulationSize.x);          // inImageSize
-    OCL::setKernelArgMem(kernelFillVelocity, 1, velocity.getDestination()); // outVelocity
+    OCL::setKernelArgFlt(kernelFillVelocity, 0, static_cast<float>(simulationSize.x)); // inImageSize
+    OCL::setKernelArgMem(kernelFillVelocity, 1, velocity.getDestination());            // outVelocity
     OCL::enqueueKernel3D(commandQueue, kernelFillVelocity, simulationSizeWithBorder);
     velocity.swap();
     OCL::setKernelArgVec(kernelFillColor, 0, simulationSize.x, simulationSize.y, simulationSize.z); // inImageSize
