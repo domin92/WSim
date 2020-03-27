@@ -118,7 +118,7 @@ OCL::Vec3 Simulation::calculateBorderOffset(PositionInGrid positionInGrid, size_
     if (!positionInGrid.edgeL) {
         result.x = borderWidth;
     }
-    if (!positionInGrid.edgeU) {
+    if (!positionInGrid.edgeD) {
         result.y = borderWidth;
     }
     if (!positionInGrid.edgeF) {

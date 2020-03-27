@@ -4,8 +4,8 @@
 
 static const PositionInGrid positionInGridAllBorders = {OCL::Vec3{1, 1, 1}, OCL::Vec3{3, 3, 3}};
 static const PositionInGrid positionInGridLeftEdge = {OCL::Vec3{0, 1, 1}, OCL::Vec3{3, 3, 3}};
-static const PositionInGrid positionInGridLeftUpFrontEdge = {OCL::Vec3{0, 0, 0}, OCL::Vec3{3, 3, 3}};
-static const PositionInGrid positionInGridLeftUpBackEdge = {OCL::Vec3{0, 0, 2}, OCL::Vec3{3, 3, 3}};
+static const PositionInGrid positionInGridLeftDownFrontEdge = {OCL::Vec3{0, 0, 0}, OCL::Vec3{3, 3, 3}};
+static const PositionInGrid positionInGridLeftDownBackEdge = {OCL::Vec3{0, 0, 2}, OCL::Vec3{3, 3, 3}};
 static const PositionInGrid positionInGridTheOnlyNode = {OCL::Vec3{0, 0, 0}, OCL::Vec3{1, 1, 1}};
 
 struct MockSimulation : Simulation {
@@ -28,14 +28,14 @@ TEST(SimulationInitialCalculationsTest, givenNoLeftBorderPresentWhenCalculatingB
 }
 
 TEST(SimulationInitialCalculationsTest, givenNoLowerBordersPresentWhenCalculatingBorderOffsetThenDoNotApply) {
-    OCL::Vec3 offset = MockSimulation::calculateBorderOffset(positionInGridLeftUpFrontEdge, 5);
+    OCL::Vec3 offset = MockSimulation::calculateBorderOffset(positionInGridLeftDownFrontEdge, 5);
     EXPECT_EQ(0, offset.x);
     EXPECT_EQ(0, offset.y);
     EXPECT_EQ(0, offset.z);
 }
 
 TEST(SimulationInitialCalculationsTest, givenOnlyZBorderPresentWhenCalculatingBorderOffsetThenApplyToDimensionZ) {
-    OCL::Vec3 offset = MockSimulation::calculateBorderOffset(positionInGridLeftUpBackEdge, 5);
+    OCL::Vec3 offset = MockSimulation::calculateBorderOffset(positionInGridLeftDownBackEdge, 5);
     EXPECT_EQ(0, offset.x);
     EXPECT_EQ(0, offset.y);
     EXPECT_EQ(5, offset.z);
@@ -59,11 +59,11 @@ TEST(SimulationInitialCalculationsTest, givenNoLeftBorderPresentWhenCalculatingS
 
 TEST(SimulationInitialCalculationsTest, givenOneBorderInEachDimensionPresentWhenCalculatingSimulationSizeWithBorderThenApplyToEachDimensionOnce) {
     OCL::Vec3 simulationSize{100, 100, 100};
-    OCL::Vec3 size = MockSimulation::calculateSimulationSizeWithBorder(simulationSize, positionInGridLeftUpFrontEdge, 5);
+    OCL::Vec3 size = MockSimulation::calculateSimulationSizeWithBorder(simulationSize, positionInGridLeftDownFrontEdge, 5);
     EXPECT_EQ(105, size.x);
     EXPECT_EQ(105, size.y);
     EXPECT_EQ(105, size.z);
-    size = MockSimulation::calculateSimulationSizeWithBorder(simulationSize, positionInGridLeftUpBackEdge, 5);
+    size = MockSimulation::calculateSimulationSizeWithBorder(simulationSize, positionInGridLeftDownBackEdge, 5);
     EXPECT_EQ(105, size.x);
     EXPECT_EQ(105, size.y);
     EXPECT_EQ(105, size.z);

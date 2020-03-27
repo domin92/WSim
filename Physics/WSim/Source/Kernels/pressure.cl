@@ -16,7 +16,7 @@ __kernel void calculateDivergence(__read_only image3d_t inVelocity,
 
     // Compute divergence
     const float divergence = ((velocityR - velocityL) + (velocityU - velocityD) + (velocityF - velocityB)) / 2;
-    write_imagef(outDivergence, threadPosition, divergence);
+    write_imagef(outDivergence, threadPosition,divergence);
 }
 
 __kernel void calculatePressureWithJacobiIteration(__read_only image3d_t inDivergence,

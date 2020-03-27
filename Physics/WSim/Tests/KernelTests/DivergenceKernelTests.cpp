@@ -120,8 +120,8 @@ TEST_F(DivergenceKernelTest, divergenceXWithOffset) {
         +1, 0, 0, 0, /**/ -1, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1, 0, 0, 0,
         -1, 0, 0, 0, /**/ -1, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1, 0, 0, 0};
     const float expectedOutputData[] = {
+        +1.0, /**/ +0.0, /**/ 0.5,
         -1.0, /**/ +0.5, /**/ 1.5,
-        -0.5, /**/ +1.0, /**/ 0.5,
-        +0.5, /**/ +1.0, /**/ 0.5};
+        -0.5, /**/ +1.0, /**/ 0.5};
     performTest(velocityOffset, simluationSize, simluationSizeWithBorders, inputData, expectedOutputData);
 }
