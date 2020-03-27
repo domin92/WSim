@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utils/OpenCL.h"
+#include "Source/Utils/OpenCL.h"
 
 struct Image3DPair {
     explicit Image3DPair(cl_context context, OCL::Vec3 size, const cl_image_format &format) {

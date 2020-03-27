@@ -1,6 +1,6 @@
 #include "OpenGL.h"
 
-#include "Simulation/Simulation.h"
+#include "Source/Simulation/Simulation.h"
 
 #include <chrono>
 #include <thread>

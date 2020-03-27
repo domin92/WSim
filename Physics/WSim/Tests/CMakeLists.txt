@@ -18,5 +18,5 @@ target_link_libraries(${TARGET_WSIM_TESTS}
     $<TARGET_PROPERTY:gtest,LINK_LIBRARIES>
 )
 target_include_directories(${TARGET_WSIM_TESTS} PRIVATE $<TARGET_PROPERTY:${TARGET_WSIM_CORE_LIB},INCLUDE_DIRECTORIES> )
-target_include_directories(${TARGET_WSIM_TESTS} PRIVATE ${SOURCE_DIR} ${DIR_GTEST}/googletest/include)
+target_include_directories(${TARGET_WSIM_TESTS} PRIVATE ${DIR_GTEST}/googletest/include)
 set_target_properties(${TARGET_WSIM_TESTS} PROPERTIES CXX_STANDARD 17)

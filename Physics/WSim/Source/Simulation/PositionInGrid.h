@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utils/OpenCL.h"
+#include "Source/Utils/OpenCL.h"
 
 struct PositionInGrid {
     struct PositionInGrid(OCL::Vec3 positionInGrid, OCL::Vec3 gridSize) {
