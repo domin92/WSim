@@ -7,9 +7,9 @@ class Master{
 	int node_size;
 	int proc_count;
 
-	int** tab;
+	char** tab;
 
-	int* all_tab;
+	char* all_tab;
 
 	void receive_from_nodes();
 

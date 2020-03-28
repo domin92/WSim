@@ -4,12 +4,12 @@
 class Node{
 
 	int rank;
-	int grid_size;
-	int node_size;
+	int grid_size; // Number of nodes in side of 3d grd
+	int node_size; // Size of the cude side in bytes
 
-	int share_thickness; // Thickness of shared areas
+	int share_thickness; // Thickness of shared areas in bytes
 
-	int **tab[2]; // Two 2D arrays - input, output
+	char **tab[2]; // Two 2D arrays - input, output
 	int current_tab_idx; // Index of the current input tab
 
 	// Position in grid
@@ -18,28 +18,28 @@ class Node{
 
 	// Share arrays
 	int sh_horizontal_size;
-	int *sh_horizontal_L_in; // Left
-	int *sh_horizontal_L_out;
-	int *sh_horizontal_R_in; // Right
-	int *sh_horizontal_R_out;
+	char *sh_horizontal_L_in; // Left
+	char *sh_horizontal_L_out;
+	char *sh_horizontal_R_in; // Right
+	char *sh_horizontal_R_out;
 
 	int sh_vertical_size;
-	int *sh_vertical_U_in; // Up
-	int *sh_vertical_U_out;
-	int *sh_vertical_D_in; // Down
-	int *sh_vertical_D_out;
+	char *sh_vertical_U_in; // Up
+	char *sh_vertical_U_out;
+	char *sh_vertical_D_in; // Down
+	char *sh_vertical_D_out;
 
 	int sh_corner_size;
-	int *sh_corner_UL_in; // Upper Left
-	int *sh_corner_UL_out;
-	int *sh_corner_UR_in; // Upper Right
-	int *sh_corner_UR_out;
-	int *sh_corner_DL_in; // Down Left
-	int *sh_corner_DL_out;
-	int *sh_corner_DR_in; // Down Right
-	int *sh_corner_DR_out;
+	char *sh_corner_UL_in; // Upper Left
+	char *sh_corner_UL_out;
+	char *sh_corner_UR_in; // Upper Right
+	char *sh_corner_UR_out;
+	char *sh_corner_DL_in; // Down Left
+	char *sh_corner_DL_out;
+	char *sh_corner_DR_in; // Down Right
+	char *sh_corner_DR_out;
 
-	int *output_send_tab;
+	char *output_send_tab;
 
 	void share_horizontal();
 	void share_vertical();
