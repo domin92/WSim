@@ -1,6 +1,6 @@
-#include "Simulation/Simulation.h"
-#include "Utils/OpenCL.h"
-#include "Utils/OpenGL.h"
+#include "Source/Simulation/Simulation.h"
+#include "Source/Utils/OpenCL.h"
+#include "Source/Utils/OpenGL.h"
 
 void update(float deltaTime) {
     // Play simulation

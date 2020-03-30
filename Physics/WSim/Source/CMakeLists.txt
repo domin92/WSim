@@ -9,14 +9,11 @@ file(GLOB_RECURSE SOURCE_FILES
 )
 source_group (TREE ${SOURCE_DIR} FILES ${SOURCE_FILES})
 
-# Files which will be only in executable file, not in core library
-set(EXE_ONLY_FILES "${SOURCE_DIR}/Main.cpp")
-list(REMOVE_ITEM SOURCE_FILES ${SOURCE_DIR}/Main.cpp)
-
-# Some directories define their own utility targets - exclude them from WSim)
+# Some directories define their own targets - exclude them from WSimCore
 list(FILTER SOURCE_FILES EXCLUDE REGEX "^${SOURCE_DIR}/ComputeInfo/*")
+list(FILTER SOURCE_FILES EXCLUDE REGEX "^${SOURCE_DIR}/WSimStandalone/*")
 
-# Define core library
+# Define core library. It can be used by other targets.
 add_library(${TARGET_WSIM_CORE_LIB} STATIC ${SOURCE_FILES})
 target_link_libraries(${TARGET_WSIM_CORE_LIB}
     OpenCL::OpenCL
@@ -30,20 +27,6 @@ target_compile_definitions(${TARGET_WSIM_CORE_LIB}
     FREEGLUT_STATIC
 )
 
-# Define executable
-add_executable(${TARGET_WSIM} ${EXE_ONLY_FILES})
-add_dependencies(${TARGET_WSIM} ${TARGET_WSIM_CORE_LIB})
-target_link_libraries(${TARGET_WSIM} ${TARGET_WSIM_CORE_LIB})
-target_link_libraries(${TARGET_WSIM}
-    $<GENEX_EVAL:$<TARGET_PROPERTY:${TARGET_WSIM_CORE_LIB},LINK_LIBRARIES>>
-    $<TARGET_PROPERTY:freeglut_static,LINK_LIBRARIES>
-)
-
-target_include_directories(${TARGET_WSIM} PRIVATE $<TARGET_PROPERTY:${TARGET_WSIM_CORE_LIB},INCLUDE_DIRECTORIES>)
-set_target_properties(${TARGET_WSIM} PROPERTIES CXX_STANDARD 17)
-
-# Define utility targets
+# Define executable targets
 add_subdirectory(ComputeInfo)
-
-# Generate run.sh script
-file(GENERATE OUTPUT ${DIR_ROOT}/run.sh CONTENT "$<TARGET_FILE:${TARGET_WSIM}> $@")
+add_subdirectory(WSimStandalone)

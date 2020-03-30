@@ -92,8 +92,8 @@ if [ "$build_dependencies" == 1 ]; then
     compile freeglut_static
 fi
 if [ "$build_wsim" == 1 ]; then
-    compile WSim
+    compile WSimStandalone
 fi
 
 # CMake created run.sh script, set execute permissions
-chmod +x run.sh
+chmod +x run_standalone.sh
