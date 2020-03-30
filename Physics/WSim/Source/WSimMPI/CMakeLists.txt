@@ -1,6 +1,7 @@
 if (MPI_FOUND)
     # Define WSimMPI - a water simulation done locally, using only one computer (no MPI involved).
-    add_executable(${TARGET_WSIM_MPI} Main.cpp)
+    get_sources(SOURCE_FILES)
+    add_executable(${TARGET_WSIM_MPI} ${SOURCE_FILES})
     add_dependencies(${TARGET_WSIM_MPI} ${TARGET_WSIM_CORE_LIB})
     target_link_libraries(${TARGET_WSIM_MPI}
         ${MPI_LIBRARIES}

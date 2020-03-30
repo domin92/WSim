@@ -15,6 +15,19 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+# Helper macro
+macro(get_sources VARIABLE)
+    set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+    file(GLOB_RECURSE ${VARIABLE}
+        "${SOURCE_DIR}/*/CMakeLists.txt"
+        "${SOURCE_DIR}/*.cmake"
+        "${SOURCE_DIR}/*.h"
+        "${SOURCE_DIR}/*.cpp"
+        "${SOURCE_DIR}/*.cl"
+    )
+    source_group (TREE ${SOURCE_DIR} FILES ${VARIABLE})
+endmacro()
+
 # Add source and tests
 add_subdirectory(Source)
 add_subdirectory(Tests)

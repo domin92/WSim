@@ -1,15 +1,5 @@
-# Get source files
-set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-file(GLOB_RECURSE SOURCE_FILES
-    "${SOURCE_DIR}/*/CMakeLists.txt"
-    "${SOURCE_DIR}/*.cmake"
-    "${SOURCE_DIR}/*.h"
-    "${SOURCE_DIR}/*.cpp"
-    "${SOURCE_DIR}/*.cl"
-)
-source_group (TREE ${SOURCE_DIR} FILES ${SOURCE_FILES})
-
 # Define tests executable
+get_sources(SOURCE_FILES)
 add_executable(${TARGET_WSIM_TESTS} ${SOURCE_FILES})
 add_dependencies(${TARGET_WSIM_TESTS} ${TARGET_WSIM_CORE_LIB})
 target_link_libraries(${TARGET_WSIM_TESTS} 

@@ -1,15 +1,5 @@
-# Get source files
-set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-file(GLOB_RECURSE SOURCE_FILES
-    "${SOURCE_DIR}/*/CMakeLists.txt"
-    "${SOURCE_DIR}/*.cmake"
-    "${SOURCE_DIR}/*.h"
-    "${SOURCE_DIR}/*.cpp"
-    "${SOURCE_DIR}/*.cl"
-)
-source_group (TREE ${SOURCE_DIR} FILES ${SOURCE_FILES})
-
-# Some directories define their own targets - exclude them from WSimCore
+# Get source files. Exclude directories which define their own targets.
+get_sources(SOURCE_FILES)
 list(FILTER SOURCE_FILES EXCLUDE REGEX "^${SOURCE_DIR}/ComputeInfo/*")
 list(FILTER SOURCE_FILES EXCLUDE REGEX "^${SOURCE_DIR}/WSimStandalone/*")
 list(FILTER SOURCE_FILES EXCLUDE REGEX "^${SOURCE_DIR}/WSimMPI/*")
