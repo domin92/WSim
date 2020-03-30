@@ -2,6 +2,7 @@
 set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
 if(POLICY CMP0072)
     cmake_policy(SET CMP0072 NEW)
+    set(OpenGL_GL_PREFERENCE GLVND)
 endif()
 if(POLICY CMP0091)
     cmake_policy(SET CMP0091 NEW)
