@@ -12,6 +12,7 @@ source_group (TREE ${SOURCE_DIR} FILES ${SOURCE_FILES})
 # Some directories define their own targets - exclude them from WSimCore
 list(FILTER SOURCE_FILES EXCLUDE REGEX "^${SOURCE_DIR}/ComputeInfo/*")
 list(FILTER SOURCE_FILES EXCLUDE REGEX "^${SOURCE_DIR}/WSimStandalone/*")
+list(FILTER SOURCE_FILES EXCLUDE REGEX "^${SOURCE_DIR}/WSimMPI/*")
 
 # Define core library. It can be used by other targets.
 add_library(${TARGET_WSIM_CORE_LIB} STATIC ${SOURCE_FILES})
@@ -30,3 +31,4 @@ target_compile_definitions(${TARGET_WSIM_CORE_LIB}
 # Define executable targets
 add_subdirectory(ComputeInfo)
 add_subdirectory(WSimStandalone)
+add_subdirectory(WSimMPI)

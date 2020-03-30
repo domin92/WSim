@@ -1,6 +1,7 @@
 # Find dependencies
 find_package(OpenCL REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(MPI) # If MPI isn't found, WSimMPI target won't be created
 if(UNIX)
     # It is used by gtest but find_package made by gtest project is done in a
     # different directory, and Threads::Threads variable is not visible here,

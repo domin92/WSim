@@ -18,6 +18,7 @@ set(DIR_FREEGLUT ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/FreeGLUT/freeglut/freegl
 # Target names
 set(TARGET_WSIM_CORE_LIB WSimCore)
 set(TARGET_WSIM_STANDALONE WSimStandalone)
+set(TARGET_WSIM_MPI WSimMPI)
 set(TARGET_WSIM_TESTS WSimTests)
 
 # Define project and subprojects

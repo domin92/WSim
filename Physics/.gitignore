@@ -1,2 +1,3 @@
 .build/
 run_standalone.sh
+run_mpi.sh

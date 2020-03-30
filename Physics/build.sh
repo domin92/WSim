@@ -93,7 +93,11 @@ if [ "$build_dependencies" == 1 ]; then
 fi
 if [ "$build_wsim" == 1 ]; then
     compile WSimStandalone
+    if [ -e run_mpi.sh ]; then
+        compile WSimMPI
+    fi
 fi
 
 # CMake created run.sh script, set execute permissions
 chmod +x run_standalone.sh
+if [ -e run_mpi.sh ]; then chmod +x run_mpi.sh; fi
