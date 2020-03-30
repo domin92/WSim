@@ -10,7 +10,7 @@ const static cl_image_format vectorFieldFormat = {CL_RGBA, CL_FLOAT};
 const static cl_image_format scalarFieldFormat = {CL_R, CL_FLOAT};
 class Simulation {
 public:
-    Simulation(OCL::Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid);
+    Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid);
     void stepSimulation(float deltaTime);
     void applyForce(float positionX, float positionY, float changeX, float changeY, float radius);
     void stop();

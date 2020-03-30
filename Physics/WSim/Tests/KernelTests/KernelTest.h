@@ -8,8 +8,8 @@ struct KernelTest : ::testing::Test {
     const cl_image_format scalarFieldFormat = {CL_R, CL_FLOAT};
 
     void SetUp() {
-        platform = OCL::createPlatform();
-        device = OCL::createDevice(platform);
+        platform = OCL::createPlatform(0u);
+        device = OCL::createDevice(platform, CL_DEVICE_TYPE_GPU, 0u);
         context = OCL::createContext(platform, device);
         queue = OCL::createCommandQueue(context, device);
     }

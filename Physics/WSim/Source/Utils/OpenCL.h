@@ -80,8 +80,8 @@ PlatformInfo getPlatformInfo(cl_platform_id platform);
 DeviceInfo getDeviceInfo(cl_device_id device);
 
 // Init
-cl_platform_id createPlatform(size_t index = 0);
-Device createDevice(cl_platform_id platform, cl_device_type deviceType = CL_DEVICE_TYPE_GPU, size_t index = 0);
+cl_platform_id createPlatform(size_t index);
+Device createDevice(cl_platform_id platform, cl_device_type deviceType, size_t index);
 Context createContext(cl_platform_id platform, cl_device_id device);
 CommandQueue createCommandQueue(cl_context context, cl_device_id device);
 

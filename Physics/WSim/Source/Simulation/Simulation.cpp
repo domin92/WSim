@@ -1,12 +1,12 @@
 #include "Simulation.h"
 
-Simulation::Simulation(OCL::Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid)
+Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid)
     : positionInGrid(positionInGrid),
       borderOffset(calculateBorderOffset(positionInGrid, borderWidth)),
       simulationSize(simulationSize),
       simulationSizeWithBorder(calculateSimulationSizeWithBorder(simulationSize, positionInGrid, borderWidth)),
-      platform(OCL::createPlatform()),
-      device(OCL::createDevice(platform)),
+      platform(OCL::createPlatform(platformIndex)),
+      device(OCL::createDevice(platform, CL_DEVICE_TYPE_GPU, deviceIndex)),
       context(OCL::createContext(platform, device)),
       commandQueue(OCL::createCommandQueue(context, device)),
       velocity(context, simulationSizeWithBorder, vectorFieldFormat),

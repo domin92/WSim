@@ -46,4 +46,4 @@ set_target_properties(${TARGET_WSIM} PROPERTIES CXX_STANDARD 17)
 add_subdirectory(ComputeInfo)
 
 # Generate run.sh script
-file(GENERATE OUTPUT ${DIR_ROOT}/run.sh CONTENT $<TARGET_FILE:${TARGET_WSIM}>)
+file(GENERATE OUTPUT ${DIR_ROOT}/run.sh CONTENT "$<TARGET_FILE:${TARGET_WSIM}> $@")
