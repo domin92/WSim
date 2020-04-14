@@ -4,17 +4,21 @@
 class Node{
 
 	int rank;
-	int grid_size; // Number of nodes in side of 3d grd
+	int grid_size; // Number of nodes in side of 3d grid
 	int node_size; // Size of the cude side in bytes
+
+	int adjusted_rank; // Rank excluding master
 
 	int share_thickness; // Thickness of shared areas in bytes
 
-	char **tab[2]; // Two 2D arrays - input, output
-	int current_tab_idx; // Index of the current input tab
+	int main_array_size;
+	char ***array[2]; // Two 3D arrays - input, output
+	int current_array_idx; // Index of the current input array
 
 	// Position in grid
-	int row;
-	int col;
+	int x_pos_in_grid;
+	int y_pos_in_grid;
+	int z_pos_in_grid;
 
 	// Share arrays
 	int sh_horizontal_size;
@@ -39,7 +43,7 @@ class Node{
 	char *sh_corner_DR_in; // Down Right
 	char *sh_corner_DR_out;
 
-	char *output_send_tab;
+	char *output_send_array;
 
 	void share_horizontal();
 	void share_vertical();

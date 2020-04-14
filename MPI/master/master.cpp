@@ -10,12 +10,12 @@ Master::Master(int proc_count, int grid_size, int node_size){
 	this->grid_size = grid_size;
 	this->node_size = node_size;
 
-	all_tab = new char[(proc_count-1)*node_size*node_size];
+	all_tab = new char[(proc_count-1) * node_size * node_size * node_size];
 
 	tab = new char*[proc_count-1];
 
 	for(int i=0;i<proc_count-1;i++){
-		tab[i] = all_tab + i*node_size*node_size;
+		tab[i] = all_tab + i * node_size * node_size * node_size;
 	}
 
 }
@@ -31,7 +31,7 @@ void drawpixel(Display* di, Window wi, GC gc, int x, int y, int color){
 }
 
 void Master::receive_from_nodes(){
-	MPI_Gather(NULL, 0, MPI_CHAR, all_tab - node_size*node_size, node_size*node_size, MPI_CHAR, 0, MPI_COMM_WORLD);
+	MPI_Gather(NULL, 0, MPI_CHAR, all_tab - node_size * node_size * node_size, node_size * node_size * node_size, MPI_CHAR, 0, MPI_COMM_WORLD);
 }
 
 void Master::main(){
@@ -59,11 +59,14 @@ void Master::main(){
 
 						int idx = i*grid_size+j;
 
-						if(tab[idx][y*node_size+x]==1){
-							drawpixel(di, wi, gc, (i*node_size+y)*2, (j*node_size+x)*2, 0xff0000);
-							drawpixel(di, wi, gc, (i*node_size+y)*2, (j*node_size+x)*2+1, 0xff0000);
-							drawpixel(di, wi, gc, (i*node_size+y)*2+1, (j*node_size+x)*2, 0xff0000);
-							drawpixel(di, wi, gc, (i*node_size+y)*2+1, (j*node_size+x)*2+1, 0xff0000);
+						if(tab[idx][(node_size/2) * node_size * node_size + y * node_size + x]>0){
+
+							int power = tab[idx][(node_size/2) * node_size * node_size + y * node_size + x];
+
+							drawpixel(di, wi, gc, (i*node_size+y)*2, (j*node_size+x)*2, 0x220000 * power);
+							drawpixel(di, wi, gc, (i*node_size+y)*2, (j*node_size+x)*2+1, 0x220000 * power);
+							drawpixel(di, wi, gc, (i*node_size+y)*2+1, (j*node_size+x)*2, 0x220000 * power);
+							drawpixel(di, wi, gc, (i*node_size+y)*2+1, (j*node_size+x)*2+1, 0x220000 * power);
 						}else{
 							drawpixel(di, wi, gc, (i*node_size+y)*2, (j*node_size+x)*2, 0x000000);
 							drawpixel(di, wi, gc, (i*node_size+y)*2, (j*node_size+x)*2+1, 0x000000);
