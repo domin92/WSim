@@ -43,7 +43,7 @@ void Master::main(){
 	Window ro = DefaultRootWindow(di);
 	Window wi = XCreateSimpleWindow(di, ro, x, y, width, height, border_width, BlackPixel(di, sc), WhitePixel(di, sc));
 	XMapRaised(di, wi); //Make window visible
-	XStoreName(di, wi, "Game of Life"); // Set window title
+	XStoreName(di, wi, "WSim"); // Set window title
 	GC gc = XCreateGC(di, ro, 0, NULL); //Prepare the window for drawing
 	//
 
@@ -53,25 +53,27 @@ void Master::main(){
 		
 		for(int i=0;i<grid_size;i++){
 			for(int j=0;j<grid_size;j++){
+				for(int k=0;k<grid_size;k++){
 
-				for (int y = 0; y < node_size; y++) {
-					for (int x = 0; x < node_size; x++) {
+					for (int y = 0; y < node_size; y++) {
+						for (int x = 0; x < node_size; x++) {
 
-						int idx = i*grid_size+j;
+							int idx = i * grid_size * grid_size + j * grid_size + k;
 
-						if(tab[idx][(node_size/2) * node_size * node_size + y * node_size + x]>0){
+							float total_power = 0;
+							for (int z = 0; z < node_size; z++) {
+								int power = tab[idx][z * node_size * node_size + y * node_size + x];
+								if(power>0){
+									total_power+=1.0f / (float)node_size;
+								}
 
-							int power = tab[idx][(node_size/2) * node_size * node_size + y * node_size + x];
+							}
 
-							drawpixel(di, wi, gc, (i*node_size+y)*2, (j*node_size+x)*2, 0x220000 * power);
-							drawpixel(di, wi, gc, (i*node_size+y)*2, (j*node_size+x)*2+1, 0x220000 * power);
-							drawpixel(di, wi, gc, (i*node_size+y)*2+1, (j*node_size+x)*2, 0x220000 * power);
-							drawpixel(di, wi, gc, (i*node_size+y)*2+1, (j*node_size+x)*2+1, 0x220000 * power);
-						}else{
-							drawpixel(di, wi, gc, (i*node_size+y)*2, (j*node_size+x)*2, 0x000000);
-							drawpixel(di, wi, gc, (i*node_size+y)*2, (j*node_size+x)*2+1, 0x000000);
-							drawpixel(di, wi, gc, (i*node_size+y)*2+1, (j*node_size+x)*2, 0x000000);
-							drawpixel(di, wi, gc, (i*node_size+y)*2+1, (j*node_size+x)*2+1, 0x000000);
+							drawpixel(di, wi, gc, (j*node_size+y)*2, (k*node_size+x)*2, 0x110000 * total_power);
+							drawpixel(di, wi, gc, (j*node_size+y)*2, (k*node_size+x)*2+1, 0x110000 * total_power);
+							drawpixel(di, wi, gc, (j*node_size+y)*2+1, (k*node_size+x)*2, 0x110000 * total_power);
+							drawpixel(di, wi, gc, (j*node_size+y)*2+1, (k*node_size+x)*2+1, 0x110000 * total_power);
+						
 						}
 					}
 				}
