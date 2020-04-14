@@ -84,9 +84,9 @@ Node::Node(int rank, int grid_size, int node_size){
 	}
 
 	// Fill random pixels
-	for(int i=15;i<node_size-15;i++){
-		for(int j=15;j<node_size-15;j++){
-			for(int k=15;k<node_size-15;k++){
+	for(int i = 1 + (node_size/5*2);i<node_size - (node_size/5*2) - 1;i++){
+		for(int j = 1 + (node_size/5*2);j<node_size - (node_size/5*2) - 1;j++){
+			for(int k = 1 + (node_size/5*2);k<node_size - (node_size/5*2) - 1;k++){
 				int r = rank*rand()%100;
 				if(r>50){
 					array[0][i][j][k]=r%5;

@@ -50,30 +50,28 @@ void Master::main(){
 	while (true) {
 		
 		receive_from_nodes();
-		
+
+		XSetForeground(di, gc, 0);
+		XFillRectangle(di, wi, gc, 100, 100, 300, 300);
+
 		for(int i=0;i<grid_size;i++){
 			for(int j=0;j<grid_size;j++){
 				for(int k=0;k<grid_size;k++){
 
-					for (int y = 0; y < node_size; y++) {
-						for (int x = 0; x < node_size; x++) {
+					for (int z = node_size-1; z >= 0 ; z--) {
+						for (int y = 0; y < node_size; y++) {
+							for (int x = 0; x < node_size; x++) {
 
-							int idx = i * grid_size * grid_size + j * grid_size + k;
+								int idx = i * grid_size * grid_size + j * grid_size + k;
 
-							float total_power = 0;
-							for (int z = 0; z < node_size; z++) {
 								int power = tab[idx][z * node_size * node_size + y * node_size + x];
 								if(power>0){
-									total_power+=1.0f / (float)node_size;
+									drawpixel(di, wi, gc, 200 - 50 * i + (j*node_size+y)*2 - z, 300 + 50 * i - (k*node_size+x)*2 + z, 50 * power);
+									drawpixel(di, wi, gc, 200 - 50 * i + (j*node_size+y)*2 - z, 300 + 50 * i - (k*node_size+x)*2+1 + z, 50 * power);
+									drawpixel(di, wi, gc, 200 - 50 * i + (j*node_size+y)*2+1 - z, 300 + 50 * i - (k*node_size+x)*2 + z, 50 * power);
+									drawpixel(di, wi, gc, 200 - 50 * i + (j*node_size+y)*2+1 - z, 300 + 50 * i - (k*node_size+x)*2+1 + z, 50 * power);
 								}
-
 							}
-
-							drawpixel(di, wi, gc, (j*node_size+y)*2, (k*node_size+x)*2, 0x110000 * total_power);
-							drawpixel(di, wi, gc, (j*node_size+y)*2, (k*node_size+x)*2+1, 0x110000 * total_power);
-							drawpixel(di, wi, gc, (j*node_size+y)*2+1, (k*node_size+x)*2, 0x110000 * total_power);
-							drawpixel(di, wi, gc, (j*node_size+y)*2+1, (k*node_size+x)*2+1, 0x110000 * total_power);
-						
 						}
 					}
 				}
