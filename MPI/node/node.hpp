@@ -43,7 +43,7 @@ class Node{
 	char *sh_corner_DR_in; // Down Right
 	char *sh_corner_DR_out;
 
-	char *output_send_array;
+	char *send_array;
 
 	void share_horizontal();
 	void share_vertical();
@@ -57,6 +57,7 @@ class Node{
 
 	void iter();
 
+	void receive_from_master();
 	void send_to_master();
 	
 public:

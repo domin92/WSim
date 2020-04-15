@@ -83,21 +83,9 @@ Node::Node(int rank, int grid_size, int node_size){
 		}
 	}
 
-	// Fill random pixels
-	for(int i = 1 + (node_size/5*2);i<node_size - (node_size/5*2) - 1;i++){
-		for(int j = 1 + (node_size/5*2);j<node_size - (node_size/5*2) - 1;j++){
-			for(int k = 1 + (node_size/5*2);k<node_size - (node_size/5*2) - 1;k++){
-				int r = rank*rand()%100;
-				if(r>50){
-					array[0][i][j][k]=r%5;
-				}
-			}
-		}
-	}
-
 	current_array_idx = 0;
 
-	output_send_array = new char[node_size*node_size*node_size];
+	send_array = new char[node_size*node_size*node_size];
 
 }
 
@@ -120,7 +108,7 @@ Node::~Node(){
 	delete[] sh_corner_DR_in;
 	delete[] sh_corner_DR_out;
 
-	delete[] output_send_array;
+	delete[] send_array;
 
 	for(int i=0;i<main_array_size;i++){
 		for(int j=0;j<main_array_size;j++){
@@ -466,19 +454,34 @@ void Node::iter() {
 	current_array_idx ^= 1;
 }
 
-void Node::send_to_master(){
+void Node::receive_from_master(){
+
+	MPI_Scatter(NULL, node_size * node_size * node_size, MPI_CHAR, send_array, node_size * node_size * node_size, MPI_CHAR, 0, MPI_COMM_WORLD);
+
 	for(int z=0;z<node_size;z++){
 		for(int y=0;y<node_size;y++){
 			for(int x=0;x<node_size;x++){
-				output_send_array[z*(node_size*node_size) + y*node_size + x]=array[current_array_idx][z + share_thickness][y + share_thickness][x + share_thickness];
+				array[current_array_idx][z + share_thickness][y + share_thickness][x + share_thickness] = send_array[z*(node_size*node_size) + y*node_size + x];
 			}
 		}
 	}
 	
-	MPI_Gather(output_send_array, node_size * node_size * node_size, MPI_CHAR, NULL, node_size * node_size * node_size, MPI_CHAR, 0, MPI_COMM_WORLD);
+}
+
+void Node::send_to_master(){
+	for(int z=0;z<node_size;z++){
+		for(int y=0;y<node_size;y++){
+			for(int x=0;x<node_size;x++){
+				send_array[z*(node_size*node_size) + y*node_size + x]=array[current_array_idx][z + share_thickness][y + share_thickness][x + share_thickness];
+			}
+		}
+	}
+	
+	MPI_Gather(send_array, node_size * node_size * node_size, MPI_CHAR, NULL, node_size * node_size * node_size, MPI_CHAR, 0, MPI_COMM_WORLD);
 }
 
 void Node::main(){
+	receive_from_master();
 	while (true) {
 		//pre_share_copy();
 		//share();

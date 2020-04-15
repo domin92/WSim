@@ -12,6 +12,7 @@ class Master{
 	char* all_tab;
 
 	void receive_from_nodes();
+	void send_to_nodes();
 
 public:
 

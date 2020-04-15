@@ -30,12 +30,46 @@ void drawpixel(Display* di, Window wi, GC gc, int x, int y, int color){
 	XDrawPoint(di, wi, gc, x, y);
 }
 
+void Master::send_to_nodes(){
+	MPI_Scatter(all_tab - node_size * node_size * node_size, node_size * node_size * node_size, MPI_CHAR, NULL, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
+}
+
 void Master::receive_from_nodes(){
 	MPI_Gather(NULL, 0, MPI_CHAR, all_tab - node_size * node_size * node_size, node_size * node_size * node_size, MPI_CHAR, 0, MPI_COMM_WORLD);
 }
 
 void Master::main(){
 	
+
+	for(int i=0;i<grid_size;i++){
+		for(int j=0;j<grid_size;j++){
+			for(int k=0;k<grid_size;k++){
+
+				for (int z = 1 + (node_size/5*2); z < node_size - (node_size/5*2) - 1; z++) {
+					for (int y = 1 + (node_size/5*2); y < node_size - (node_size/5*2) - 1; y++) {
+						for (int x = 1 + (node_size/5*2); x < node_size - (node_size/5*2) - 1; x++) {
+
+							int idx = i * grid_size * grid_size + j * grid_size + k;
+							
+							int r = idx * rand()%100;
+							
+							if(r>50){
+								int idx = i * grid_size * grid_size + j * grid_size + k;
+								tab[idx][z * node_size * node_size + y * node_size + x] = r%5;
+							}
+							
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	send_to_nodes();
+
+
+
 	// X11
 	Display *di = XOpenDisplay("");	
 	int const x = 0, y = 0, width = 800, height = 800, border_width = 1;
@@ -66,7 +100,7 @@ void Master::main(){
 
 								int power = tab[idx][z * node_size * node_size + y * node_size + x];
 
-								int color = ((63 * power) / (grid_size * node_size + 40)) * ((i * node_size) + z + 40);
+								int color = ((63 * power) / (grid_size * node_size + 60)) * ((i * node_size) + z + 60);
 
 
 								if(power>0){
