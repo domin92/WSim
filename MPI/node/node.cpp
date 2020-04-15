@@ -414,7 +414,7 @@ void Node::iter() {
 			
 				int val = 0;
 
-				// sum 8 neighbours
+				// sum 26 neighbours
 				for (int i = -1; i <= 1; i++) {
 					for (int j = -1; j <= 1; j++) {
 						for (int k = -1; k <= 1; k++) {
@@ -426,8 +426,6 @@ void Node::iter() {
 						}
 					}
 				}
-
-				//output_array[y][x] = input_array[y][x];
 
 				// 3D CA rules - Amoeba (9-26/5-7,12-13,15/5/M)
 				if (input_array[z][y][x] == 0) {
@@ -456,7 +454,7 @@ void Node::iter() {
 
 void Node::receive_from_master(){
 
-	MPI_Scatter(NULL, node_size * node_size * node_size, MPI_CHAR, send_array, node_size * node_size * node_size, MPI_CHAR, 0, MPI_COMM_WORLD);
+	MPI_Scatter(NULL, 0, MPI_CHAR, send_array, node_size * node_size * node_size, MPI_CHAR, 0, MPI_COMM_WORLD);
 
 	for(int z=0;z<node_size;z++){
 		for(int y=0;y<node_size;y++){
@@ -469,15 +467,16 @@ void Node::receive_from_master(){
 }
 
 void Node::send_to_master(){
+
 	for(int z=0;z<node_size;z++){
 		for(int y=0;y<node_size;y++){
 			for(int x=0;x<node_size;x++){
-				send_array[z*(node_size*node_size) + y*node_size + x]=array[current_array_idx][z + share_thickness][y + share_thickness][x + share_thickness];
+				send_array[z*(node_size*node_size) + y*node_size + x] = array[current_array_idx][z + share_thickness][y + share_thickness][x + share_thickness];
 			}
 		}
 	}
 	
-	MPI_Gather(send_array, node_size * node_size * node_size, MPI_CHAR, NULL, node_size * node_size * node_size, MPI_CHAR, 0, MPI_COMM_WORLD);
+	MPI_Gather(send_array, node_size * node_size * node_size, MPI_CHAR, NULL, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
 }
 
 void Node::main(){
@@ -487,6 +486,6 @@ void Node::main(){
 		//share();
 		//post_share_copy();
 		iter();
-		send_to_master();	
+		send_to_master();
 	}
 }

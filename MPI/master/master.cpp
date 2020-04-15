@@ -40,45 +40,41 @@ void Master::receive_from_nodes(){
 
 void Master::main(){
 	
+	for (int z = node_size / 5 * 2; z < node_size * grid_size - node_size / 5 * 2; z++) {
+		for (int y = node_size / 5 * 2; y < node_size * grid_size - node_size / 5 * 2; y++) {
+			for (int x = node_size / 5 * 2; x < node_size * grid_size - node_size / 5 * 2; x++) {
 
-	for(int i=0;i<grid_size;i++){
-		for(int j=0;j<grid_size;j++){
-			for(int k=0;k<grid_size;k++){
+				int z_in_node = z % node_size;
+				int y_in_node = y % node_size;
+				int x_in_node = x % node_size;
 
-				for (int z = 1 + (node_size/5*2); z < node_size - (node_size/5*2) - 1; z++) {
-					for (int y = 1 + (node_size/5*2); y < node_size - (node_size/5*2) - 1; y++) {
-						for (int x = 1 + (node_size/5*2); x < node_size - (node_size/5*2) - 1; x++) {
+				int z_in_grid = z / node_size;
+				int y_in_grid = y / node_size;
+				int x_in_grid = x / node_size;
 
-							int idx = i * grid_size * grid_size + j * grid_size + k;
-							
-							int r = idx * rand()%100;
-							
-							if(r>50){
-								int idx = i * grid_size * grid_size + j * grid_size + k;
-								tab[idx][z * node_size * node_size + y * node_size + x] = r%5;
-							}
-							
-						}
-					}
+				int idx = z_in_grid * grid_size * grid_size + y_in_grid * grid_size + x_in_grid;
+				
+				int r = rand()%100;
+				
+				if(r>50){
+					tab[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node] = r%5;
 				}
+				
 			}
 		}
 	}
 
-
 	send_to_nodes();
-
-
 
 	// X11
 	Display *di = XOpenDisplay("");	
-	int const x = 0, y = 0, width = 800, height = 800, border_width = 1;
+	int const x = 0, y = 0, width = 500, height = 500, border_width = 1;
 	int sc    = DefaultScreen(di);
 	Window ro = DefaultRootWindow(di);
 	Window wi = XCreateSimpleWindow(di, ro, x, y, width, height, border_width, BlackPixel(di, sc), WhitePixel(di, sc));
-	XMapRaised(di, wi); //Make window visible
+	XMapRaised(di, wi); // Make window visible
 	XStoreName(di, wi, "WSim"); // Set window title
-	GC gc = XCreateGC(di, ro, 0, NULL); //Prepare the window for drawing
+	GC gc = XCreateGC(di, ro, 0, NULL); // Prepare the window for drawing
 	//
 
 	while (true) {
@@ -102,7 +98,6 @@ void Master::main(){
 
 								int color = ((63 * power) / (grid_size * node_size + 60)) * ((i * node_size) + z + 60);
 
-
 								if(power>0){
 									drawpixel(di, wi, gc, 200 - 50 * i + (j*node_size+y)*2 - z, 300 + 50 * i - (k*node_size+x)*2 + z, color);
 									drawpixel(di, wi, gc, 200 - 50 * i + (j*node_size+y)*2 - z, 300 + 50 * i - (k*node_size+x)*2+1 + z, color);
@@ -112,6 +107,7 @@ void Master::main(){
 							}
 						}
 					}
+
 				}
 			}
 		}
