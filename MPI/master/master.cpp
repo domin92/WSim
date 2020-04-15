@@ -40,9 +40,9 @@ void Master::receive_from_nodes(){
 
 void Master::main(){
 	
-	for (int z = node_size / 5 * 2; z < node_size * grid_size - node_size / 5 * 2; z++) {
-		for (int y = node_size / 5 * 2; y < node_size * grid_size - node_size / 5 * 2; y++) {
-			for (int x = node_size / 5 * 2; x < node_size * grid_size - node_size / 5 * 2; x++) {
+	for (int z = 40; z < 60; z++) {
+		for (int y = 40; y < 60; y++) {
+			for (int x = 40; x < 60; x++) {
 
 				int z_in_node = z % node_size;
 				int y_in_node = y % node_size;

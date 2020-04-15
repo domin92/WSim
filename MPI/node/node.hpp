@@ -33,15 +33,21 @@ class Node{
 	char *sh_vertical_D_in; // Down
 	char *sh_vertical_D_out;
 
+	int sh_depth_size;
+	char *sh_depth_F_in; // Front
+	char *sh_depth_F_out;
+	char *sh_depth_B_in; // Back
+	char *sh_depth_B_out;
+
 	int sh_corner_size;
-	char *sh_corner_UL_in; // Upper Left
+	/*char *sh_corner_UL_in; // Upper Left
 	char *sh_corner_UL_out;
 	char *sh_corner_UR_in; // Upper Right
 	char *sh_corner_UR_out;
 	char *sh_corner_DL_in; // Down Left
 	char *sh_corner_DL_out;
 	char *sh_corner_DR_in; // Down Right
-	char *sh_corner_DR_out;
+	char *sh_corner_DR_out;*/
 
 	char *send_array;
 
