@@ -58,18 +58,22 @@ void Master::main(){
 			for(int j=0;j<grid_size;j++){
 				for(int k=0;k<grid_size;k++){
 
-					for (int z = node_size-1; z >= 0 ; z--) {
+					for (int z = 0; z < node_size; z++) {
 						for (int y = 0; y < node_size; y++) {
 							for (int x = 0; x < node_size; x++) {
 
 								int idx = i * grid_size * grid_size + j * grid_size + k;
 
 								int power = tab[idx][z * node_size * node_size + y * node_size + x];
+
+								int color = ((63 * power) / (grid_size * node_size + 40)) * ((i * node_size) + z + 40);
+
+
 								if(power>0){
-									drawpixel(di, wi, gc, 200 - 50 * i + (j*node_size+y)*2 - z, 300 + 50 * i - (k*node_size+x)*2 + z, 50 * power);
-									drawpixel(di, wi, gc, 200 - 50 * i + (j*node_size+y)*2 - z, 300 + 50 * i - (k*node_size+x)*2+1 + z, 50 * power);
-									drawpixel(di, wi, gc, 200 - 50 * i + (j*node_size+y)*2+1 - z, 300 + 50 * i - (k*node_size+x)*2 + z, 50 * power);
-									drawpixel(di, wi, gc, 200 - 50 * i + (j*node_size+y)*2+1 - z, 300 + 50 * i - (k*node_size+x)*2+1 + z, 50 * power);
+									drawpixel(di, wi, gc, 200 - 50 * i + (j*node_size+y)*2 - z, 300 + 50 * i - (k*node_size+x)*2 + z, color);
+									drawpixel(di, wi, gc, 200 - 50 * i + (j*node_size+y)*2 - z, 300 + 50 * i - (k*node_size+x)*2+1 + z, color);
+									drawpixel(di, wi, gc, 200 - 50 * i + (j*node_size+y)*2+1 - z, 300 + 50 * i - (k*node_size+x)*2 + z, color);
+									drawpixel(di, wi, gc, 200 - 50 * i + (j*node_size+y)*2+1 - z, 300 + 50 * i - (k*node_size+x)*2+1 + z, color);
 								}
 							}
 						}
