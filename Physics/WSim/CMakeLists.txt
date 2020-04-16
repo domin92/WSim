@@ -24,7 +24,7 @@ macro(get_sources VARIABLE)
         "${SOURCE_DIR}/*.cl"
         "${SOURCE_DIR}/*.c"
     )
-    source_group (TREE ${SOURCE_DIR} FILES ${VARIABLE})
+    source_group (TREE ${SOURCE_DIR} FILES ${${VARIABLE}})
 endmacro()
 
 # Add source and tests
