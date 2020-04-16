@@ -1,4 +1,4 @@
-#include "Source/Simulation/PositionInGrid.h"
+#include "Source/WSimCore/Simulation/PositionInGrid.h"
 
 #include <gtest/gtest.h>
 

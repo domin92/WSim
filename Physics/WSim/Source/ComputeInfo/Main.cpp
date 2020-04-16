@@ -1,4 +1,4 @@
-#include "Source/Utils/OpenCL.h"
+#include "Source/WSimCore/Utils/OpenCL.h"
 
 #include <cstdint>
 #include <iostream>
@@ -49,7 +49,7 @@ void displayPlatform(size_t index) {
 
     cl_uint devicesNum{};
     cl_int retVal = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 0, nullptr, &devicesNum);
-    for (int i = 0; i < devicesNum; i++) {
+    for (int i = 0u; i < devicesNum; i++) {
         displayDevice(platform, CL_DEVICE_TYPE_ALL, i);
         std::cout << '\n';
     }
@@ -60,7 +60,7 @@ int main() {
     cl_int retVal = clGetPlatformIDs(0, nullptr, &platformsNum);
 
     std::cout << "Platforms detected: " << platformsNum << '\n';
-    for (int i = 0; i < platformsNum; i++) {
+    for (int i = 0u; i < platformsNum; i++) {
         displayPlatform(i);
         std::cout << "\n\n";
     }

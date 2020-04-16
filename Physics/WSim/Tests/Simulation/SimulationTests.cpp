@@ -1,4 +1,4 @@
-#include "Source/Simulation/Simulation.h"
+#include "Source/WSimCore/Simulation/Simulation.h"
 
 #include <gtest/gtest.h>
 

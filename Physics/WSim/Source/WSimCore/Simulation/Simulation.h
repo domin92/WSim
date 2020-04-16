@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Source/Simulation/PositionInGrid.h"
-#include "Source/Utils/ImagePair.h"
-#include "Source/Utils/OpenCL.h"
+#include "Source/WSimCore/Simulation/PositionInGrid.h"
+#include "Source/WSimCore/Utils/ImagePair.h"
+#include "Source/WSimCore/Utils/OpenCL.h"
 
 #include <vector>
 
