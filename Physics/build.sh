@@ -90,6 +90,7 @@ run_cmake "." "$build_path" $architecture $configuration
 if [ "$build_dependencies" == 1 ]; then
     compile gtest
     compile freeglut_static
+    compile glfw
 fi
 if [ "$build_wsim" == 1 ]; then
     compile WSimStandalone
@@ -101,3 +102,4 @@ fi
 # CMake created run.sh script, set execute permissions
 chmod +x run_standalone.sh
 if [ -e run_mpi.sh ]; then chmod +x run_mpi.sh; fi
+chmod +x run_renderer.sh

@@ -2,12 +2,10 @@
 find_package(OpenCL REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(MPI) # If MPI isn't found, WSimMPI target won't be created
-if(UNIX)
-    # It is used by gtest but find_package made by gtest project is done in a
-    # different directory, and Threads::Threads variable is not visible here,
-    # hence the manual call.
-    find_package(Threads)
-endif()
+# Threads::Threads is used by some dependent libraries (such as gtest, glfw),
+# but find_package made by them are done in different directories, and
+# Threads::Threads variable is not visible here, hence the manual call.
+find_package(Threads)
 
 # General setup
 project(WSim)
@@ -24,6 +22,7 @@ macro(get_sources VARIABLE)
         "${SOURCE_DIR}/*.h"
         "${SOURCE_DIR}/*.cpp"
         "${SOURCE_DIR}/*.cl"
+        "${SOURCE_DIR}/*.c"
     )
     source_group (TREE ${SOURCE_DIR} FILES ${VARIABLE})
 endmacro()

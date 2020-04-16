@@ -3,6 +3,7 @@ get_sources(SOURCE_FILES)
 list(FILTER SOURCE_FILES EXCLUDE REGEX "^${SOURCE_DIR}/ComputeInfo/*")
 list(FILTER SOURCE_FILES EXCLUDE REGEX "^${SOURCE_DIR}/WSimStandalone/*")
 list(FILTER SOURCE_FILES EXCLUDE REGEX "^${SOURCE_DIR}/WSimMPI/*")
+list(FILTER SOURCE_FILES EXCLUDE REGEX "^${SOURCE_DIR}/WSimRenderer/*")
 
 # Define core library. It can be used by other targets.
 add_library(${TARGET_WSIM_CORE_LIB} STATIC ${SOURCE_FILES})
@@ -22,3 +23,4 @@ target_compile_definitions(${TARGET_WSIM_CORE_LIB}
 add_subdirectory(ComputeInfo)
 add_subdirectory(WSimStandalone)
 add_subdirectory(WSimMPI)
+add_subdirectory(WSimRenderer)

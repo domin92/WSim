@@ -15,10 +15,12 @@ set(DIR_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(DIR_WSIM ${CMAKE_CURRENT_SOURCE_DIR}/WSim)
 set(DIR_GTEST ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/googletest)
 set(DIR_FREEGLUT ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/FreeGLUT/freeglut/freeglut)
+set(DIR_GLFW ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glfw)
 
 # Target names
 set(TARGET_WSIM_CORE_LIB WSimCore)
 set(TARGET_WSIM_STANDALONE WSimStandalone)
+set(TARGET_WSIM_RENDERER WSimRenderer)
 set(TARGET_WSIM_MPI WSimMPI)
 set(TARGET_WSIM_TESTS WSimTests)
 
@@ -27,6 +29,7 @@ project(WSimWithDependencies)
 set(gtest_force_shared_crt on)
 add_subdirectory(${DIR_GTEST})
 add_subdirectory(${DIR_FREEGLUT})
+add_subdirectory(${DIR_GLFW})
 add_subdirectory(${DIR_WSIM})
 
 # Set startup project
