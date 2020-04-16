@@ -97,6 +97,7 @@ if [ "$build_wsim" == 1 ]; then
     if [ -e run_mpi.sh ]; then
         compile WSimMPI
     fi
+    compile WSimRenderer
 fi
 
 # CMake created run.sh script, set execute permissions
