@@ -33,4 +33,4 @@ add_subdirectory(${DIR_GLFW})
 add_subdirectory(${DIR_WSIM})
 
 # Set startup project
-set_directory_properties(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTIES VS_STARTUP_PROJECT WSim)
+set_directory_properties(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTIES VS_STARTUP_PROJECT ${TARGET_WSIM_STANDALONE})
