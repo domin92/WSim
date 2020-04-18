@@ -102,8 +102,8 @@ int main(int argc, char **argv) {
     std::cout << "Using clDeviceIndex=" << clDeviceIndex << '\n';
 
     // Mocked grid parameters
-    const OCL::Vec3 gridId{1, 1, 0};
-    const OCL::Vec3 gridSize{3, 3, 1};
+    const OCL::Vec3 gridId{0,0, 0};
+    const OCL::Vec3 gridSize{1,1, 1};
 
     // Create simulation
     const OCL::Vec3 imageSize{100, 100, 1};

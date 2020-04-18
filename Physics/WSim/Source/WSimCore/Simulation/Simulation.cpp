@@ -12,7 +12,8 @@ Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simul
       velocity(context, simulationSizeWithBorder, vectorFieldFormat),
       color(context, simulationSizeWithBorder, vectorFieldFormat),
       divergence(context, simulationSize, scalarFieldFormat),
-      pressure(context, simulationSize, scalarFieldFormat) {
+      pressure(context, simulationSize, scalarFieldFormat),
+      vorticity(context, simulationSize, vectorFieldFormat) {
 
     // Load kernels
     this->programs.push_back(OCL::createProgramFromFile(device, context, "fill.cl", true));
@@ -20,6 +21,9 @@ Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simul
     this->kernelFillColor = OCL::createKernel(programs.back(), "fillColor");
     this->programs.push_back(OCL::createProgramFromFile(device, context, "advection.cl", true));
     this->kernelAdvection = OCL::createKernel(programs.back(), "advection3f");
+    this->programs.push_back(OCL::createProgramFromFile(device, context, "vorticityConfinement.cl", true));
+    this->kernelCalculateVorticity = OCL::createKernel(programs.back(), "calculateVorticity");
+    this->kernelApplyVorticityConfinement = OCL::createKernel(programs.back(), "applyVorticityConfinement");
     this->programs.push_back(OCL::createProgramFromFile(device, context, "pressure.cl", true));
     this->kernelDivergence = OCL::createKernel(programs.back(), "calculateDivergence");
     this->kernelPressureJacobi = OCL::createKernel(programs.back(), "calculatePressureWithJacobiIteration");
@@ -47,6 +51,23 @@ void Simulation::stepSimulation(float deltaTime) {
     OCL::setKernelArgFlt(kernelAdvection, 3, 1.f);                       // inDissipation
     OCL::setKernelArgMem(kernelAdvection, 4, velocity.getDestination()); // outField
     OCL::enqueueKernel3D(commandQueue, kernelAdvection, simulationSizeWithBorder);
+    velocity.swap();
+
+    // Calculate vorticity
+    OCL::setKernelArgMem(kernelCalculateVorticity, 0, velocity.getSource());                           // inVelocity
+    OCL::setKernelArgVec(kernelCalculateVorticity, 1, borderOffset.x, borderOffset.y, borderOffset.z); // inVelocityOffset
+    OCL::setKernelArgMem(kernelCalculateVorticity, 2, vorticity.getDestination());                     // outVorticity
+    OCL::enqueueKernel3D(commandQueue, kernelCalculateVorticity, simulationSize);                      // TODO: next kernel calculates vorticity gradient. Calculate this with border=1?
+    vorticity.swap();
+
+    // Apply vorticity confinement
+    // TODO problem with border
+    OCL::setKernelArgMem(kernelApplyVorticityConfinement, 0, velocity.getSource());                           // inVelocity
+    OCL::setKernelArgMem(kernelApplyVorticityConfinement, 1, vorticity.getSource());                          // inVorticity
+    OCL::setKernelArgVec(kernelApplyVorticityConfinement, 2, borderOffset.x, borderOffset.y, borderOffset.z); // inVelocityOffset
+    OCL::setKernelArgFlt(kernelApplyVorticityConfinement, 3, 10.f);                                            // inVelocityStrength
+    OCL::setKernelArgMem(kernelApplyVorticityConfinement, 4, velocity.getDestination());                      // outVelocity
+    OCL::enqueueKernel3D(commandQueue, kernelApplyVorticityConfinement, simulationSizeWithBorder);
     velocity.swap();
 
     // Calculate divergence

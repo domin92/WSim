@@ -50,12 +50,15 @@ protected:
     Image3DPair color;    // extended
     Image3DPair divergence;
     Image3DPair pressure;
+    Image3DPair vorticity;
 
     // Kernels
-    std::vector<OCL::Program> programs{}; // held so all objects are properly free
+    std::vector<OCL::Program> programs{}; // held so all objects are properly freed
     OCL::Kernel kernelFillVelocity;
     OCL::Kernel kernelFillColor;
     OCL::Kernel kernelAdvection;
+    OCL::Kernel kernelCalculateVorticity;
+    OCL::Kernel kernelApplyVorticityConfinement;
     OCL::Kernel kernelDivergence;
     OCL::Kernel kernelPressureJacobi;
     OCL::Kernel kernelProjectVelocityToDivergenceFree;
