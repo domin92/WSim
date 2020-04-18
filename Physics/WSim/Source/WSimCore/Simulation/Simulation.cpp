@@ -13,23 +13,17 @@ Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simul
       color(context, simulationSizeWithBorder, vectorFieldFormat),
       divergence(context, simulationSize, scalarFieldFormat),
       pressure(context, simulationSize, scalarFieldFormat),
-      vorticity(context, simulationSize, vectorFieldFormat) {
-
-    // Load kernels
-    this->programs.push_back(OCL::createProgramFromFile(device, context, "fill.cl", true));
-    this->kernelFillVelocity = OCL::createKernel(programs.back(), "fillVelocity");
-    this->kernelFillColor = OCL::createKernel(programs.back(), "fillColor");
-    this->programs.push_back(OCL::createProgramFromFile(device, context, "advection.cl", true));
-    this->kernelAdvection = OCL::createKernel(programs.back(), "advection3f");
-    this->programs.push_back(OCL::createProgramFromFile(device, context, "vorticityConfinement.cl", true));
-    this->kernelCalculateVorticity = OCL::createKernel(programs.back(), "calculateVorticity");
-    this->kernelApplyVorticityConfinement = OCL::createKernel(programs.back(), "applyVorticityConfinement");
-    this->programs.push_back(OCL::createProgramFromFile(device, context, "pressure.cl", true));
-    this->kernelDivergence = OCL::createKernel(programs.back(), "calculateDivergence");
-    this->kernelPressureJacobi = OCL::createKernel(programs.back(), "calculatePressureWithJacobiIteration");
-    this->kernelProjectVelocityToDivergenceFree = OCL::createKernel(programs.back(), "projectVelocityToDivergenceFree");
-    this->programs.push_back(OCL::createProgramFromFile(device, context, "addVelocity.cl", true));
-    this->kernelAddVelocity = OCL::createKernel(programs.back(), "addVelocity");
+      vorticity(context, simulationSize, vectorFieldFormat),
+      kernels(device, context),
+      kernelFillVelocity(kernels["fill.cl"]["fillVelocity"]),
+      kernelFillColor(kernels["fill.cl"]["fillColor"]),
+      kernelAdvection(kernels["advection.cl"]["advection3f"]),
+      kernelCalculateVorticity(kernels["vorticityConfinement.cl"]["calculateVorticity"]),
+      kernelApplyVorticityConfinement(kernels["vorticityConfinement.cl"]["applyVorticityConfinement"]),
+      kernelDivergence(kernels["pressure.cl"]["calculateDivergence"]),
+      kernelPressureJacobi(kernels["pressure.cl"]["calculatePressureWithJacobiIteration"]),
+      kernelProjectVelocityToDivergenceFree(kernels["pressure.cl"]["projectVelocityToDivergenceFree"]),
+      kernelAddVelocity(kernels["addVelocity.cl"]["addVelocity"]) {
     reset();
 }
 

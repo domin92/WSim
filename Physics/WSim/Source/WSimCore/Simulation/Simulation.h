@@ -3,6 +3,7 @@
 #include "Source/WSimCore/Simulation/BorderMaths.h"
 #include "Source/WSimCore/Utils/ImagePair.h"
 #include "Source/WSimCore/Utils/OpenCL.h"
+#include "Source/WSimCore/Utils/KernelManager.h"
 
 #include <vector>
 
@@ -51,7 +52,7 @@ protected:
     Image3DPair vorticity;
 
     // Kernels
-    std::vector<OCL::Program> programs{}; // held so all objects are properly freed
+    KernelManager kernels;
     OCL::Kernel kernelFillVelocity;
     OCL::Kernel kernelFillColor;
     OCL::Kernel kernelAdvection;
