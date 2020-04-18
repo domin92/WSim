@@ -49,6 +49,9 @@ void mouseClick(int button, int state, int x, int y) {
     case GLUT_RIGHT_BUTTON:
         OGL::renderData.simulation->stop();
         break;
+    case GLUT_MIDDLE_BUTTON:
+        OGL::renderData.simulation->reset();
+        break;
     }
 }
 

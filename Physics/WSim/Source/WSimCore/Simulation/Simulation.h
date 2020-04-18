@@ -14,6 +14,7 @@ public:
     void stepSimulation(float deltaTime);
     void applyForce(float positionX, float positionY, float changeX, float changeY, float radius);
     void stop();
+    void reset();
 
     auto getBorderOffset() const { return borderOffset; }
     auto getSimulationSize() const { return simulationSize; }
