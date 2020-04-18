@@ -102,6 +102,9 @@ void Simulation::applyForce(float positionX, float positionY, float changeX, flo
 
 void Simulation::stop() {
     OCL::enqueueZeroImage3D(commandQueue, velocity.getSource(), simulationSizeWithBorder);
+    OCL::enqueueZeroImage3D(commandQueue, divergence.getDestinationAndSwap(), simulationSize);
+    OCL::enqueueZeroImage3D(commandQueue, pressure.getDestinationAndSwap(), simulationSize);
+    OCL::enqueueZeroImage3D(commandQueue, vorticity.getDestinationAndSwap(), simulationSize);
 }
 
 void Simulation::reset() {
