@@ -35,20 +35,18 @@ Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simul
 
 void Simulation::stepSimulation(float deltaTime) {
     // Advect velocity - including the border, because it will be sampled from later
-    OCL::setKernelArgMem(kernelAdvection, 0, velocity.getSource());      // inField
-    OCL::setKernelArgMem(kernelAdvection, 1, velocity.getSource());      // inVelocity
-    OCL::setKernelArgFlt(kernelAdvection, 2, deltaTime);                 // inDeltaTime
-    OCL::setKernelArgFlt(kernelAdvection, 3, 1.f);                       // inDissipation
-    OCL::setKernelArgMem(kernelAdvection, 4, velocity.getDestination()); // outField
+    OCL::setKernelArgMem(kernelAdvection, 0, velocity.getSource());             // inField
+    OCL::setKernelArgMem(kernelAdvection, 1, velocity.getSource());             // inVelocity
+    OCL::setKernelArgFlt(kernelAdvection, 2, deltaTime);                        // inDeltaTime
+    OCL::setKernelArgFlt(kernelAdvection, 3, 1.f);                              // inDissipation
+    OCL::setKernelArgMem(kernelAdvection, 4, velocity.getDestinationAndSwap()); // outField
     OCL::enqueueKernel3D(commandQueue, kernelAdvection, simulationSizeWithBorder);
-    velocity.swap();
 
     // Calculate vorticity
     OCL::setKernelArgMem(kernelCalculateVorticity, 0, velocity.getSource());                           // inVelocity
     OCL::setKernelArgVec(kernelCalculateVorticity, 1, borderOffset.x, borderOffset.y, borderOffset.z); // inVelocityOffset
-    OCL::setKernelArgMem(kernelCalculateVorticity, 2, vorticity.getDestination());                     // outVorticity
+    OCL::setKernelArgMem(kernelCalculateVorticity, 2, vorticity.getDestinationAndSwap());              // outVorticity
     OCL::enqueueKernel3D(commandQueue, kernelCalculateVorticity, simulationSize);                      // TODO: next kernel calculates vorticity gradient. Calculate this with border=1?
-    vorticity.swap();
 
     // Apply vorticity confinement
     // TODO problem with border
@@ -56,42 +54,37 @@ void Simulation::stepSimulation(float deltaTime) {
     OCL::setKernelArgMem(kernelApplyVorticityConfinement, 1, vorticity.getSource());                          // inVorticity
     OCL::setKernelArgVec(kernelApplyVorticityConfinement, 2, borderOffset.x, borderOffset.y, borderOffset.z); // inVelocityOffset
     OCL::setKernelArgFlt(kernelApplyVorticityConfinement, 3, 10.f);                                           // inVelocityStrength
-    OCL::setKernelArgMem(kernelApplyVorticityConfinement, 4, velocity.getDestination());                      // outVelocity
+    OCL::setKernelArgMem(kernelApplyVorticityConfinement, 4, velocity.getDestinationAndSwap());               // outVelocity
     OCL::enqueueKernel3D(commandQueue, kernelApplyVorticityConfinement, simulationSizeWithBorder);
-    velocity.swap();
 
     // Calculate divergence
     OCL::setKernelArgMem(kernelDivergence, 0, velocity.getSource());                           // inVelocity
     OCL::setKernelArgVec(kernelDivergence, 1, borderOffset.x, borderOffset.y, borderOffset.z); // inVelocityOffset
-    OCL::setKernelArgMem(kernelDivergence, 2, divergence.getDestination());                    // outDivergence
+    OCL::setKernelArgMem(kernelDivergence, 2, divergence.getDestinationAndSwap());             // outDivergence
     OCL::enqueueKernel3D(commandQueue, kernelDivergence, simulationSize);
-    divergence.swap();
 
     // Calculate pressure
-    OCL::setKernelArgMem(kernelPressureJacobi, 0, divergence.getSource());        // inDivergence
-    for (int i = 0; i < 10; i++) {                                                //
-        OCL::setKernelArgMem(kernelPressureJacobi, 1, pressure.getSource());      // inPressure
-        OCL::setKernelArgMem(kernelPressureJacobi, 2, pressure.getDestination()); // outPressure
+    OCL::setKernelArgMem(kernelPressureJacobi, 0, divergence.getSource());               // inDivergence
+    for (int i = 0; i < 10; i++) {                                                       //
+        OCL::setKernelArgMem(kernelPressureJacobi, 1, pressure.getSource());             // inPressure
+        OCL::setKernelArgMem(kernelPressureJacobi, 2, pressure.getDestinationAndSwap()); // outPressure
         OCL::enqueueKernel3D(commandQueue, kernelPressureJacobi, simulationSize);
-        pressure.swap();
     }
 
     // Apply pressure
     OCL::setKernelArgMem(kernelProjectVelocityToDivergenceFree, 0, velocity.getSource());                           // inVelocity
     OCL::setKernelArgMem(kernelProjectVelocityToDivergenceFree, 1, pressure.getSource());                           // inPressure
     OCL::setKernelArgVec(kernelProjectVelocityToDivergenceFree, 2, borderOffset.x, borderOffset.y, borderOffset.z); // inVelocityOffset
-    OCL::setKernelArgMem(kernelProjectVelocityToDivergenceFree, 3, velocity.getDestination());                      // outVelocity
+    OCL::setKernelArgMem(kernelProjectVelocityToDivergenceFree, 3, velocity.getDestinationAndSwap());               // outVelocity
     OCL::enqueueKernel3D(commandQueue, kernelProjectVelocityToDivergenceFree, simulationSize);
-    velocity.swap();
 
     // Advect Color - including the border
-    OCL::setKernelArgMem(kernelAdvection, 0, color.getSource());      // inField
-    OCL::setKernelArgMem(kernelAdvection, 1, velocity.getSource());   // inVelocity
-    OCL::setKernelArgFlt(kernelAdvection, 2, deltaTime);              // inDeltaTime
-    OCL::setKernelArgFlt(kernelAdvection, 3, 1.f);                    // inDissipation
-    OCL::setKernelArgMem(kernelAdvection, 4, color.getDestination()); // outField
+    OCL::setKernelArgMem(kernelAdvection, 0, color.getSource());             // inField
+    OCL::setKernelArgMem(kernelAdvection, 1, velocity.getSource());          // inVelocity
+    OCL::setKernelArgFlt(kernelAdvection, 2, deltaTime);                     // inDeltaTime
+    OCL::setKernelArgFlt(kernelAdvection, 3, 1.f);                           // inDissipation
+    OCL::setKernelArgMem(kernelAdvection, 4, color.getDestinationAndSwap()); // outField
     OCL::enqueueKernel3D(commandQueue, kernelAdvection, simulationSizeWithBorder);
-    color.swap();
 }
 
 void Simulation::applyForce(float positionX, float positionY, float changeX, float changeY, float radius) {
@@ -103,9 +96,8 @@ void Simulation::applyForce(float positionX, float positionY, float changeX, flo
     OCL::setKernelArgVec(kernelAddVelocity, 1, positionX, positionY, 0); // inCenter
     OCL::setKernelArgVec(kernelAddVelocity, 2, changeX, changeY, 0);     // inVelocityChange
     OCL::setKernelArgFlt(kernelAddVelocity, 3, radius);                  // inRadius
-    OCL::setKernelArgMem(kernelAddVelocity, 4, velocity.getDestination());
+    OCL::setKernelArgMem(kernelAddVelocity, 4, velocity.getDestinationAndSwap());
     OCL::enqueueKernel3D(commandQueue, kernelAddVelocity, simulationSizeWithBorder);
-    velocity.swap();
 }
 
 void Simulation::stop() {
@@ -114,20 +106,17 @@ void Simulation::stop() {
 
 void Simulation::reset() {
     OCL::setKernelArgFlt(kernelFillVelocity, 0, static_cast<float>(simulationSize.x)); // inImageSize
-    OCL::setKernelArgMem(kernelFillVelocity, 1, velocity.getDestination());            // outVelocity
+    OCL::setKernelArgMem(kernelFillVelocity, 1, velocity.getDestinationAndSwap());     // outVelocity
+
     OCL::enqueueKernel3D(commandQueue, kernelFillVelocity, simulationSizeWithBorder);
-    velocity.swap();
     OCL::setKernelArgVec(kernelFillColor, 0, simulationSize.x, simulationSize.y, simulationSize.z); // inImageSize
     OCL::setKernelArgVec(kernelFillColor, 1, borderOffset.x, borderOffset.y, borderOffset.z);       // inOffset
-    OCL::setKernelArgMem(kernelFillColor, 2, color.getDestination());                               // outColor
+    OCL::setKernelArgMem(kernelFillColor, 2, color.getDestinationAndSwap());                        // outColor
     OCL::enqueueKernel3D(commandQueue, kernelFillColor, simulationSizeWithBorder);
-    color.swap();
-    OCL::enqueueZeroImage3D(commandQueue, divergence.getDestination(), simulationSize);
-    divergence.swap();
-    OCL::enqueueZeroImage3D(commandQueue, pressure.getDestination(), simulationSize);
-    pressure.swap();
-    OCL::enqueueZeroImage3D(commandQueue, vorticity.getDestination(), simulationSize);
-    vorticity.swap();
+
+    OCL::enqueueZeroImage3D(commandQueue, divergence.getDestinationAndSwap(), simulationSize);
+    OCL::enqueueZeroImage3D(commandQueue, pressure.getDestinationAndSwap(), simulationSize);
+    OCL::enqueueZeroImage3D(commandQueue, vorticity.getDestinationAndSwap(), simulationSize);
 }
 
 OCL::Vec3 Simulation::calculateSimulationSizeWithBorder(OCL::Vec3 simulationSize, PositionInGrid positionInGrid, size_t borderWidth) {
