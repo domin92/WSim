@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/WSimCore/Simulation/PositionInGrid.h"
+#include "Source/WSimCore/Simulation/BorderMaths.h"
 #include "Source/WSimCore/Utils/ImagePair.h"
 #include "Source/WSimCore/Utils/OpenCL.h"
 
@@ -30,14 +30,11 @@ public:
     auto &getKernelProjectVelocityToDivergenceFree() { return kernelProjectVelocityToDivergenceFree; }
 
 protected:
-    static OCL::Vec3 calculateSimulationSizeWithBorder(OCL::Vec3 simulationSize, PositionInGrid positionInGrid, size_t borderWidth);
-    static OCL::Vec3 calculateBorderOffset(PositionInGrid positionInGrid, size_t borderWidth);
-
     // Sizes
     const PositionInGrid positionInGrid;
-    const OCL::Vec3 borderOffset;             // offset to be applied to extended images
     const OCL::Vec3 simulationSize;           // size for which simulation kernels are launched
     const OCL::Vec3 simulationSizeWithBorder; // simulationSize increased by additional border space
+    const OCL::Vec3 borderOffset;             // offset to be applied to extended images
 
     // Basic OCL objects
     cl_platform_id platform;

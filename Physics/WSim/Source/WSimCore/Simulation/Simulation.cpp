@@ -2,9 +2,9 @@
 
 Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid)
     : positionInGrid(positionInGrid),
-      borderOffset(calculateBorderOffset(positionInGrid, borderWidth)),
       simulationSize(simulationSize),
-      simulationSizeWithBorder(calculateSimulationSizeWithBorder(simulationSize, positionInGrid, borderWidth)),
+      simulationSizeWithBorder(increaseBorder(simulationSize, positionInGrid, static_cast<int>(borderWidth))),
+      borderOffset(calculateBorderOffset(simulationSizeWithBorder, simulationSize, positionInGrid)),
       platform(OCL::createPlatform(platformIndex)),
       device(OCL::createDevice(platform, CL_DEVICE_TYPE_GPU, deviceIndex)),
       context(OCL::createContext(platform, device)),
@@ -120,30 +120,4 @@ void Simulation::reset() {
     OCL::enqueueZeroImage3D(commandQueue, divergence.getDestinationAndSwap(), simulationSize);
     OCL::enqueueZeroImage3D(commandQueue, pressure.getDestinationAndSwap(), simulationSize);
     OCL::enqueueZeroImage3D(commandQueue, vorticity.getDestinationAndSwap(), simulationSize);
-}
-
-OCL::Vec3 Simulation::calculateSimulationSizeWithBorder(OCL::Vec3 simulationSize, PositionInGrid positionInGrid, size_t borderWidth) {
-
-    const auto borderX = 2 - static_cast<int>(positionInGrid.edgeL) - static_cast<int>(positionInGrid.edgeR);
-    const auto borderY = 2 - static_cast<int>(positionInGrid.edgeU) - static_cast<int>(positionInGrid.edgeD);
-    const auto borderZ = 2 - static_cast<int>(positionInGrid.edgeF) - static_cast<int>(positionInGrid.edgeB);
-    OCL::Vec3 result = {
-        simulationSize.x + borderX * borderWidth,
-        simulationSize.y + borderY * borderWidth,
-        simulationSize.z + borderZ * borderWidth};
-    return result;
-}
-
-OCL::Vec3 Simulation::calculateBorderOffset(PositionInGrid positionInGrid, size_t borderWidth) {
-    OCL::Vec3 result{};
-    if (!positionInGrid.edgeL) {
-        result.x = borderWidth;
-    }
-    if (!positionInGrid.edgeD) {
-        result.y = borderWidth;
-    }
-    if (!positionInGrid.edgeF) {
-        result.z = borderWidth;
-    }
-    return result;
 }
