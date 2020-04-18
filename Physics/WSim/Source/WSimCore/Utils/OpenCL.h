@@ -1,6 +1,6 @@
 #pragma once
 
-#define CL_TARGET_OPENCL_VERSION 200
+#define CL_TARGET_OPENCL_VERSION 120
 #include <CL/cl.h>
 #include <assert.h>
 #include <iostream>

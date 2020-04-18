@@ -16,6 +16,7 @@ set(DIR_WSIM ${CMAKE_CURRENT_SOURCE_DIR}/WSim)
 set(DIR_GTEST ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/googletest)
 set(DIR_FREEGLUT ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/FreeGLUT/freeglut/freeglut)
 set(DIR_GLFW ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glfw)
+set(DIR_OPENCL_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/OpenCL-Headers)
 
 # Target names
 set(TARGET_WSIM_CORE_LIB WSimCore)

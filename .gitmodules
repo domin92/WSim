@@ -7,3 +7,6 @@
 [submodule "Physics/ThirdParty/glfw"]
 	path = Physics/ThirdParty/glfw
 	url = https://github.com/glfw/glfw
+[submodule "Physics/ThirdParty/OpenCL-Headers"]
+	path = Physics/ThirdParty/OpenCL-Headers
+	url = https://github.com/KhronosGroup/OpenCL-Headers.git

@@ -125,7 +125,7 @@ Context createContext(cl_platform_id platform, cl_device_id device) {
 
 CommandQueue createCommandQueue(cl_context context, cl_device_id device) {
     cl_int retVal{};
-    CommandQueue commandQueue = clCreateCommandQueueWithProperties(context, device, nullptr, &retVal);
+    CommandQueue commandQueue = clCreateCommandQueue(context, device, 0, &retVal);
     ASSERT_CL_SUCCESS(retVal);
     return commandQueue;
 }
@@ -255,7 +255,7 @@ Mem createReadWriteImage3D(cl_context context, Vec3 size, const cl_image_format 
     desc.image_slice_pitch = 0;
     desc.num_mip_levels = 0;
     desc.num_samples = 0;
-    desc.mem_object = nullptr;
+    desc.buffer = nullptr;
 
     cl_int retVal{};
     Mem image = clCreateImage(context, CL_MEM_READ_WRITE, &format, &desc, nullptr, &retVal);
