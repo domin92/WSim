@@ -1,14 +1,16 @@
 __kernel void advection3f(__read_only image3d_t inField,
                           __read_only image3d_t inVelocity,
+                          int4 inVelocityOffset,
                           float inDeltaTime,
                           float inDissipation,
                           __write_only image3d_t outField) {
-    // Thread position
+    // Get current positions
     const int4 threadPosition = (int4)((int)get_global_id(0), (int)get_global_id(1), (int)get_global_id(2), 0);
+    const int4 velocityPosition = threadPosition + inVelocityOffset;
 
     // Calculate sample position
     const sampler_t nearestSampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_NONE | CLK_FILTER_NEAREST;
-    float4 samplePosition = convert_float4(threadPosition);
+    float4 samplePosition = convert_float4(velocityPosition); // TODO: shouldn't 0.5f offset be here?
     samplePosition -= inDeltaTime * read_imagef(inVelocity, nearestSampler, threadPosition);
     samplePosition += 0.5f;
 
@@ -17,7 +19,7 @@ __kernel void advection3f(__read_only image3d_t inField,
     float4 value = read_imagef(inField, linearSampler, samplePosition) * inDissipation;
 
     // Write to output
-    write_imagef(outField, threadPosition, value);
+    write_imagef(outField, velocityPosition, value);
 }
 
 __kernel void advection1f(__read_only image3d_t inField,

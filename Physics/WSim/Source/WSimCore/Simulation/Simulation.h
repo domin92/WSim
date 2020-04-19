@@ -2,9 +2,11 @@
 
 #include "Source/WSimCore/Simulation/BorderMaths.h"
 #include "Source/WSimCore/Utils/ImagePair.h"
-#include "Source/WSimCore/Utils/OpenCL.h"
 #include "Source/WSimCore/Utils/KernelManager.h"
+#include "Source/WSimCore/Utils/OpenCL.h"
+#include "Source/WSimCore/Simulation/SimulationStep.h"
 
+#include <memory>
 #include <vector>
 
 const static cl_image_format vectorFieldFormat = {CL_RGBA, CL_FLOAT};
@@ -21,14 +23,12 @@ public:
     auto getSimulationSize() const { return simulationSize; }
     auto getSimulationSizeWithBorder() const { return simulationSizeWithBorder; }
     auto &getCommandQueue() { return commandQueue; }
+    auto &getContext() { return context; }
+    auto &getDevice() { return device; }
+    auto &getPositionInGrid() { return positionInGrid; }
     auto &getColor() { return color; }
     auto &getVelocity() { return velocity; }
-    auto &getKernelFillVelocity() { return kernelFillVelocity; }
-    auto &getKernelFillColor() { return kernelFillColor; }
-    auto &getKernelAdvection() { return kernelAdvection; }
-    auto &getKernelDivergence() { return kernelDivergence; }
-    auto &getKernelPressureJacobi() { return kernelPressureJacobi; }
-    auto &getKernelProjectVelocityToDivergenceFree() { return kernelProjectVelocityToDivergenceFree; }
+    auto &getKernelManager() { return kernels; }
 
 protected:
     // Sizes
@@ -43,23 +43,16 @@ protected:
     OCL::Context context;
     OCL::CommandQueue commandQueue;
 
-    // Images. Images can be private to the node (size=simulationSize) or extended (size=simulationSizeWithBorder),
-    // meaning they contain border pixels passed from neighbouring nodes.
+    // Simulation steps
+    std::vector<std::unique_ptr<SimulationStep>> simulationSteps;
+
+    // Images
     Image3DPair velocity; // extended
     Image3DPair color;    // extended
-    Image3DPair divergence;
-    Image3DPair pressure;
-    Image3DPair vorticity;
 
     // Kernels
     KernelManager kernels;
     OCL::Kernel kernelFillVelocity;
     OCL::Kernel kernelFillColor;
-    OCL::Kernel kernelAdvection;
-    OCL::Kernel kernelCalculateVorticity;
-    OCL::Kernel kernelApplyVorticityConfinement;
-    OCL::Kernel kernelDivergence;
-    OCL::Kernel kernelPressureJacobi;
-    OCL::Kernel kernelProjectVelocityToDivergenceFree;
     OCL::Kernel kernelAddVelocity;
 };

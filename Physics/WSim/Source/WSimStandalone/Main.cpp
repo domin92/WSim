@@ -105,20 +105,20 @@ int main(int argc, char **argv) {
     std::cout << "Using clDeviceIndex=" << clDeviceIndex << '\n';
 
     // Mocked grid parameters
-    const OCL::Vec3 gridId{0,0, 0};
-    const OCL::Vec3 gridSize{1,1, 1};
+    const OCL::Vec3 gridId{1, 1, 0};
+    const OCL::Vec3 gridSize{3, 3, 1};
 
     // Create simulation
     const OCL::Vec3 imageSize{100, 100, 1};
-    const size_t borderWidth = 5;
+    const size_t borderWidth = 13;
     const PositionInGrid positionInGrid{gridId, gridSize};
     Simulation simulation{clPlatformIndex, clDeviceIndex, imageSize, borderWidth, positionInGrid};
 
     // Initialize rendering
     OGL::init(1100, 600);
     OGL::renderData.simulation = &simulation;
-    OGL::renderData.colorPixels = std::make_unique<float[]>(imageSize.getRequiredBufferSize(4 * sizeof(float)));
-    OGL::renderData.velocityPixels = std::make_unique<float[]>(imageSize.getRequiredBufferSize(4 * sizeof(float)));
+    OGL::renderData.colorPixels = std::make_unique<float[]>(simulation.getSimulationSizeWithBorder().getRequiredBufferSize(4 * sizeof(float)));
+    OGL::renderData.velocityPixels = std::make_unique<float[]>(simulation.getSimulationSizeWithBorder().getRequiredBufferSize(4 * sizeof(float)));
     glGenTextures(2, OGL::renderData.textures);
 
     // Rendering loop
