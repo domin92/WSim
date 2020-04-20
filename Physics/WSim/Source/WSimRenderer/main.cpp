@@ -139,10 +139,10 @@ int main()
 	//------------------------------------------------------------------------------
 	// VAO - Vertax Array Object 2     -   VBO x2 and EBO x1
         float vertices_ebo[] = {
-            -1.0f, 0.0f, 0.0f,   // top right
-            0.0f, 0.0f, 0.0f,  // bottom right
+            0.0f, 0.0f, 0.0f,   // top right
+            0.0f, -1.0f, 0.0f,  // bottom right
             -1.0f, -1.0f, 0.0f, // bottom left
-             0.0f, -1.0f, 0.0f   // top left
+             -1.0f, 0.0f, 0.0f   // top left
         };
         unsigned int indices_ebo[] = {
             // note that we start from 0!
@@ -150,13 +150,21 @@ int main()
             1, 2, 3  // second triangle
         };
 
+        float vertices_2[] = {
+            0.0f, 0.0f, 0.0f,
+            0.0f, -1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f};
 
-	unsigned int VAO_2, VBO_2;
-	glGenVertexArrays(1, &VAO_2);
+
+		unsigned int VAO_2;
+		glGenVertexArrays(1, &VAO_2);
+        glBindVertexArray(VAO_2);
+
+
+	//square
+	unsigned int VBO_2;
+
 	glGenBuffers(1, &VBO_2);
-
-
-	glBindVertexArray(VAO_2);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_2);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_ebo), vertices_ebo, GL_STATIC_DRAW);
 
@@ -165,26 +173,19 @@ int main()
     glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_ebo), indices_ebo, GL_STATIC_DRAW); 
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
 
-	
+	// second triangle
+
+
 	unsigned int VBO_3;
-	float vertices_2[] = {
-        0.0f, 0.0f, 0.0f,
-        0.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f};
+    glGenBuffers(1, &VBO_3);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_3);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_2), vertices_2, GL_STATIC_DRAW);
 
-	//glGenBuffers(1, &VBO_3);
-	//glBindBuffer(GL_ARRAY_BUFFER, VBO_3);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_2), vertices_2, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-
-
-
-
-
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -193,17 +194,21 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//triangle 1
+		//triangle #1
 		glUseProgram(shaderProgram1);
 		glBindVertexArray(VAO_1);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
-		//triangle 2#
-		glUseProgram(shaderProgram2);
+		//triangle #2
+        glUseProgram(shaderProgram2);
+        glBindVertexArray(VAO_2);
+        glDrawArrays(GL_TRIANGLES, 4, 3);
+
+		//square #1
+		glUseProgram(shaderProgram1);
 		glBindVertexArray(VAO_2);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
+        glBindVertexArray(0);
 
 
 		glfwSwapBuffers(window);
