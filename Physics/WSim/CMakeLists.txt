@@ -20,6 +20,7 @@ macro(get_sources VARIABLE)
         "${SOURCE_DIR}/*/CMakeLists.txt"
         "${SOURCE_DIR}/*.cmake"
         "${SOURCE_DIR}/*.h"
+        "${SOURCE_DIR}/*.hpp"
         "${SOURCE_DIR}/*.cpp"
         "${SOURCE_DIR}/*.cl"
         "${SOURCE_DIR}/*.c"
