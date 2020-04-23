@@ -23,6 +23,7 @@ function getParameters() {
         echo "  -c <Debug|Release>  - select configuration"
         echo "  -d                  - do not compile dependencies automatically"
         echo "  -w                  - do not compile WSim automatically"
+        echo "  -u                  - do not update git dependencies automatically"
     )
 
     # Available option values
@@ -34,9 +35,10 @@ function getParameters() {
     configuration=${configurations[0]}
     build_dependencies=1
     build_wsim=1
+    update_dependencies=1
 
     # Override values
-    while getopts "a:c:dwh" opt; do
+    while getopts "a:c:dwuh" opt; do
       case ${opt} in
         a ) validateOption "${architectures[*]}" "$OPTARG"
             architecture="$OPTARG" ;;
@@ -44,6 +46,7 @@ function getParameters() {
             configuration="$OPTARG" ;;
         d ) build_dependencies=0 ;;
         w ) build_wsim=0 ;;
+        u ) update_dependencies=0 ;;
         h ) printHelp; exit 0 ;;
         \?) printHelp; exit 1 ;;
       esac
@@ -82,8 +85,12 @@ function compile() (
 
 # Initialize
 getParameters $@
-git submodule update --init --recursive
 build_path=`realpath .build -m`/"$architecture"_"$configuration"
+
+# Clone dependencies needed by WSim
+if [ "$update_dependencies" == 1 ]; then
+    git submodule update --init --recursive
+fi
 
 # Build
 run_cmake "." "$build_path" $architecture $configuration
