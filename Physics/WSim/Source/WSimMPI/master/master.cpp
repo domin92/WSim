@@ -12,7 +12,7 @@ Master::Master(int proc_count, int grid_size, int node_size) {
 
     node_volume = node_size * node_size * node_size;
 
-    main_buffer = new char[(proc_count)*node_volume];
+    main_buffer = new char[proc_count*node_volume];
 
     mapped_buffer = new char *[proc_count - 1];
 
@@ -53,7 +53,7 @@ void Master::main() {
                 int r = rand() % 100;
 
                 if (r > 50) {
-                    mapped_buffer[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node] = r % 5;
+                    mapped_buffer[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node] = 1;
                 }
             }
         }
@@ -65,13 +65,11 @@ void Master::main() {
 
         receive_from_nodes();
 
-        std::cout << "---" << std::endl;
-
         for (int i = 0; i < /*grid_size*/1; i++) {
             for (int j = 0; j < grid_size; j++) {
                 for (int k = 0; k < grid_size; k++) {
 
-                    for (int z = 2/*0*/; z < /*node_size*/3; z++) {
+                    for (int z = 0; z < /*node_size*/1; z++) {
                         for (int y = 0; y < node_size; y++) {
                             for (int x = 0; x < node_size; x++) {
 
@@ -87,11 +85,12 @@ void Master::main() {
                                     std::cout << " ";
                                 }
                             }
-                            std::cout << std::endl;
+                            std::cout << "\n";
                         }
                     }
                 }
             }
         }
+
     }
 }
