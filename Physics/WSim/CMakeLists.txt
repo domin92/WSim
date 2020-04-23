@@ -28,6 +28,13 @@ macro(get_sources VARIABLE)
     source_group (TREE ${SOURCE_DIR} FILES ${${VARIABLE}})
 endmacro()
 
+# Target names
+set_with_parent_scope(TARGET_WSIM_CORE_LIB WSimCore)
+set_with_parent_scope(TARGET_WSIM_STANDALONE WSimStandalone)
+set_with_parent_scope(TARGET_WSIM_RENDERER WSimRenderer)
+set_with_parent_scope(TARGET_WSIM_MPI WSimMPI)
+set_with_parent_scope(TARGET_WSIM_TESTS WSimTests)
+
 # Add source and tests
 add_subdirectory(Source)
 add_subdirectory(Tests)
