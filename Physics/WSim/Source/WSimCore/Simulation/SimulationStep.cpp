@@ -74,7 +74,7 @@ void SimulationStepVorticityConfinement::stop() {
 }
 
 SimulationStepPressure::SimulationStepPressure(Simulation &simulation, size_t jacobiIterations, OCL::Vec3 &outputVelocitySize)
-    : SimulationStep(simulation, outputVelocitySize, increaseBorder(outputVelocitySize, simulation.getPositionInGrid(), jacobiIterations + 1)),
+    : SimulationStep(simulation, outputVelocitySize, increaseBorder(outputVelocitySize, simulation.getPositionInGrid(), static_cast<int>(jacobiIterations + 1))),
       jacobiIterations(jacobiIterations),
       divergenceSize(decreaseBorder(inputVelocitySize, simulation.getPositionInGrid(), 1, simulation.getSimulationSize())),
       kernelDivergence(simulation.getKernelManager()["pressure.cl"]["calculateDivergence"]),
