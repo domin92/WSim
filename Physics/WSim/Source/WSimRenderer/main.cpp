@@ -28,7 +28,7 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow *window = glfwCreateWindow(1280, 720, "LearnOpenGL", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(800, 800, "LearnOpenGL", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -127,23 +127,18 @@ int main() {
     glEnableVertexAttribArray(0);
 
     //------------------------------------------------------------------------------
-    // VAO - Vertax Array Object 2     -   VBO x2 and EBO x1
+    // VAO - Vertax Array Object 2
     float vertices_ebo[] = {
-        0.2f, 0.2f, 0.0f,  // top right
-        0.2f, 0.0f, 0.0f,  // bottom right
-        0.0f, 00.0f, 0.0f, // bottom left
-        0.0f, 0.2f, 0.0f   // top left
+        0.2f, 0.2f, 0.0f, // top right
+        0.2f, 0.0f, 0.0f, // bottom right
+        0.0f, 0.0f, 0.0f, // bottom left
+        0.0f, 0.2f, 0.0f  // top left
     };
     unsigned int indices_ebo[] = {
         // note that we start from 0!
         0, 1, 3, // first triangle
         1, 2, 3  // second triangle
     };
-
-    float vertices_2[] = {
-        0.0f, 0.0f, 0.0f,
-        0.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f};
 
     unsigned int VAO_2;
     glGenVertexArrays(1, &VAO_2);
@@ -163,15 +158,20 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
 
-    // second triangle
+    const int waterNumber = 4;
+    float waters[waterNumber][2];
 
-    unsigned int VBO_3;
-    glGenBuffers(1, &VBO_3);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_3);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_2), vertices_2, GL_STATIC_DRAW);
+    waters[0][0] = 0;
+    waters[0][1] = 0;
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
+    waters[1][0] = 0.2;
+    waters[1][1] = 0;
+
+    waters[2][0] = 0.4;
+    waters[2][1] = 0;
+
+    waters[3][0] = 0;
+    waters[3][1] = 0.2;
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
@@ -179,21 +179,21 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        //triangle #1
-        glUseProgram(shaderProgram1);
-        glBindVertexArray(VAO_1);
-        //glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        //triangle #2
-        glUseProgram(shaderProgram2);
-        glBindVertexArray(VAO_2);
-        //glDrawArrays(GL_TRIANGLES, 4, 3);
+        float timeValue = glfwGetTime();
+        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+        int vertexColorLocation = glGetUniformLocation(shaderProgram1, "ourColor");
+        int vertexCurrPosition = glGetUniformLocation(shaderProgram1, "currPosition");
 
-        //square #1
-        glUseProgram(shaderProgram1);
-        glBindVertexArray(VAO_2);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+        for (int i = 0; i < 4; i++) {
+
+            glUseProgram(shaderProgram1);
+            glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+            glUniform3f(vertexCurrPosition, waters[i][0], waters[i][1], 0.0f);
+            glBindVertexArray(VAO_2);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            glBindVertexArray(0);
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
