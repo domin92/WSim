@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
     const OCL::Vec3 gridSize{3, 3, 1};
 
     // Create simulation
-    const OCL::Vec3 imageSize{100, 100, 1};
+    const OCL::Vec3 imageSize{100, 100, 3};
     const size_t borderWidth = 13;
     const PositionInGrid positionInGrid{gridId, gridSize};
     Simulation simulation{clPlatformIndex, clDeviceIndex, imageSize, borderWidth, positionInGrid};

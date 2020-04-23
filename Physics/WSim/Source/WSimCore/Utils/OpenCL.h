@@ -1,15 +1,17 @@
 #pragma once
 
 #define CL_TARGET_OPENCL_VERSION 120
+
+#include "Source/WSimCore/Utils/Error.h"
+
 #include <CL/cl.h>
-#include <assert.h>
 #include <iostream>
 #include <string>
 
 #define ASSERT_CL_SUCCESS(retVal)                   \
     if (retVal != CL_SUCCESS) {                     \
         std::cerr << "retVal = " << retVal << '\n'; \
-        assert(false);                              \
+        wsimError();                                \
     }
 
 #define DEFINE_RAII_WRAPPER(name, clType, releaseMethod) \

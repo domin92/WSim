@@ -1,13 +1,14 @@
 #include "SimulationStep.h"
 
 #include "Source/WSimCore/Simulation/Simulation.h"
+#include "Source/WSimCore/Utils/Error.h"
 
 SimulationStep::SimulationStep(Simulation &simulation, OCL::Vec3 &outputVelocitySize, OCL::Vec3 inputVelocitySize)
     : simulation(simulation),
       outputVelocitySize(outputVelocitySize),
       inputVelocitySize(inputVelocitySize) {
     // Simulation size can't be enlarged by the simulation step
-    assert(outputVelocitySize <= inputVelocitySize);
+    wsimErrorUnless(outputVelocitySize <= inputVelocitySize);
 
     // Input size of this step, will be use as an output size of previous steps, which will be constructed later
     // (steps are constructed from last to first)
@@ -109,7 +110,7 @@ void SimulationStepPressure::run(float deltaTime) {
     }
 
     // This should always be the last step, and it's output should not contain any borders, as that would be wasteful
-    assert(gws == simulation.getSimulationSize());
+    wsimErrorUnless(gws == simulation.getSimulationSize());
 
     // GWS is now smaller so we need a new offset
     velocityOffset = calculateBorderOffset(simulation.getSimulationSizeWithBorder(), gws, simulation.getPositionInGrid());

@@ -133,9 +133,7 @@ CommandQueue createCommandQueue(cl_context context, cl_device_id device) {
 Program createProgramFromFile(cl_device_id device, cl_context context, const std::string &sourceFilePath, bool compilationMustSuceed) {
     std::ifstream file(std::string{SHADERS_DIR} + "/" + sourceFilePath);
     if (!file.good()) {
-        if (compilationMustSuceed) {
-            assert(false);
-        }
+        wsimErrorIf(compilationMustSuceed);
         return {};
     }
 
@@ -161,9 +159,7 @@ Program createProgramFromSource(cl_device_id device, cl_context context, const s
         ASSERT_CL_SUCCESS(retVal);
 
         std::cerr << log.get() << '\n';
-        if (compilationMustSuceed) {
-            assert(false);
-        }
+        wsimErrorIf(compilationMustSuceed);
         return {};
     }
 

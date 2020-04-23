@@ -1,6 +1,6 @@
 #include "BorderMaths.h"
 
-#include <assert.h>
+#include "Source/WSimCore/Utils/Error.h"
 
 OCL::Vec3 increaseBorder(OCL::Vec3 simulationSize, PositionInGrid positionInGrid, int borderWidthChange) {
     const auto borderX = 2 - static_cast<int>(positionInGrid.edgeL) - static_cast<int>(positionInGrid.edgeR);
@@ -15,9 +15,9 @@ OCL::Vec3 increaseBorder(OCL::Vec3 simulationSize, PositionInGrid positionInGrid
 
 OCL::Vec3 decreaseBorder(OCL::Vec3 simulationSize, PositionInGrid positionInGrid, int borderWidthChange, OCL::Vec3 baseSimulationSize) {
     const OCL::Vec3 result = increaseBorder(simulationSize, positionInGrid, -borderWidthChange);
-    assert(baseSimulationSize.x <= result.x);
-    assert(baseSimulationSize.y <= result.y);
-    assert(baseSimulationSize.z <= result.z);
+    wsimErrorUnless(baseSimulationSize.x <= result.x);
+    wsimErrorUnless(baseSimulationSize.y <= result.y);
+    wsimErrorUnless(baseSimulationSize.z <= result.z);
     return result;
 }
 
@@ -31,8 +31,7 @@ OCL::Vec3 calculateBorderOffset(OCL::Vec3 totalSize, OCL::Vec3 usedSize, Positio
     const auto calcualateOffsetComponent = [](bool edgeLower, bool edgeHigher, size_t borderSize) -> size_t {
         if (edgeLower) {
             return 0;
-        }
-        else {
+        } else {
             return borderSize / (2 - static_cast<size_t>(edgeHigher));
         }
     };
