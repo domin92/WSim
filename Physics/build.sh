@@ -19,8 +19,8 @@ function getParameters() {
     function printHelp() (
         echo "Usage: build.sh [options]"
         echo "Options:"
-        echo "  -a <x86|x64>        - select architecture"
-        echo "  -c <Debug|Release>  - select configuration"
+        echo "  -a <x86|x64>        - select architecture (default: x64)"
+        echo "  -c <Debug|Release>  - select configuration (default: Debug)"
         echo "  -d                  - do not compile dependencies automatically"
         echo "  -w                  - do not compile WSim automatically"
         echo "  -u                  - do not update git dependencies automatically"
