@@ -24,6 +24,7 @@ macro(get_sources VARIABLE)
         "${SOURCE_DIR}/*.cpp"
         "${SOURCE_DIR}/*.cl"
         "${SOURCE_DIR}/*.c"
+		"${SOURCE_DIR}/*.glsl"
     )
     source_group (TREE ${SOURCE_DIR} FILES ${${VARIABLE}})
 endmacro()
