@@ -12,11 +12,12 @@ struct AdvectionKernelTest : KernelTest {
         auto velocitySrc = OCL::createReadWriteImage3D(context, imageSize, vectorFieldFormat);
         auto velocityDst = OCL::createReadWriteImage3D(context, imageSize, vectorFieldFormat);
         OCL::enqueueWriteImage3D(queue, velocitySrc, CL_FALSE, imageSize, inputData);
-        OCL::setKernelArgMem(kernelAdvection, 0, velocitySrc); // inField
-        OCL::setKernelArgMem(kernelAdvection, 1, velocitySrc); // inVelocity
-        OCL::setKernelArgFlt(kernelAdvection, 2, deltaTime);   // inDeltaTime
-        OCL::setKernelArgFlt(kernelAdvection, 3, 1.f);         // inDissipation
-        OCL::setKernelArgMem(kernelAdvection, 4, velocityDst); // outField
+        OCL::setKernelArgMem(kernelAdvection, 0, velocitySrc);   // inField
+        OCL::setKernelArgMem(kernelAdvection, 1, velocitySrc);   // inVelocity
+        OCL::setKernelArgVec(kernelAdvection, 2, 0.f, 0.f, 0.f); // inVelocityOffset
+        OCL::setKernelArgFlt(kernelAdvection, 3, deltaTime);     // inDeltaTime
+        OCL::setKernelArgFlt(kernelAdvection, 4, 1.f);           // inDissipation
+        OCL::setKernelArgMem(kernelAdvection, 5, velocityDst);   // outField
         OCL::enqueueKernel3D(queue, kernelAdvection, imageSize);
 
         const auto requiredBufferSize = imageSize.getRequiredBufferSize(4u);
