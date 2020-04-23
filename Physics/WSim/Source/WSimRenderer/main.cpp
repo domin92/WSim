@@ -1,7 +1,9 @@
+// clang-format off
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <fstream>
 #include <iostream>
+// clang-format on
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -44,7 +46,6 @@ int main() {
     //SHADERS
     int success;
     char infoLog[512];
-    
 
     std::string shaderCode = loadShader("..\\..\\..\\..\\..\\WSim\\Source\\WSimRenderer\\Shaders\\Vertex\\vertexShader1.glsl");
     const char *vertexShaderSource = shaderCode.c_str();
@@ -54,7 +55,6 @@ int main() {
 
     std::string shaderCode3 = loadShader("..\\..\\..\\..\\..\\WSim\\Source\\WSimRenderer\\Shaders\\Fragment\\fragmentShader2.glsl");
     const GLchar *fragmentShaderSource2 = shaderCode3.c_str();
-
 
     unsigned int vertexShader;
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -129,10 +129,10 @@ int main() {
     //------------------------------------------------------------------------------
     // VAO - Vertax Array Object 2     -   VBO x2 and EBO x1
     float vertices_ebo[] = {
-        0.0f, 0.0f, 0.0f,   // top right
-        0.0f, -1.0f, 0.0f,  // bottom right
-        -1.0f, -1.0f, 0.0f, // bottom left
-        -1.0f, 0.0f, 0.0f   // top left
+        0.2f, 0.2f, 0.0f,  // top right
+        0.2f, 0.0f, 0.0f,  // bottom right
+        0.0f, 00.0f, 0.0f, // bottom left
+        0.0f, 0.2f, 0.0f   // top left
     };
     unsigned int indices_ebo[] = {
         // note that we start from 0!
@@ -182,12 +182,12 @@ int main() {
         //triangle #1
         glUseProgram(shaderProgram1);
         glBindVertexArray(VAO_1);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
 
         //triangle #2
         glUseProgram(shaderProgram2);
         glBindVertexArray(VAO_2);
-        glDrawArrays(GL_TRIANGLES, 4, 3);
+        //glDrawArrays(GL_TRIANGLES, 4, 3);
 
         //square #1
         glUseProgram(shaderProgram1);
