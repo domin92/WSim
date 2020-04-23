@@ -1,5 +1,5 @@
 if (MPI_FOUND)
-    # Define WSimMPI - a water simulation done locally, using only one computer (no MPI involved).
+    # Define WSimMPI - an MPI executable conducting the simulation
     get_sources(SOURCE_FILES)
     add_executable(${TARGET_WSIM_MPI} ${SOURCE_FILES})
     add_dependencies(${TARGET_WSIM_MPI} ${TARGET_WSIM_CORE_LIB})
@@ -14,6 +14,8 @@ if (MPI_FOUND)
         ${MPI_INCLUDE_PATH}
     )
     set_target_properties(${TARGET_WSIM_MPI} PROPERTIES CXX_STANDARD 17)
+
+    # MPI settings
     if(MPI_COMPILE_FLAGS)
         set_target_properties(${TARGET_WSIM_MPI} PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
     endif()

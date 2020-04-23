@@ -13,7 +13,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# Helper macro
+# Helper macro for selecting all sources recursively and accumulating them in a variable
 macro(get_sources VARIABLE)
     set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
     file(GLOB_RECURSE ${VARIABLE}

@@ -8,5 +8,5 @@ target_link_libraries(${TARGET_WSIM_RENDERER}
 )
 set_target_properties(${TARGET_WSIM_RENDERER} PROPERTIES CXX_STANDARD 17)
 
-# Generate run_standalone.sh script
+# Generate run_renderer.sh script
 file(GENERATE OUTPUT ${DIR_ROOT}/run_renderer.sh CONTENT "$<TARGET_FILE:${TARGET_WSIM_RENDERER}> $@")

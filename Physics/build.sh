@@ -108,6 +108,6 @@ if [ "$build_wsim" == 1 ]; then
 fi
 
 # CMake created run.sh script, set execute permissions
-chmod +x run_standalone.sh
-if [ -e run_mpi.sh ]; then chmod +x run_mpi.sh; fi
-chmod +x run_renderer.sh
+chmod +x run_standalone.sh  2>/dev/null
+chmod +x run_mpi.sh         2>/dev/null
+chmod +x run_renderer.sh    2>/dev/null
