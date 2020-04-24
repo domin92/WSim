@@ -1,8 +1,12 @@
-#include<cstdlib>
-#include<mpi.h>
-#include<iostream>
-
-#include "master.hpp"
+// clang-format off
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <fstream>
+#include <cstdlib>
+#include <mpi.h>
+#include <iostream>
+#include "Master.hpp"
+// clang-format on
 
 Master::Master(int proc_count, int grid_size, int node_size) {
 
@@ -12,7 +16,7 @@ Master::Master(int proc_count, int grid_size, int node_size) {
 
     node_volume = node_size * node_size * node_size;
 
-    main_buffer = new char[proc_count*node_volume];
+    main_buffer = new char[proc_count * node_volume];
 
     mapped_buffer = new char *[proc_count - 1];
 
@@ -34,9 +38,26 @@ void Master::receive_from_nodes() {
     MPI_Gather(MPI_IN_PLACE, 0, MPI_CHAR, main_buffer, node_volume, MPI_CHAR, 0, MPI_COMM_WORLD);
 }
 
+void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
+void processInput(GLFWwindow *window) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+}
+
+std::string loadShader(std::string path) {
+    std::ifstream ifs(path);
+    std::string content((std::istreambuf_iterator<char>(ifs)),
+                        (std::istreambuf_iterator<char>()));
+
+    return content;
+}
+
 void Master::main() {
 
-    for (int z = 0; z < node_size*grid_size; z++) {
+    for (int z = 0; z < node_size * grid_size; z++) {
         for (int y = 0; y < node_size * grid_size; y++) {
             for (int x = 0; x < node_size * grid_size; x++) {
 
@@ -52,7 +73,7 @@ void Master::main() {
 
                 int r = rand() % 100;
 
-                if (r > 50) {
+                if (r > 40) {
                     mapped_buffer[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node] = 1;
                 }
             }
@@ -61,36 +82,163 @@ void Master::main() {
 
     send_to_nodes();
 
-    while (true) {
+    // init OpenGL
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    int screen_size = 1000;
+
+    GLFWwindow *window = glfwCreateWindow(screen_size, screen_size, "WSim", NULL, NULL);
+    if (window == NULL) {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return;
+    }
+
+    glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return;
+    }
+
+    //SHADERS
+    int success;
+    char infoLog[512];
+
+    std::string shaderCode = loadShader("..\\..\\..\\..\\WSim\\Source\\WSimMPI\\Shaders\\Vertex.glsl");
+    const char *vertexShaderSource = shaderCode.c_str();
+
+    std::string shaderCode2 = loadShader("..\\..\\..\\..\\WSim\\Source\\WSimMPI\\Shaders\\Fragment.glsl");
+    const GLchar *fragmentShaderSource = shaderCode2.c_str();
+
+    unsigned int vertexShader;
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    unsigned int fragmentShader;
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    unsigned int shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    glGetShaderiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(shaderProgram, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    //------------------------------------------------------------------------------
+    // VAO - Vertax Array Object
+
+    float vertices[] = {
+        0.1f, 0.1f, 0.0f,
+        0.1f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.1f, 0.0f,
+    };
+
+    unsigned int indices[] = {
+        0, 1, 3,
+        1, 2, 3
+    };
+
+    unsigned int VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    //position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
+
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // WSim specific -------------------------
+
+    int vertexCurrPosition = glGetUniformLocation(shaderProgram, "position");
+
+    glUseProgram(shaderProgram);
+    glBindVertexArray(VAO);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    while (!glfwWindowShouldClose(window)) {
 
         receive_from_nodes();
 
-        for (int i = 0; i < /*grid_size*/1; i++) {
-            for (int j = 0; j < grid_size; j++) {
-                for (int k = 0; k < grid_size; k++) {
+        processInput(window);
 
-                    for (int z = 0; z < /*node_size*/1; z++) {
-                        for (int y = 0; y < node_size; y++) {
-                            for (int x = 0; x < node_size; x++) {
+        glClear(GL_COLOR_BUFFER_BIT);
 
-                                int idx = i * grid_size * grid_size + j * grid_size + k;
+      
 
-                                int power = mapped_buffer[idx][z * node_size * node_size + y * node_size + x];
+        for (int z = 0; z < 1; z++) {
+            for (int y = 0; y < node_size * grid_size; y++) {
+                for (int x = 0; x < node_size * grid_size; x++) {
 
-                                int color = ((63 * power) / (grid_size * node_size + 60)) * ((i * node_size) + z + 60);
+                    int z_in_node = z % node_size;
+                    int y_in_node = y % node_size;
+                    int x_in_node = x % node_size;
 
-                                if (power > 0) {
-                                    std::cout << "#";
-                                } else {
-                                    std::cout << " ";
-                                }
-                            }
-                            std::cout << "\n";
-                        }
-                    }
+                    int z_in_grid = z / node_size;
+                    int y_in_grid = y / node_size;
+                    int x_in_grid = x / node_size;
+
+                    int idx = z_in_grid * grid_size * grid_size + y_in_grid * grid_size + x_in_grid;
+
+
+                    int power = mapped_buffer[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node];
+                    
+
+                    if (power > 0) {
+
+                        glUniform3f(vertexCurrPosition, (x - (node_size * grid_size) / 2) * 0.1f, (y - (node_size * grid_size) / 2) * 0.1f, 0.0f);
+                        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                    } 
+
                 }
             }
         }
 
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+
     }
+
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glfwTerminate();
+
+    MPI_Abort(MPI_COMM_WORLD, 0);
 }

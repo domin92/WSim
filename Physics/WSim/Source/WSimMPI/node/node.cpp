@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <mpi.h>
 #include <iostream>
-#include "node.hpp"
+#include "Node.hpp"
 
 Node::Node(int rank, int grid_size, int node_size) {
     this->rank = rank;

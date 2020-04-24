@@ -8,10 +8,16 @@ if (MPI_FOUND)
         ${TARGET_WSIM_CORE_LIB}
         $<GENEX_EVAL:$<TARGET_PROPERTY:${TARGET_WSIM_CORE_LIB},LINK_LIBRARIES>>
         $<TARGET_PROPERTY:freeglut_static,LINK_LIBRARIES>
+    	$<TARGET_PROPERTY:glfw,LINK_LIBRARIES>
+    	$<TARGET_PROPERTY:glad,LINK_LIBRARIES>
+    	$<TARGET_FILE:glfw>
+    	$<TARGET_FILE:glad>
     )
     target_include_directories(${TARGET_WSIM_MPI} PRIVATE 
         $<TARGET_PROPERTY:${TARGET_WSIM_CORE_LIB},INCLUDE_DIRECTORIES> 
         ${MPI_INCLUDE_PATH}
+	.
+	${DIR_GLFW}/include ${DIR_GLAD}/include ${DIR_STB}
     )
     set_target_properties(${TARGET_WSIM_MPI} PROPERTIES CXX_STANDARD 17)
 

@@ -1,7 +1,7 @@
 #include<mpi.h>
 
-#include"node/node.hpp"
-#include"master/master.hpp"
+#include "Node/Node.hpp"
+#include "Master/Master.hpp"
 
 using namespace std;
 

@@ -1,6 +1,11 @@
 #ifndef MASTER_HPP
 #define MASTER_HPP
 
+// clang-format off
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+// clang-format on
+
 class Master{
 
 	int grid_size;
