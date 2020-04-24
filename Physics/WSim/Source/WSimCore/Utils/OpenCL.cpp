@@ -220,6 +220,11 @@ void enqueueReadImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blo
     ASSERT_CL_SUCCESS(retVal);
 }
 
+void enqueueWriteImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 origin, Vec3 imageSize, const void *data) {
+    cl_int retVal = clEnqueueWriteImage(commandQueue, image, blocking, origin.ptr, imageSize.ptr, 0, 0, data, 0, nullptr, nullptr);
+    ASSERT_CL_SUCCESS(retVal);
+}
+
 void enqueueWriteImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, const void *data) {
     Vec3 zeros{};
     cl_int retVal = clEnqueueWriteImage(commandQueue, image, blocking, zeros.ptr, imageSize.ptr, 0, 0, data, 0, nullptr, nullptr);

@@ -107,6 +107,7 @@ void setKernelArgInt(cl_kernel kernel, cl_uint argIndex, int arg);
 void enqueueReadImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, void *outPtr);
 void enqueueReadImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 origin, Vec3 size, void *outPtr);
 void enqueueWriteImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 imageSize, const void *data);
+void enqueueWriteImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool blocking, Vec3 origin, Vec3 imageSize, const void *data);
 void enqueueZeroImage3D(cl_command_queue queue, cl_mem image, Vec3 imageSize);
 
 // Misc
