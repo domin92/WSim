@@ -31,6 +31,8 @@ Master::Master(int proc_count, int grid_size, int node_size) {
     this->grid_size = grid_size;
     this->node_size = node_size;
 
+    full_size = node_size * grid_size;
+
     node_volume = node_size * node_size * node_size;
 
     main_buffer = new char[proc_count * node_volume];
@@ -40,6 +42,8 @@ Master::Master(int proc_count, int grid_size, int node_size) {
     for (int i = 0; i < proc_count - 1; i++) {
         mapped_buffer[i] = main_buffer + (i + 1) * node_volume;
     }
+
+    pixel_size = 2.0f / (float)full_size;
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -123,6 +127,23 @@ void Master::load_shaders() {
 }
 
 void Master::load_buffers() {
+
+    float squareVertices[] = {
+        1.0f, 1.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+    };
+
+    for (int i = 0; i < 12; i++) {
+        squareVertices[i] *= pixel_size;
+    }
+
+    unsigned int squareIndices[] = {
+        0, 1, 3,
+        1, 2, 3
+    };
+
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -136,6 +157,7 @@ void Master::load_buffers() {
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
+
 }
 
 void Master::send_to_nodes() {
@@ -148,9 +170,9 @@ void Master::receive_from_nodes() {
 
 void Master::main() {
 
-    for (int z = 0; z < node_size * grid_size; z++) {
-        for (int y = 0; y < node_size * grid_size; y++) {
-            for (int x = 0; x < node_size * grid_size; x++) {
+    for (int z = 0; z < full_size; z++) {
+        for (int y = 0; y < full_size; y++) {
+            for (int x = 0; x < full_size; x++) {
 
                 int z_in_node = z % node_size;
                 int y_in_node = y % node_size;
@@ -189,8 +211,8 @@ void Master::main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         for (int z = 0; z < 1; z++) {
-            for (int y = 0; y < node_size * grid_size; y++) {
-                for (int x = 0; x < node_size * grid_size; x++) {
+            for (int y = 0; y < full_size; y++) {
+                for (int x = 0; x < full_size; x++) {
 
                     int z_in_node = z % node_size;
                     int y_in_node = y % node_size;
@@ -205,7 +227,7 @@ void Master::main() {
                     int power = mapped_buffer[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node];
                     
                     if (power > 0) {
-                        glUniform3f(positionUniformLocation, (x - (node_size * grid_size) / 2) * 0.1f, (y - (node_size * grid_size) / 2) * 0.1f, 0.0f);
+                        glUniform3f(positionUniformLocation, (x - full_size / 2) * pixel_size, (y - full_size / 2) * pixel_size, 0.0f);
                         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
                     } 
 

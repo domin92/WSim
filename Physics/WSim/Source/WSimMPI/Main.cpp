@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
 	
 	int grid_size = my_cbrt(proc_count-1);
-	int node_size = 20 / grid_size;
+	int node_size = 100 / grid_size;
 	
 	if(my_rank==0){
 		Master master(proc_count, grid_size, node_size);

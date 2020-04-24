@@ -12,6 +12,7 @@ class Master{
 	int node_size;
 	int proc_count;
     int node_volume;
+    int full_size;
 
 	char** mapped_buffer;
 	char* main_buffer;
@@ -20,23 +21,12 @@ class Master{
 	void send_to_nodes();
 
     int screen_size;
+    float pixel_size;
     GLFWwindow *window;
 
     void load_shaders();
     unsigned int shaderProgram;
     int positionUniformLocation;
-
-    float squareVertices[12] = {
-        0.1f, 0.1f, 0.0f,
-        0.1f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 0.1f, 0.0f,
-    };
-
-    unsigned int squareIndices[6] = {
-        0, 1, 3,
-        1, 2, 3
-    };
 
     void load_buffers();
     unsigned int VAO, VBO, EBO;
