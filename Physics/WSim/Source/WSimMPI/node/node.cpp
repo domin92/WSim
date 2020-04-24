@@ -508,7 +508,7 @@ void Node::iter() {
 
 				// 3D CA rules - Amoeba (9-26/5-7,12-13,15/5/M)
 				if (input_array[z][y][x] == 0) {
-					if ((val >= 5 && val <=7) || (val == 12 || val == 12) || (val == 15) ) {
+					if ((val >= 5 && val <=7) || val == 12 || val == 13 || val == 15 ) {
 						output_array[z][y][x] = 4;
 					}
 					else {

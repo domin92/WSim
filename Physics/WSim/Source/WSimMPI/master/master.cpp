@@ -1,6 +1,4 @@
 // clang-format off
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <fstream>
 #include <cstdlib>
 #include <mpi.h>
@@ -9,8 +7,9 @@
 // clang-format on
 
 void processInput(GLFWwindow *window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    }
 }
 
 std::string loadShader(std::string path) {
@@ -45,6 +44,20 @@ Master::Master(int proc_count, int grid_size, int node_size) {
 
     pixel_size = 2.0f / (float)full_size;
 
+    // MVP 
+    glm::mat4 Projection = glm::perspective(glm::radians(80.0f), (float)screen_size / (float)screen_size, 0.1f, 100.0f);
+
+    glm::mat4 View = glm::lookAt(
+        glm::vec3(1.5f, 1.5f, 2.5f), // Camera is at (4,3,3), in World Space
+        glm::vec3(0, 0, 0),       // and looks at the origin
+        glm::vec3(0, 1, 0)        // Head is up (set to 0,-1,0 to look upside-down)
+    );
+
+    glm::mat4 Model = glm::mat4(1.0f);
+
+    mvp = Projection * View * Model;
+
+    // OpenGL
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -124,11 +137,12 @@ void Master::load_shaders() {
     glDeleteShader(fragmentShader);
 
     positionUniformLocation = glGetUniformLocation(shaderProgram, "position");
+    mvpUniformLocation = glGetUniformLocation(shaderProgram, "MVP");
 }
 
 void Master::load_buffers() {
 
-    float squareVertices[] = {
+    float squareVertices[12] = {
         1.0f, 1.0f, 0.0f,
         1.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 0.0f,
@@ -139,10 +153,42 @@ void Master::load_buffers() {
         squareVertices[i] *= pixel_size;
     }
 
-    unsigned int squareIndices[] = {
+    unsigned int squareIndices[6] = {
         0, 1, 3,
         1, 2, 3
     };
+
+    float cubeVertices[24] = {
+        1.0, -1.0, -1.0,
+        1.0, -1.0, 1.0,
+        -1.0, -1.0, 1.0,
+        -1.0, -1.0, -1.0,
+        1.0, 1.0, -1.0,
+        1.0, 1.0, 1.0,
+        -1.0, 1.0, 1.0,
+        -1.0, 1.0, -1.0
+    };
+
+    for (int i = 0; i < 24; i++) {
+        cubeVertices[i] += 1.0f;
+        cubeVertices[i] *= 0.5f;
+        cubeVertices[i] *= pixel_size;
+    }
+
+    unsigned int cubeIndices[36] = {
+        1, 2, 4,
+        2, 3, 4,
+        5, 8, 6,
+        8, 7, 6,
+        3, 7, 4,
+        7, 8, 4,
+        1, 5, 2,
+        5, 6, 2,
+        5, 1, 8,
+        1, 4, 8,
+        2, 6, 3,
+        6, 7, 3
+    };   
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -151,9 +197,9 @@ void Master::load_buffers() {
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(squareVertices), squareVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(squareIndices), squareIndices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
@@ -201,6 +247,7 @@ void Master::main() {
 
     glUseProgram(shaderProgram);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glUniformMatrix4fv(mvpUniformLocation, 1, GL_FALSE, &mvp[0][0]);
 
     while (!glfwWindowShouldClose(window)) {
 
@@ -210,7 +257,7 @@ void Master::main() {
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        for (int z = 0; z < 1; z++) {
+        for (int z = 0; z < full_size; z++) {
             for (int y = 0; y < full_size; y++) {
                 for (int x = 0; x < full_size; x++) {
 
@@ -227,8 +274,8 @@ void Master::main() {
                     int power = mapped_buffer[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node];
                     
                     if (power > 0) {
-                        glUniform3f(positionUniformLocation, (x - full_size / 2) * pixel_size, (y - full_size / 2) * pixel_size, 0.0f);
-                        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                        glUniform3f(positionUniformLocation, (x - full_size / 2) * pixel_size, (y - full_size / 2) * pixel_size, (z - full_size / 2) * pixel_size);
+                        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
                     } 
 
                 }
