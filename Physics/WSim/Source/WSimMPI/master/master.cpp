@@ -8,6 +8,23 @@
 #include "Master.hpp"
 // clang-format on
 
+void processInput(GLFWwindow *window) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+}
+
+std::string loadShader(std::string path) {
+    std::ifstream ifs(path);
+    std::string content((std::istreambuf_iterator<char>(ifs)),
+                        (std::istreambuf_iterator<char>()));
+
+    return content;
+}
+
+void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
 Master::Master(int proc_count, int grid_size, int node_size) {
 
     this->proc_count = proc_count;
@@ -23,78 +40,19 @@ Master::Master(int proc_count, int grid_size, int node_size) {
     for (int i = 0; i < proc_count - 1; i++) {
         mapped_buffer[i] = main_buffer + (i + 1) * node_volume;
     }
-}
 
-Master::~Master() {
-    delete[] mapped_buffer;
-    delete[] main_buffer;
-}
-
-void Master::send_to_nodes() {
-    MPI_Scatter(main_buffer, node_volume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
-}
-
-void Master::receive_from_nodes() {
-    MPI_Gather(MPI_IN_PLACE, 0, MPI_CHAR, main_buffer, node_volume, MPI_CHAR, 0, MPI_COMM_WORLD);
-}
-
-void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
-
-void processInput(GLFWwindow *window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
-
-std::string loadShader(std::string path) {
-    std::ifstream ifs(path);
-    std::string content((std::istreambuf_iterator<char>(ifs)),
-                        (std::istreambuf_iterator<char>()));
-
-    return content;
-}
-
-void Master::main() {
-
-    for (int z = 0; z < node_size * grid_size; z++) {
-        for (int y = 0; y < node_size * grid_size; y++) {
-            for (int x = 0; x < node_size * grid_size; x++) {
-
-                int z_in_node = z % node_size;
-                int y_in_node = y % node_size;
-                int x_in_node = x % node_size;
-
-                int z_in_grid = z / node_size;
-                int y_in_grid = y / node_size;
-                int x_in_grid = x / node_size;
-
-                int idx = z_in_grid * grid_size * grid_size + y_in_grid * grid_size + x_in_grid;
-
-                int r = rand() % 100;
-
-                if (r > 40) {
-                    mapped_buffer[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node] = 1;
-                }
-            }
-        }
-    }
-
-    send_to_nodes();
-
-    // init OpenGL
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    int screen_size = 1000;
+    screen_size = 1000;
 
-    GLFWwindow *window = glfwCreateWindow(screen_size, screen_size, "WSim", NULL, NULL);
+    window = glfwCreateWindow(screen_size, screen_size, "WSim", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
-        return;
+        MPI_Abort(MPI_COMM_WORLD, 0);
     }
 
     glfwMakeContextCurrent(window);
@@ -102,10 +60,23 @@ void Master::main() {
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
-        return;
+        MPI_Abort(MPI_COMM_WORLD, 0);
     }
 
-    //SHADERS
+}
+
+Master::~Master() {
+    delete[] mapped_buffer;
+    delete[] main_buffer;
+
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glfwTerminate();
+
+    MPI_Abort(MPI_COMM_WORLD, 0);
+}
+
+void Master::load_shaders() {
     int success;
     char infoLog[512];
 
@@ -135,7 +106,7 @@ void Master::main() {
         std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 
-    unsigned int shaderProgram = glCreateProgram();
+    shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
@@ -148,22 +119,10 @@ void Master::main() {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    //------------------------------------------------------------------------------
-    // VAO - Vertax Array Object
+    positionUniformLocation = glGetUniformLocation(shaderProgram, "position");
+}
 
-    float vertices[] = {
-        0.1f, 0.1f, 0.0f,
-        0.1f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 0.1f, 0.0f,
-    };
-
-    unsigned int indices[] = {
-        0, 1, 3,
-        1, 2, 3
-    };
-
-    unsigned int VAO, VBO, EBO;
+void Master::load_buffers() {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -171,26 +130,54 @@ void Master::main() {
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(squareVertices), squareVertices, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(squareIndices), squareIndices, GL_STATIC_DRAW);
 
-    //position
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
+}
 
-    // set the texture wrapping/filtering options (on the currently bound texture object)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+void Master::send_to_nodes() {
+    MPI_Scatter(main_buffer, node_volume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
+}
 
-    // WSim specific -------------------------
+void Master::receive_from_nodes() {
+    MPI_Gather(MPI_IN_PLACE, 0, MPI_CHAR, main_buffer, node_volume, MPI_CHAR, 0, MPI_COMM_WORLD);
+}
 
-    int vertexCurrPosition = glGetUniformLocation(shaderProgram, "position");
+void Master::main() {
+
+    for (int z = 0; z < node_size * grid_size; z++) {
+        for (int y = 0; y < node_size * grid_size; y++) {
+            for (int x = 0; x < node_size * grid_size; x++) {
+
+                int z_in_node = z % node_size;
+                int y_in_node = y % node_size;
+                int x_in_node = x % node_size;
+
+                int z_in_grid = z / node_size;
+                int y_in_grid = y / node_size;
+                int x_in_grid = x / node_size;
+
+                int idx = z_in_grid * grid_size * grid_size + y_in_grid * grid_size + x_in_grid;
+
+                int r = rand() % 100;
+
+                if (r > 40) {
+                    mapped_buffer[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node] = 1;
+                }
+            }
+        }
+    }
+
+    send_to_nodes();
+
+    load_shaders();
+
+    load_buffers();
 
     glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     while (!glfwWindowShouldClose(window)) {
@@ -200,8 +187,6 @@ void Master::main() {
         processInput(window);
 
         glClear(GL_COLOR_BUFFER_BIT);
-
-      
 
         for (int z = 0; z < 1; z++) {
             for (int y = 0; y < node_size * grid_size; y++) {
@@ -217,13 +202,10 @@ void Master::main() {
 
                     int idx = z_in_grid * grid_size * grid_size + y_in_grid * grid_size + x_in_grid;
 
-
                     int power = mapped_buffer[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node];
                     
-
                     if (power > 0) {
-
-                        glUniform3f(vertexCurrPosition, (x - (node_size * grid_size) / 2) * 0.1f, (y - (node_size * grid_size) / 2) * 0.1f, 0.0f);
+                        glUniform3f(positionUniformLocation, (x - (node_size * grid_size) / 2) * 0.1f, (y - (node_size * grid_size) / 2) * 0.1f, 0.0f);
                         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
                     } 
 
@@ -236,9 +218,4 @@ void Master::main() {
 
     }
 
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glfwTerminate();
-
-    MPI_Abort(MPI_COMM_WORLD, 0);
 }
