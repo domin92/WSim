@@ -492,7 +492,7 @@ void Node::iter() {
 
                 int val = 0;
 
-                /*
+                
 				// sum 26 neighbours
 				for (int i = -1; i <= 1; i++) {
 					for (int j = -1; j <= 1; j++) {
@@ -522,9 +522,9 @@ void Node::iter() {
 					else {
 						output_array[z][y][x] = 0;
 					}
-				}*/
+				}
 
-                for (int i = -1; i <= 1; i++) {
+                /*for (int i = -1; i <= 1; i++) {
                     for (int j = -1; j <= 1; j++) {
                         if (i == 0 && j == 0) {
                             continue;
@@ -546,7 +546,7 @@ void Node::iter() {
                     } else {
                         output_array[z][y][x] = 0;
                     }
-                }
+                }*/
             }
         }
     }
