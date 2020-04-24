@@ -13,7 +13,7 @@ __kernel void addVelocity(__read_only image3d_t inVelocity,
 
     // Calculate change of velocity to be applied
     const float distance = length(convert_float4(threadPosition) - inCenter);
-    const float4 velocityChange = -inVelocityChange * exp(-distance / inRadius);
+    const float4 velocityChange = inVelocityChange * exp(-distance / inRadius);
 
     // Write to output buffer
     float4 newVelocity = currentVelocity + velocityChange;

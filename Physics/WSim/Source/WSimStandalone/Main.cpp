@@ -66,8 +66,8 @@ void mouseMove(int mouseX, int mouseY) {
     }
 
     // Calculate the mouse movement and abort if mouse did not move
-    const float deltaX = OGL::renderData.lastMouseX - x;
-    const float deltaY = OGL::renderData.lastMouseY - y;
+    const float deltaX = x - OGL::renderData.lastMouseX;
+    const float deltaY = y - OGL::renderData.lastMouseY;
     OGL::renderData.lastMouseX = x;
     OGL::renderData.lastMouseY = y;
     if (deltaX == 0 && deltaY == 0) {

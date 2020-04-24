@@ -49,11 +49,11 @@ void Simulation::applyForce(float positionX, float positionY, float changeX, flo
     changeX *= simulationSize.x * coefficient;
     changeY *= simulationSize.y * coefficient;
 
-    OCL::setKernelArgMem(kernelAddVelocity, 0, velocity.getSource());    // inVelocity
-    OCL::setKernelArgVec(kernelAddVelocity, 1, positionX, positionY, 0); // inCenter
-    OCL::setKernelArgVec(kernelAddVelocity, 2, changeX, changeY, 0);     // inVelocityChange
-    OCL::setKernelArgFlt(kernelAddVelocity, 3, radius);                  // inRadius
-    OCL::setKernelArgMem(kernelAddVelocity, 4, velocity.getDestinationAndSwap());
+    OCL::setKernelArgMem(kernelAddVelocity, 0, velocity.getSource());             // inVelocity
+    OCL::setKernelArgVec(kernelAddVelocity, 1, positionX, positionY, 0);          // inCenter
+    OCL::setKernelArgVec(kernelAddVelocity, 2, changeX, changeY, 0);              // inVelocityChange
+    OCL::setKernelArgFlt(kernelAddVelocity, 3, radius);                           // inRadius
+    OCL::setKernelArgMem(kernelAddVelocity, 4, velocity.getDestinationAndSwap()); // outVelocity
     OCL::enqueueKernel3D(commandQueue, kernelAddVelocity, simulationSizeWithBorder);
 }
 
