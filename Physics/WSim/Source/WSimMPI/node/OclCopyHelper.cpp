@@ -1,4 +1,4 @@
-#include "OpenCLCopies.h"
+#include "OclCopyHelper.h"
 
 #include "Source/WSimCore/Utils/Error.h"
 
