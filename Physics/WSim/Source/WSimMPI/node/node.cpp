@@ -47,6 +47,32 @@ Node::Node(int rank, int grid_size, int node_size) {
     sh_corner_BDR_in = new char[sh_corner_size];
     sh_corner_BDR_out = new char[sh_corner_size];
 
+    sh_edge_size = share_thickness * share_thickness * node_size;
+    sh_edge_UL_in = new char[sh_edge_size];
+    sh_edge_UL_out = new char[sh_edge_size];
+    sh_edge_UR_in = new char[sh_edge_size];
+    sh_edge_UR_out = new char[sh_edge_size];
+    sh_edge_DL_in = new char[sh_edge_size];
+    sh_edge_DL_out = new char[sh_edge_size];
+    sh_edge_DR_in = new char[sh_edge_size];
+    sh_edge_DR_out = new char[sh_edge_size];
+    sh_edge_FL_in = new char[sh_edge_size];
+    sh_edge_FL_out = new char[sh_edge_size];
+    sh_edge_FR_in = new char[sh_edge_size];
+    sh_edge_FR_out = new char[sh_edge_size];
+    sh_edge_FU_in = new char[sh_edge_size];
+    sh_edge_FU_out = new char[sh_edge_size];
+    sh_edge_FD_in = new char[sh_edge_size];
+    sh_edge_FD_out = new char[sh_edge_size];
+    sh_edge_BL_in = new char[sh_edge_size];
+    sh_edge_BL_out = new char[sh_edge_size];
+    sh_edge_BR_in = new char[sh_edge_size];
+    sh_edge_BR_out = new char[sh_edge_size];
+    sh_edge_BU_in = new char[sh_edge_size];
+    sh_edge_BU_out = new char[sh_edge_size];
+    sh_edge_BD_in = new char[sh_edge_size];
+    sh_edge_BD_out = new char[sh_edge_size];
+
     adjusted_rank = rank - 1;
 
     // Calculating node position in 3D space - VERY IMPORTANT!
@@ -132,6 +158,30 @@ Node::~Node() {
     delete[] sh_corner_BDL_out;
     delete[] sh_corner_BDR_in;
     delete[] sh_corner_BDR_out;
+    delete[] sh_edge_UL_in;
+    delete[] sh_edge_UL_out;
+    delete[] sh_edge_UR_in;
+    delete[] sh_edge_UR_out;
+    delete[] sh_edge_DL_in;
+    delete[] sh_edge_DL_out;
+    delete[] sh_edge_DR_in;
+    delete[] sh_edge_DR_out;
+    delete[] sh_edge_FL_in;
+    delete[] sh_edge_FL_out;
+    delete[] sh_edge_FR_in;
+    delete[] sh_edge_FR_out;
+    delete[] sh_edge_FU_in;
+    delete[] sh_edge_FU_out;
+    delete[] sh_edge_FD_in;
+    delete[] sh_edge_FD_out;
+    delete[] sh_edge_BL_in;
+    delete[] sh_edge_BL_out;
+    delete[] sh_edge_BR_in;
+    delete[] sh_edge_BR_out;
+    delete[] sh_edge_BU_in;
+    delete[] sh_edge_BU_out;
+    delete[] sh_edge_BD_in;
+    delete[] sh_edge_BD_out;
 
     delete[] send_array;
 
@@ -146,6 +196,18 @@ Node::~Node() {
 
     delete[] array[0];
     delete[] array[1];
+}
+
+bool Node::node_in_grid(int x, int y, int z) {
+    // Returns true if neighbour node is withing grid
+    bool x_in_grid = x_pos_in_grid + x >= 0 & x_pos_in_grid + x < grid_size;
+    bool y_in_grid = y_pos_in_grid + y >= 0 & y_pos_in_grid + y < grid_size;
+    bool z_in_grid = z_pos_in_grid + z >= 0 & z_pos_in_grid + z < grid_size;
+    return x_in_grid & y_in_grid & z_in_grid;
+}
+
+int Node::rank_with_offset(int x, int y, int z) {
+    return rank + z * grid_size * grid_size + y * grid_size + x;
 }
 
 void Node::share_vertical() {
@@ -275,11 +337,173 @@ void Node::share_depth() {
             MPI_Send(sh_depth_F_out, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD);
         }
     }
+
 }
 
 void Node::share_corners() {
 
-    
+    if (z_pos_in_grid % 2 == 0) {
+        if (node_in_grid(-1, -1, -1)) {
+            MPI_Recv(sh_corner_FUL_in, 1, MPI_CHAR, rank_with_offset(-1, -1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(1, 1, 1)) {
+            MPI_Send(sh_corner_BDR_out, 1, MPI_CHAR, rank_with_offset(1, 1, 1), 1, MPI_COMM_WORLD);
+        }
+    }
+
+    if (z_pos_in_grid % 2 == 0) {
+        if (node_in_grid(1, 1, 1)) {
+            MPI_Recv(sh_corner_BDR_in, 1, MPI_CHAR, rank_with_offset(1, 1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(-1, -1, -1)) {
+            MPI_Send(sh_corner_FUL_out, 1, MPI_CHAR, rank_with_offset(-1, -1, -1), 1, MPI_COMM_WORLD);
+        }
+    }
+
+    if (z_pos_in_grid % 2 == 0) {
+        if (node_in_grid(1, -1, -1)) {
+            MPI_Recv(sh_corner_FUR_in, 1, MPI_CHAR, rank_with_offset(1, -1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(-1, 1, 1)) {
+            MPI_Send(sh_corner_BDL_out, 1, MPI_CHAR, rank_with_offset(-1, 1, 1), 1, MPI_COMM_WORLD);
+        }
+    }
+
+    if (z_pos_in_grid % 2 == 0) {
+        if (node_in_grid(-1, 1, 1)) {
+            MPI_Recv(sh_corner_BDL_in, 1, MPI_CHAR, rank_with_offset(-1, 1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(1, -1, -1)) {
+            MPI_Send(sh_corner_FUR_out, 1, MPI_CHAR, rank_with_offset(1, -1, -1), 1, MPI_COMM_WORLD);
+        }
+    }
+
+
+    if (z_pos_in_grid % 2 == 0) {
+        if (node_in_grid(-1, 1, -1)) {
+            MPI_Recv(sh_corner_FDL_in, 1, MPI_CHAR, rank_with_offset(-1, 1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(1, -1, 1)) {
+            MPI_Send(sh_corner_BUR_out, 1, MPI_CHAR, rank_with_offset(1, -1, 1), 1, MPI_COMM_WORLD);
+        }
+    }
+
+    if (z_pos_in_grid % 2 == 0) {
+        if (node_in_grid(1, -1, 1)) {
+            MPI_Recv(sh_corner_BUR_in, 1, MPI_CHAR, rank_with_offset(1, -1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(-1, 1, -1)) {
+            MPI_Send(sh_corner_FDL_out, 1, MPI_CHAR, rank_with_offset(-1, 1, -1), 1, MPI_COMM_WORLD);
+        }
+    }
+
+    if (z_pos_in_grid % 2 == 0) {
+        if (node_in_grid(1, 1, -1)) {
+            MPI_Recv(sh_corner_FDR_in, 1, MPI_CHAR, rank_with_offset(1, 1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(-1, -1, 1)) {
+            MPI_Send(sh_corner_BUL_out, 1, MPI_CHAR, rank_with_offset(-1, -1, 1), 1, MPI_COMM_WORLD);
+        }
+    }
+
+    if (z_pos_in_grid % 2 == 0) {
+        if (node_in_grid(-1, -1, 1)) {
+            MPI_Recv(sh_corner_BUL_in, 1, MPI_CHAR, rank_with_offset(-1, -1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(1, 1, -1)) {
+            MPI_Send(sh_corner_FDR_out, 1, MPI_CHAR, rank_with_offset(1, 1, -1), 1, MPI_COMM_WORLD);
+        }
+    }
+
+
+    if (z_pos_in_grid % 2 == 1) {
+        if (node_in_grid(-1, -1, -1)) {
+            MPI_Recv(sh_corner_FUL_in, 1, MPI_CHAR, rank_with_offset(-1, -1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(1, 1, 1)) {
+            MPI_Send(sh_corner_BDR_out, 1, MPI_CHAR, rank_with_offset(1, 1, 1), 1, MPI_COMM_WORLD);
+        }
+    }
+
+    if (z_pos_in_grid % 2 == 1) {
+        if (node_in_grid(1, 1, 1)) {
+            MPI_Recv(sh_corner_BDR_in, 1, MPI_CHAR, rank_with_offset(1, 1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(-1, -1, -1)) {
+            MPI_Send(sh_corner_FUL_out, 1, MPI_CHAR, rank_with_offset(-1, -1, -1), 1, MPI_COMM_WORLD);
+        }
+    }
+
+    if (z_pos_in_grid % 2 == 1) {
+        if (node_in_grid(1, -1, -1)) {
+            MPI_Recv(sh_corner_FUR_in, 1, MPI_CHAR, rank_with_offset(1, -1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(-1, 1, 1)) {
+            MPI_Send(sh_corner_BDL_out, 1, MPI_CHAR, rank_with_offset(-1, 1, 1), 1, MPI_COMM_WORLD);
+        }
+    }
+
+    if (z_pos_in_grid % 2 == 1) {
+        if (node_in_grid(-1, 1, 1)) {
+            MPI_Recv(sh_corner_BDL_in, 1, MPI_CHAR, rank_with_offset(-1, 1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(1, -1, -1)) {
+            MPI_Send(sh_corner_FUR_out, 1, MPI_CHAR, rank_with_offset(1, -1, -1), 1, MPI_COMM_WORLD);
+        }
+    }
+
+
+    if (z_pos_in_grid % 2 == 1) {
+        if (node_in_grid(-1, 1, -1)) {
+            MPI_Recv(sh_corner_FDL_in, 1, MPI_CHAR, rank_with_offset(-1, 1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(1, -1, 1)) {
+            MPI_Send(sh_corner_BUR_out, 1, MPI_CHAR, rank_with_offset(1, -1, 1), 1, MPI_COMM_WORLD);
+        }
+    }
+
+    if (z_pos_in_grid % 2 == 1) {
+        if (node_in_grid(1, -1, 1)) {
+            MPI_Recv(sh_corner_BUR_in, 1, MPI_CHAR, rank_with_offset(1, -1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(-1, 1, -1)) {
+            MPI_Send(sh_corner_FDL_out, 1, MPI_CHAR, rank_with_offset(-1, 1, -1), 1, MPI_COMM_WORLD);
+        }
+    }
+
+    if (z_pos_in_grid % 2 == 1) {
+        if (node_in_grid(1, 1, -1)) {
+            MPI_Recv(sh_corner_FDR_in, 1, MPI_CHAR, rank_with_offset(1, 1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(-1, -1, 1)) {
+            MPI_Send(sh_corner_BUL_out, 1, MPI_CHAR, rank_with_offset(-1, -1, 1), 1, MPI_COMM_WORLD);
+        }
+    }
+
+    if (z_pos_in_grid % 2 == 1) {
+        if (node_in_grid(-1, -1, 1)) {
+            MPI_Recv(sh_corner_BUL_in, 1, MPI_CHAR, rank_with_offset(-1, -1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (node_in_grid(1, 1, -1)) {
+            MPI_Send(sh_corner_FDR_out, 1, MPI_CHAR, rank_with_offset(1, 1, -1), 1, MPI_COMM_WORLD);
+        }
+    }
 
 }
 
@@ -354,21 +578,9 @@ void Node::pre_share_copy() {
     }
 
     // Corners
-    /*if(y_pos_in_grid + 1 < grid_size && x_pos_in_grid + 1 < grid_size){
-		sh_corner_DR_out[0] = share_array[node_size][node_size];
-	}
+    
+    // Edges
 
-	if(y_pos_in_grid + 1 < grid_size && x_pos_in_grid - 1 >= 0){
-		sh_corner_DL_out[0] = share_array[node_size][1];
-	}
-
-	if(y_pos_in_grid - 1 >= 0 && x_pos_in_grid + 1 < grid_size){
-		sh_corner_UR_out[0] = share_array[1][node_size];
-	}
-
-	if(y_pos_in_grid - 1 >= 0 && x_pos_in_grid - 1 >= 0){
-		sh_corner_UL_out[0] = share_array[1][1];
-	}*/
 }
 
 void Node::post_share_copy() {
@@ -439,21 +651,9 @@ void Node::post_share_copy() {
     }
 
     // Corners
-    /*if(y_pos_in_grid - 1 >= 0 && x_pos_in_grid - 1 >= 0){
-		share_array[0][0] = sh_corner_UL_in[0];
-	}
+    
+    // Edges
 
-	if(y_pos_in_grid - 1 >= 0 && x_pos_in_grid + 1 < grid_size){
-		share_array[0][node_size + 1] = sh_corner_UR_in[0];
-	}
-
-	if(y_pos_in_grid + 1 < grid_size && x_pos_in_grid - 1 >= 0){
-		share_array[node_size + 1][0] = sh_corner_DL_in[0];
-	}
-
-	if(y_pos_in_grid + 1 < grid_size && x_pos_in_grid + 1 < grid_size){
-		share_array[node_size + 1][node_size + 1] = sh_corner_DR_in[0];
-	}*/
 }
 
 void Node::iter() {
@@ -495,29 +695,6 @@ void Node::iter() {
                     }
                 }
 
-                /*for (int i = -1; i <= 1; i++) {
-                    for (int j = -1; j <= 1; j++) {
-                        if (i == 0 && j == 0) {
-                            continue;
-                        }
-
-                        val += input_array[z][y + i][x + j] > 0;
-                    }
-                }
-
-                if (input_array[z][y][x] == 0) {
-                    if (val == 3) {
-                        output_array[z][y][x] = 1;
-                    } else {
-                        output_array[z][y][x] = 0;
-                    }
-                } else {
-                    if (val == 2 || val == 3) {
-                        output_array[z][y][x] = 1;
-                    } else {
-                        output_array[z][y][x] = 0;
-                    }
-                }*/
             }
         }
     }

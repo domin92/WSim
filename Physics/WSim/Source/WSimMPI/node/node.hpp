@@ -57,7 +57,36 @@ class Node{
 	char *sh_corner_BDR_in; // Back Down Right
 	char *sh_corner_BDR_out;
 
+    int sh_edge_size;
+    char *sh_edge_UL_in; // Up Left
+    char *sh_edge_UL_out;
+    char *sh_edge_UR_in; // Up Right
+    char *sh_edge_UR_out;
+    char *sh_edge_DL_in; // Down Left
+    char *sh_edge_DL_out;
+    char *sh_edge_DR_in; // Down Right
+    char *sh_edge_DR_out;
+    char *sh_edge_FL_in; // Front Left
+    char *sh_edge_FL_out;
+    char *sh_edge_FR_in; // Front Right
+    char *sh_edge_FR_out;
+    char *sh_edge_FU_in; // Front Up
+    char *sh_edge_FU_out;
+    char *sh_edge_FD_in; // Front Down
+    char *sh_edge_FD_out;
+    char *sh_edge_BL_in; // Back Left
+    char *sh_edge_BL_out;
+    char *sh_edge_BR_in; // Back Right
+    char *sh_edge_BR_out;
+    char *sh_edge_BU_in; // Back Up
+    char *sh_edge_BU_out;
+    char *sh_edge_BD_in; // Back Down
+    char *sh_edge_BD_out;
+
 	char *send_array;
+
+    bool node_in_grid(int x, int y, int z);
+    int rank_with_offset(int x, int y, int z);
 
 	void share_horizontal();
 	void share_vertical();
