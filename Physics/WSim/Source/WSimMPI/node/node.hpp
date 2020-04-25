@@ -87,6 +87,7 @@ class Node{
 
     bool node_in_grid(int x, int y, int z);
     int rank_with_offset(int x, int y, int z);
+    void recv_buffer(bool condition, char *intput_buffer, char *output_buffer, int in_x, int in_y, int in_z);
 
 	void share_horizontal();
 	void share_vertical();

@@ -340,170 +340,40 @@ void Node::share_depth() {
 
 }
 
+void Node::recv_buffer(bool condition, char *intput_buffer, char *output_buffer, int in_x, int in_y, int in_z) {
+    if (condition) {
+        if (node_in_grid(in_x, in_y, in_z)) {
+            MPI_Recv(intput_buffer, 1, MPI_CHAR, rank_with_offset(in_x, in_y, in_z), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        int out_x = -in_x;
+        int out_y = -in_y;
+        int out_z = -in_z;
+        if (node_in_grid(out_x, out_y, out_z)) {
+            MPI_Send(output_buffer, 1, MPI_CHAR, rank_with_offset(out_x, out_y, out_z), 1, MPI_COMM_WORLD);
+        }
+    }
+}
+
 void Node::share_corners() {
 
-    if (z_pos_in_grid % 2 == 0) {
-        if (node_in_grid(-1, -1, -1)) {
-            MPI_Recv(sh_corner_FUL_in, 1, MPI_CHAR, rank_with_offset(-1, -1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(1, 1, 1)) {
-            MPI_Send(sh_corner_BDR_out, 1, MPI_CHAR, rank_with_offset(1, 1, 1), 1, MPI_COMM_WORLD);
-        }
-    }
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FUL_in, sh_corner_BDR_out, -1, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BDR_in, sh_corner_FUL_out, 1, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FUR_in, sh_corner_BDL_out, 1, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BDL_in, sh_corner_FUR_out, -1, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FDL_in, sh_corner_BUR_out, -1, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BUR_in, sh_corner_FDL_out, 1, -1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FDR_in, sh_corner_BUL_out, 1, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BUL_in, sh_corner_FDR_out, -1, -1, 1);
 
-    if (z_pos_in_grid % 2 == 0) {
-        if (node_in_grid(1, 1, 1)) {
-            MPI_Recv(sh_corner_BDR_in, 1, MPI_CHAR, rank_with_offset(1, 1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(-1, -1, -1)) {
-            MPI_Send(sh_corner_FUL_out, 1, MPI_CHAR, rank_with_offset(-1, -1, -1), 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (z_pos_in_grid % 2 == 0) {
-        if (node_in_grid(1, -1, -1)) {
-            MPI_Recv(sh_corner_FUR_in, 1, MPI_CHAR, rank_with_offset(1, -1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(-1, 1, 1)) {
-            MPI_Send(sh_corner_BDL_out, 1, MPI_CHAR, rank_with_offset(-1, 1, 1), 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (z_pos_in_grid % 2 == 0) {
-        if (node_in_grid(-1, 1, 1)) {
-            MPI_Recv(sh_corner_BDL_in, 1, MPI_CHAR, rank_with_offset(-1, 1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(1, -1, -1)) {
-            MPI_Send(sh_corner_FUR_out, 1, MPI_CHAR, rank_with_offset(1, -1, -1), 1, MPI_COMM_WORLD);
-        }
-    }
-
-
-    if (z_pos_in_grid % 2 == 0) {
-        if (node_in_grid(-1, 1, -1)) {
-            MPI_Recv(sh_corner_FDL_in, 1, MPI_CHAR, rank_with_offset(-1, 1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(1, -1, 1)) {
-            MPI_Send(sh_corner_BUR_out, 1, MPI_CHAR, rank_with_offset(1, -1, 1), 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (z_pos_in_grid % 2 == 0) {
-        if (node_in_grid(1, -1, 1)) {
-            MPI_Recv(sh_corner_BUR_in, 1, MPI_CHAR, rank_with_offset(1, -1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(-1, 1, -1)) {
-            MPI_Send(sh_corner_FDL_out, 1, MPI_CHAR, rank_with_offset(-1, 1, -1), 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (z_pos_in_grid % 2 == 0) {
-        if (node_in_grid(1, 1, -1)) {
-            MPI_Recv(sh_corner_FDR_in, 1, MPI_CHAR, rank_with_offset(1, 1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(-1, -1, 1)) {
-            MPI_Send(sh_corner_BUL_out, 1, MPI_CHAR, rank_with_offset(-1, -1, 1), 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (z_pos_in_grid % 2 == 0) {
-        if (node_in_grid(-1, -1, 1)) {
-            MPI_Recv(sh_corner_BUL_in, 1, MPI_CHAR, rank_with_offset(-1, -1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(1, 1, -1)) {
-            MPI_Send(sh_corner_FDR_out, 1, MPI_CHAR, rank_with_offset(1, 1, -1), 1, MPI_COMM_WORLD);
-        }
-    }
-
-
-    if (z_pos_in_grid % 2 == 1) {
-        if (node_in_grid(-1, -1, -1)) {
-            MPI_Recv(sh_corner_FUL_in, 1, MPI_CHAR, rank_with_offset(-1, -1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(1, 1, 1)) {
-            MPI_Send(sh_corner_BDR_out, 1, MPI_CHAR, rank_with_offset(1, 1, 1), 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (z_pos_in_grid % 2 == 1) {
-        if (node_in_grid(1, 1, 1)) {
-            MPI_Recv(sh_corner_BDR_in, 1, MPI_CHAR, rank_with_offset(1, 1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(-1, -1, -1)) {
-            MPI_Send(sh_corner_FUL_out, 1, MPI_CHAR, rank_with_offset(-1, -1, -1), 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (z_pos_in_grid % 2 == 1) {
-        if (node_in_grid(1, -1, -1)) {
-            MPI_Recv(sh_corner_FUR_in, 1, MPI_CHAR, rank_with_offset(1, -1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(-1, 1, 1)) {
-            MPI_Send(sh_corner_BDL_out, 1, MPI_CHAR, rank_with_offset(-1, 1, 1), 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (z_pos_in_grid % 2 == 1) {
-        if (node_in_grid(-1, 1, 1)) {
-            MPI_Recv(sh_corner_BDL_in, 1, MPI_CHAR, rank_with_offset(-1, 1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(1, -1, -1)) {
-            MPI_Send(sh_corner_FUR_out, 1, MPI_CHAR, rank_with_offset(1, -1, -1), 1, MPI_COMM_WORLD);
-        }
-    }
-
-
-    if (z_pos_in_grid % 2 == 1) {
-        if (node_in_grid(-1, 1, -1)) {
-            MPI_Recv(sh_corner_FDL_in, 1, MPI_CHAR, rank_with_offset(-1, 1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(1, -1, 1)) {
-            MPI_Send(sh_corner_BUR_out, 1, MPI_CHAR, rank_with_offset(1, -1, 1), 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (z_pos_in_grid % 2 == 1) {
-        if (node_in_grid(1, -1, 1)) {
-            MPI_Recv(sh_corner_BUR_in, 1, MPI_CHAR, rank_with_offset(1, -1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(-1, 1, -1)) {
-            MPI_Send(sh_corner_FDL_out, 1, MPI_CHAR, rank_with_offset(-1, 1, -1), 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (z_pos_in_grid % 2 == 1) {
-        if (node_in_grid(1, 1, -1)) {
-            MPI_Recv(sh_corner_FDR_in, 1, MPI_CHAR, rank_with_offset(1, 1, -1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(-1, -1, 1)) {
-            MPI_Send(sh_corner_BUL_out, 1, MPI_CHAR, rank_with_offset(-1, -1, 1), 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (z_pos_in_grid % 2 == 1) {
-        if (node_in_grid(-1, -1, 1)) {
-            MPI_Recv(sh_corner_BUL_in, 1, MPI_CHAR, rank_with_offset(-1, -1, 1), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (node_in_grid(1, 1, -1)) {
-            MPI_Send(sh_corner_FDR_out, 1, MPI_CHAR, rank_with_offset(1, 1, -1), 1, MPI_COMM_WORLD);
-        }
-    }
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FUL_in, sh_corner_BDR_out, -1, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BDR_in, sh_corner_FUL_out, 1, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FUR_in, sh_corner_BDL_out, 1, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BDL_in, sh_corner_FUR_out, -1, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FDL_in, sh_corner_BUR_out, -1, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BUR_in, sh_corner_FDL_out, 1, -1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FDR_in, sh_corner_BUL_out, 1, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BUL_in, sh_corner_FDR_out, -1, -1, 1);
 
 }
 
