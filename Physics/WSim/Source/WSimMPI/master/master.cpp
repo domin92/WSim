@@ -273,5 +273,4 @@ void Master::main() {
         glfwPollEvents();
 
     }
-
 }

@@ -7,9 +7,10 @@ class Node{
 	int grid_size; // Number of nodes in side of 3d grid
 	int node_size; // Size of the cude side in bytes
 
+    int share_thickness; // Thickness of shared areas in bytes
+
 	int adjusted_rank; // Rank excluding master
 
-	int share_thickness; // Thickness of shared areas in bytes
 
 	int main_array_size;
 	char ***array[2]; // Two 3D arrays - input, output

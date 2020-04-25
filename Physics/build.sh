@@ -67,7 +67,7 @@ function run_cmake() (
 
     # Do not set architecture flag on Linux
     is_unix=`uname -a | grep -E "Linux|Unix" | wc -l`
-    if [ is_unix == 0 ]; then architecture_flag="-A x64"; fi
+    if [ $is_unix == 0 ]; then architecture_flag="-A x64 -T host=x64"; fi
 
     # Run CMake
     echo "Running CMake for \"$src_dir\" in \"$build_dir\""

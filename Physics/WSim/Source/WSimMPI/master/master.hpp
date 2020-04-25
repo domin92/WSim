@@ -13,10 +13,10 @@ class Master{
 
     // MPI
 	int grid_size;
-	int node_size;
+    int node_size;
+    int full_size;
 	int proc_count;
     int node_volume;
-    int full_size;
 
 	char** mapped_buffer;
 	char* main_buffer;

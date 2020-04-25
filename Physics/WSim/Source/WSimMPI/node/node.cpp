@@ -91,6 +91,7 @@ Node::Node(int rank, int grid_size, int node_size) {
     current_array_idx = 0;
 
     send_array = new char[node_size * node_size * node_size];
+
 }
 
 Node::~Node() {
@@ -583,9 +584,9 @@ void Node::send_to_master() {
 void Node::main() {
     receive_from_master();
     while (true) {
-        //pre_share_copy();
-        //share();
-        //post_share_copy();
+        pre_share_copy();
+        share();
+        post_share_copy();
         iter();
         send_to_master();
     }
