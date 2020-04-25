@@ -1,7 +1,8 @@
-#include <cstdlib>
-#include <mpi.h>
-#include <iostream>
 #include "Node.hpp"
+
+#include <cstdlib>
+#include <iostream>
+#include <mpi.h>
 
 Node::Node(int rank, int grid_size, int node_size) {
     this->rank = rank;
@@ -29,14 +30,22 @@ Node::Node(int rank, int grid_size, int node_size) {
     sh_depth_B_out = new char[sh_depth_size];
 
     sh_corner_size = share_thickness * share_thickness * share_thickness;
-    /*sh_corner_UL_in = new char[sh_corner_size];
-	sh_corner_UL_out = new char[sh_corner_size];
-	sh_corner_UR_in = new char[sh_corner_size];
-	sh_corner_UR_out = new char[sh_corner_size];
-	sh_corner_DL_in = new char[sh_corner_size];
-	sh_corner_DL_out = new char[sh_corner_size];
-	sh_corner_DR_in = new char[sh_corner_size];
-	sh_corner_DR_out = new char[sh_corner_size];*/
+    sh_corner_FUL_in = new char[sh_corner_size];
+    sh_corner_FUL_out = new char[sh_corner_size];
+    sh_corner_FUR_in = new char[sh_corner_size];
+    sh_corner_FUR_out = new char[sh_corner_size];
+    sh_corner_FDL_in = new char[sh_corner_size];
+    sh_corner_FDL_out = new char[sh_corner_size];
+    sh_corner_FDR_in = new char[sh_corner_size];
+    sh_corner_FDR_out = new char[sh_corner_size];
+    sh_corner_BUL_in = new char[sh_corner_size];
+    sh_corner_BUL_out = new char[sh_corner_size];
+    sh_corner_BUR_in = new char[sh_corner_size];
+    sh_corner_BUR_out = new char[sh_corner_size];
+    sh_corner_BDL_in = new char[sh_corner_size];
+    sh_corner_BDL_out = new char[sh_corner_size];
+    sh_corner_BDR_in = new char[sh_corner_size];
+    sh_corner_BDR_out = new char[sh_corner_size];
 
     adjusted_rank = rank - 1;
 
@@ -91,7 +100,6 @@ Node::Node(int rank, int grid_size, int node_size) {
     current_array_idx = 0;
 
     send_array = new char[node_size * node_size * node_size];
-
 }
 
 Node::~Node() {
@@ -108,14 +116,22 @@ Node::~Node() {
     delete[] sh_depth_F_out;
     delete[] sh_depth_B_in;
     delete[] sh_depth_B_out;
-    /*delete[] sh_corner_UL_in;
-	delete[] sh_corner_UL_out;
-	delete[] sh_corner_UR_in;
-	delete[] sh_corner_UR_out;
-	delete[] sh_corner_DL_in;
-	delete[] sh_corner_DL_out;
-	delete[] sh_corner_DR_in;
-	delete[] sh_corner_DR_out;*/
+    delete[] sh_corner_FUL_in;
+    delete[] sh_corner_FUL_out;
+    delete[] sh_corner_FUR_in;
+    delete[] sh_corner_FUR_out;
+    delete[] sh_corner_FDL_in;
+    delete[] sh_corner_FDL_out;
+    delete[] sh_corner_FDR_in;
+    delete[] sh_corner_FDR_out;
+    delete[] sh_corner_BUL_in;
+    delete[] sh_corner_BUL_out;
+    delete[] sh_corner_BUR_in;
+    delete[] sh_corner_BUR_out;
+    delete[] sh_corner_BDL_in;
+    delete[] sh_corner_BDL_out;
+    delete[] sh_corner_BDR_in;
+    delete[] sh_corner_BDR_out;
 
     delete[] send_array;
 
@@ -173,7 +189,6 @@ void Node::share_vertical() {
             MPI_Send(sh_vertical_U_out, sh_vertical_size, MPI_CHAR, rank - grid_size, 1, MPI_COMM_WORLD);
         }
     }
-
 }
 
 void Node::share_horizontal() {
@@ -217,134 +232,58 @@ void Node::share_horizontal() {
             MPI_Send(sh_horizontal_L_out, sh_horizontal_size, MPI_CHAR, rank - 1, 1, MPI_COMM_WORLD);
         }
     }
-
 }
 
 void Node::share_depth() {
 
     if (z_pos_in_grid % 2 == 0) {
         if (z_pos_in_grid - 1 >= 0) {
-            MPI_Recv(sh_depth_B_in, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(sh_depth_F_in, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
     } else {
         if (z_pos_in_grid + 1 < grid_size) {
-            MPI_Send(sh_depth_F_out, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD);
+            MPI_Send(sh_depth_B_out, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD);
         }
     }
 
     if (z_pos_in_grid % 2 == 0) {
         if (z_pos_in_grid + 1 < grid_size) {
-            MPI_Recv(sh_depth_F_in, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(sh_depth_B_in, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
     } else {
         if (z_pos_in_grid - 1 >= 0) {
-            MPI_Send(sh_depth_B_out, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD);
+            MPI_Send(sh_depth_F_out, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD);
         }
     }
 
     if (z_pos_in_grid % 2 == 1) {
         if (z_pos_in_grid - 1 >= 0) {
-            MPI_Recv(sh_depth_B_in, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(sh_depth_F_in, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
     } else {
         if (z_pos_in_grid + 1 < grid_size) {
-            MPI_Send(sh_depth_F_out, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD);
+            MPI_Send(sh_depth_B_out, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD);
         }
     }
 
     if (z_pos_in_grid % 2 == 1) {
         if (z_pos_in_grid + 1 < grid_size) {
-            MPI_Recv(sh_depth_F_in, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(sh_depth_B_in, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
     } else {
         if (z_pos_in_grid - 1 >= 0) {
-            MPI_Send(sh_depth_B_out, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD);
+            MPI_Send(sh_depth_F_out, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD);
         }
     }
-
 }
 
 void Node::share_corners() {
 
-    /*if(y_pos_in_grid%2==0){ // Upper Left
-		if(y_pos_in_grid - 1 >= 0 && x_pos_in_grid - 1 >= 0){
-			MPI_Recv(sh_corner_UL_in, 1, MPI_CHAR, rank - grid_size - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		}
-	}else{
-		if(y_pos_in_grid + 1 < grid_size && x_pos_in_grid + 1 < grid_size){
-			MPI_Send(sh_corner_DR_out, 1, MPI_CHAR, rank + grid_size + 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(y_pos_in_grid%2==0){ // Upper Right
-		if(y_pos_in_grid - 1 >= 0 && x_pos_in_grid + 1 < grid_size){
-			MPI_Recv(sh_corner_UR_in, 1, MPI_CHAR, rank - grid_size + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		}
-	}else{
-		if(y_pos_in_grid + 1 < grid_size && x_pos_in_grid - 1 >= 0){
-			MPI_Send(sh_corner_DL_out, 1, MPI_CHAR, rank + grid_size - 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(y_pos_in_grid%2==0){ // Bottom Left
-		if(y_pos_in_grid + 1 < grid_size && x_pos_in_grid - 1 >= 0){
-			MPI_Recv(sh_corner_DL_in, 1, MPI_CHAR, rank + grid_size - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		}
-	}else{
-		if(y_pos_in_grid - 1 >= 0 && x_pos_in_grid + 1 < grid_size){
-			MPI_Send(sh_corner_UR_out, 1, MPI_CHAR, rank - grid_size + 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(y_pos_in_grid%2==0){ // Bottom Right
-		if(y_pos_in_grid + 1 < grid_size && x_pos_in_grid + 1 < grid_size){
-			MPI_Recv(sh_corner_DR_in, 1, MPI_CHAR, rank + grid_size + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		}
-	}else{
-		if(y_pos_in_grid - 1 >= 0 && x_pos_in_grid - 1 >= 0){
-			MPI_Send(sh_corner_UL_out, 1, MPI_CHAR, rank - grid_size - 1, 1, MPI_COMM_WORLD);
-		}
-	}
+    
 
-	if(y_pos_in_grid%2==1){ // Upper Left
-		if(y_pos_in_grid - 1 >= 0 && x_pos_in_grid - 1 >= 0){
-			MPI_Recv(sh_corner_UL_in, 1, MPI_CHAR, rank - grid_size - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		}
-	}else{
-		if(y_pos_in_grid + 1 < grid_size && x_pos_in_grid + 1 < grid_size){
-			MPI_Send(sh_corner_DR_out, 1, MPI_CHAR, rank + grid_size + 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(y_pos_in_grid%2==1){ // Upper Right
-		if(y_pos_in_grid - 1 >= 0 && x_pos_in_grid + 1 < grid_size){
-			MPI_Recv(sh_corner_UR_in, 1, MPI_CHAR, rank - grid_size + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		}
-	}else{
-		if(y_pos_in_grid + 1 < grid_size && x_pos_in_grid - 1 >= 0){
-			MPI_Send(sh_corner_DL_out, 1, MPI_CHAR, rank + grid_size - 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(y_pos_in_grid%2==1){ // Bottom Left
-		if(y_pos_in_grid + 1 < grid_size && x_pos_in_grid - 1 >= 0){
-			MPI_Recv(sh_corner_DL_in, 1, MPI_CHAR, rank + grid_size - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		}
-	}else{
-		if(y_pos_in_grid - 1 >= 0 && x_pos_in_grid + 1 < grid_size){
-			MPI_Send(sh_corner_UR_out, 1, MPI_CHAR, rank - grid_size + 1, 1, MPI_COMM_WORLD);
-		}
-	}
-	
-	if(y_pos_in_grid%2==1){ // Bottom Right
-		if(y_pos_in_grid + 1 < grid_size && x_pos_in_grid + 1 < grid_size){
-			MPI_Recv(sh_corner_DR_in, 1, MPI_CHAR, rank + grid_size + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		}
-	}else{
-		if(y_pos_in_grid - 1 >= 0 && x_pos_in_grid - 1 >= 0){
-			MPI_Send(sh_corner_UL_out, 1, MPI_CHAR, rank - grid_size - 1, 1, MPI_COMM_WORLD);
-		}
-	}*/
+}
+
+void Node::share_edges() {
 }
 
 void Node::pre_share_copy() {
@@ -371,16 +310,6 @@ void Node::pre_share_copy() {
             }
         }
     }
-    /**if(y_pos_in_grid + 1 < grid_size){
-		for(int i=0;i<node_size;i++){
-			sh_vertical_D_out[i] = share_array[node_size][i+1];
-		}
-	}
-	if(y_pos_in_grid - 1 >= 0){
-		for(int i=0;i<node_size;i++){
-			sh_vertical_U_out[i] = share_array[1][i+1];
-		}
-	}*/
 
     // Horizontal
     if (x_pos_in_grid + 1 < grid_size) {
@@ -402,17 +331,27 @@ void Node::pre_share_copy() {
             }
         }
     }
-    /*if(x_pos_in_grid + 1 < grid_size){
-		for(int i=0;i<node_size;i++){
-			sh_horizontal_R_out[i] = share_array[i + 1][node_size];
-		}
-	}
 
-	if(x_pos_in_grid - 1 >= 0){
-		for(int i=0;i<node_size;i++){
-			sh_horizontal_L_out[i] = share_array[i + 1][1];
-		}
-	}*/
+    // Depth
+    if (z_pos_in_grid + 1 < grid_size) {
+        for (int z = 0; z < share_thickness; z++) {
+            for (int y = 0; y < node_size; y++) {
+                for (int x = 0; x < node_size; x++) {
+                    sh_depth_B_out[z * node_size * node_size + y * node_size + x] = share_array[node_size + z][share_thickness + y][share_thickness + x];
+                }
+            }
+        }
+    }
+
+    if (z_pos_in_grid - 1 >= 0) {
+        for (int z = 0; z < share_thickness; z++) {
+            for (int y = 0; y < node_size; y++) {
+                for (int x = 0; x < node_size; x++) {
+                    sh_depth_F_out[z * node_size * node_size + y * node_size + x] = share_array[share_thickness + z][share_thickness + y][share_thickness + x];
+                }
+            }
+        }
+    }
 
     // Corners
     /*if(y_pos_in_grid + 1 < grid_size && x_pos_in_grid + 1 < grid_size){
@@ -456,16 +395,6 @@ void Node::post_share_copy() {
             }
         }
     }
-    /*if(y_pos_in_grid - 1 >= 0){
-		for(int i=0;i<node_size;i++){
-			share_array[0][i+1] = sh_vertical_U_in[i];
-		}
-	}
-	if(y_pos_in_grid + 1 < grid_size){
-		for(int i=0;i<node_size;i++){
-			share_array[node_size + 1][i+1] = sh_vertical_D_in[i];
-		}
-	}*/
 
     // Horizontal
     if (x_pos_in_grid - 1 >= 0) {
@@ -482,22 +411,32 @@ void Node::post_share_copy() {
         for (int z = 0; z < node_size; z++) {
             for (int y = 0; y < node_size; y++) {
                 for (int x = 0; x < share_thickness; x++) {
-                    share_array[share_thickness + z][share_thickness + y][share_thickness + node_size + x] = sh_horizontal_L_in[z * node_size * share_thickness + y * share_thickness + x];
+                    share_array[share_thickness + z][share_thickness + y][share_thickness + node_size + x] = sh_horizontal_R_in[z * node_size * share_thickness + y * share_thickness + x];
                 }
             }
         }
     }
-    /*if(x_pos_in_grid - 1 >= 0){
-		for(int i=0;i<node_size;i++){
-			share_array[i + 1][0] = sh_horizontal_L_in[i];
-		}
-	}	
 
-	if(x_pos_in_grid + 1 < grid_size){
-		for(int i=0;i<node_size;i++){
-			share_array[i + 1][node_size + 1] = sh_horizontal_R_in[i];
-		}
-	}*/
+    // Depth
+    if (z_pos_in_grid + 1 < grid_size) {
+        for (int z = 0; z < share_thickness; z++) {
+            for (int y = 0; y < node_size; y++) {
+                for (int x = 0; x < node_size; x++) {
+                    share_array[node_size + share_thickness + z][share_thickness + y][share_thickness + x] = sh_depth_B_in[z * node_size * node_size + y * node_size + x];
+                }
+            }
+        }
+    }
+
+    if (z_pos_in_grid - 1 >= 0) {
+        for (int z = 0; z < share_thickness; z++) {
+            for (int y = 0; y < node_size; y++) {
+                for (int x = 0; x < node_size; x++) {
+                    share_array[z][share_thickness + y][share_thickness + x] = sh_depth_F_in[z * node_size * node_size + y * node_size + x];
+                }
+            }
+        }
+    }
 
     // Corners
     /*if(y_pos_in_grid - 1 >= 0 && x_pos_in_grid - 1 >= 0){
@@ -528,37 +467,33 @@ void Node::iter() {
 
                 int val = 0;
 
-                
-				// sum 26 neighbours
-				for (int i = -1; i <= 1; i++) {
-					for (int j = -1; j <= 1; j++) {
-						for (int k = -1; k <= 1; k++) {
-							if (i==0 && j==0 && z==0) {
-								continue;
-							}
+                // sum 26 neighbours
+                for (int i = -1; i <= 1; i++) {
+                    for (int j = -1; j <= 1; j++) {
+                        for (int k = -1; k <= 1; k++) {
+                            if (i == 0 && j == 0 && z == 0) {
+                                continue;
+                            }
 
-							val += input_array[z + i][y + j][x + k] > 0 && input_array[z + i][y + j][x + k] < 5;
-						}
-					}
-				}
+                            val += input_array[z + i][y + j][x + k] > 0 && input_array[z + i][y + j][x + k] < 5;
+                        }
+                    }
+                }
 
-				// 3D CA rules - Amoeba (9-26/5-7,12-13,15/5/M)
-				if (input_array[z][y][x] == 0) {
-					if ((val >= 5 && val <=7) || val == 12 || val == 13 || val == 15 ) {
-						output_array[z][y][x] = 4;
-					}
-					else {
-						output_array[z][y][x] = 0;
-					}
-				}
-				else {
-					if (val >= 9 && val <= 26) {
-						output_array[z][y][x]--;
-					}
-					else {
-						output_array[z][y][x] = 0;
-					}
-				}
+                // 3D CA rules - Amoeba (9-26/5-7,12-13,15/5/M)
+                if (input_array[z][y][x] == 0) {
+                    if ((val >= 5 && val <= 7) || val == 12 || val == 13 || val == 15) {
+                        output_array[z][y][x] = 4;
+                    } else {
+                        output_array[z][y][x] = 0;
+                    }
+                } else {
+                    if (val >= 9 && val <= 26) {
+                        output_array[z][y][x]--;
+                    } else {
+                        output_array[z][y][x] = 0;
+                    }
+                }
 
                 /*for (int i = -1; i <= 1; i++) {
                     for (int j = -1; j <= 1; j++) {
@@ -621,6 +556,7 @@ void Node::share() {
     share_horizontal();
     share_depth();
     share_corners();
+    //share_edges();
 }
 
 void Node::main() {

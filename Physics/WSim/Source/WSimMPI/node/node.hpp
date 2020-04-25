@@ -40,14 +40,22 @@ class Node{
 	char *sh_depth_B_out;
 
 	int sh_corner_size;
-	/*char *sh_corner_UL_in; // Upper Left
-	char *sh_corner_UL_out;
-	char *sh_corner_UR_in; // Upper Right
-	char *sh_corner_UR_out;
-	char *sh_corner_DL_in; // Down Left
-	char *sh_corner_DL_out;
-	char *sh_corner_DR_in; // Down Right
-	char *sh_corner_DR_out;*/
+	char *sh_corner_FUL_in; // Front Upper Left
+	char *sh_corner_FUL_out;
+	char *sh_corner_FUR_in; // Front Upper Right
+	char *sh_corner_FUR_out;
+	char *sh_corner_FDL_in; // Front Down Left
+	char *sh_corner_FDL_out;
+	char *sh_corner_FDR_in; // Front Down Right
+	char *sh_corner_FDR_out;
+    char *sh_corner_BUL_in; // Back Upper Left
+	char *sh_corner_BUL_out;
+	char *sh_corner_BUR_in; // Back Upper Right
+	char *sh_corner_BUR_out;
+	char *sh_corner_BDL_in; // Back Down Left
+	char *sh_corner_BDL_out;
+	char *sh_corner_BDR_in; // Back Down Right
+	char *sh_corner_BDR_out;
 
 	char *send_array;
 
@@ -55,6 +63,7 @@ class Node{
 	void share_vertical();
 	void share_depth();
 	void share_corners();
+	void share_edges();
 
 	void share();
 
