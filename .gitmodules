@@ -1,9 +1,6 @@
 [submodule "Physics/ThirdParty/googletest"]
 	path = Physics/ThirdParty/googletest
 	url = https://github.com/google/googletest
-[submodule "Physics/ThirdParty/FreeGLUT"]
-	path = Physics/ThirdParty/FreeGLUT
-	url = https://github.com/dcnieho/FreeGLUT
 [submodule "Physics/ThirdParty/glfw"]
 	path = Physics/ThirdParty/glfw
 	url = https://github.com/glfw/glfw
