@@ -1,4 +1,4 @@
 .build/
 run_standalone.sh
 run_mpi.sh
-run_renderer.sh
+run_renderer_exe.sh

@@ -31,8 +31,9 @@ endmacro()
 
 # Target names
 set_with_parent_scope(TARGET_WSIM_SIMULATION_LIB WSimSimulation)
+set_with_parent_scope(TARGET_WSIM_RENDERER_LIB WSimRenderer)
 set_with_parent_scope(TARGET_WSIM_STANDALONE WSimStandalone)
-set_with_parent_scope(TARGET_WSIM_RENDERER WSimRenderer)
+set_with_parent_scope(TARGET_WSIM_RENDERER_EXE WSimRendererExe)
 set_with_parent_scope(TARGET_WSIM_MPI WSimMPI)
 set_with_parent_scope(TARGET_WSIM_TESTS WSimTests)
 
