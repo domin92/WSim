@@ -173,6 +173,7 @@ void Node::share_vertical() {
             MPI_Send(sh_vertical_U_out, sh_vertical_size, MPI_CHAR, rank - grid_size, 1, MPI_COMM_WORLD);
         }
     }
+
 }
 
 void Node::share_horizontal() {
@@ -216,10 +217,51 @@ void Node::share_horizontal() {
             MPI_Send(sh_horizontal_L_out, sh_horizontal_size, MPI_CHAR, rank - 1, 1, MPI_COMM_WORLD);
         }
     }
+
 }
 
 void Node::share_depth() {
-    // Nothing to share
+
+    if (z_pos_in_grid % 2 == 0) {
+        if (z_pos_in_grid - 1 >= 0) {
+            MPI_Recv(sh_depth_B_in, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (z_pos_in_grid + 1 < grid_size) {
+            MPI_Send(sh_depth_F_out, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD);
+        }
+    }
+
+    if (z_pos_in_grid % 2 == 0) {
+        if (z_pos_in_grid + 1 < grid_size) {
+            MPI_Recv(sh_depth_F_in, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (z_pos_in_grid - 1 >= 0) {
+            MPI_Send(sh_depth_B_out, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD);
+        }
+    }
+
+    if (z_pos_in_grid % 2 == 1) {
+        if (z_pos_in_grid - 1 >= 0) {
+            MPI_Recv(sh_depth_B_in, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (z_pos_in_grid + 1 < grid_size) {
+            MPI_Send(sh_depth_F_out, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD);
+        }
+    }
+
+    if (z_pos_in_grid % 2 == 1) {
+        if (z_pos_in_grid + 1 < grid_size) {
+            MPI_Recv(sh_depth_F_in, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        if (z_pos_in_grid - 1 >= 0) {
+            MPI_Send(sh_depth_B_out, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD);
+        }
+    }
+
 }
 
 void Node::share_corners() {
@@ -303,13 +345,6 @@ void Node::share_corners() {
 			MPI_Send(sh_corner_UL_out, 1, MPI_CHAR, rank - grid_size - 1, 1, MPI_COMM_WORLD);
 		}
 	}*/
-}
-
-void Node::share() {
-    share_vertical();
-    share_horizontal();
-    share_depth();
-    //share_corners();
 }
 
 void Node::pre_share_copy() {
@@ -502,7 +537,7 @@ void Node::iter() {
 								continue;
 							}
 
-							val += input_array[z+i][y+j][x+k] > 0;
+							val += input_array[z + i][y + j][x + k] > 0 && input_array[z + i][y + j][x + k] < 5;
 						}
 					}
 				}
@@ -579,6 +614,13 @@ void Node::send_to_master() {
     }
 
     MPI_Gather(send_array, node_size * node_size * node_size, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
+}
+
+void Node::share() {
+    share_vertical();
+    share_horizontal();
+    share_depth();
+    share_corners();
 }
 
 void Node::main() {
