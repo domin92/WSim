@@ -6,6 +6,7 @@ target_include_directories(${TARGET_WSIM_RENDERER_LIB} PRIVATE
     ${DIR_GLFW}/include
     ${DIR_GLAD}/include
     ${DIR_STB}
+    ${DIR_WSIM}
 )
 target_link_libraries(${TARGET_WSIM_RENDERER_LIB}
     $<TARGET_PROPERTY:glfw,LINK_LIBRARIES>

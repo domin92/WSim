@@ -44,6 +44,22 @@ void Simulation::stepSimulation(float deltaTime) {
     OCL::enqueueKernel3D(commandQueue, kernelAdvection, simulationSizeWithBorder);
 }
 
+AbstractSimulation::ImageInfo Simulation::getImageInfo2D() {
+    ImageInfo info{};
+    info.width = simulationSize.x;
+    info.height = simulationSize.y;
+    info.totalSize = info.width * info.height * 4 * sizeof(float);
+    return info;
+}
+
+void Simulation::getImageData2D(void *data) {
+    OCL::Vec3 offset = borderOffset;
+    offset.z = 0;
+    OCL::Vec3 size = simulationSize;
+    size.z = 1;
+    OCL::enqueueReadImage3D(commandQueue, color.getSource(), CL_TRUE, offset, size, data);
+}
+
 void Simulation::applyForce(float positionX, float positionY, float changeX, float changeY, float radius) {
     const float coefficient = 0.01f; // arbitrarily set
     changeX *= simulationSize.x * coefficient;

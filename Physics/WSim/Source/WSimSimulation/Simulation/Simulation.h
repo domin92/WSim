@@ -1,23 +1,26 @@
 #pragma once
 
+#include "Source/WSimSimulation/Simulation/AbstractSimulation.h"
 #include "Source/WSimSimulation/Simulation/BorderMaths.h"
+#include "Source/WSimSimulation/Simulation/SimulationStep.h"
 #include "Source/WSimSimulation/Utils/ImagePair.h"
 #include "Source/WSimSimulation/Utils/KernelManager.h"
 #include "Source/WSimSimulation/Utils/OpenCL.h"
-#include "Source/WSimSimulation/Simulation/SimulationStep.h"
 
 #include <memory>
 #include <vector>
 
 const static cl_image_format vectorFieldFormat = {CL_RGBA, CL_FLOAT};
 const static cl_image_format scalarFieldFormat = {CL_R, CL_FLOAT};
-class Simulation {
+class Simulation : public AbstractSimulation {
 public:
     Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid);
-    void stepSimulation(float deltaTime);
-    void applyForce(float positionX, float positionY, float changeX, float changeY, float radius);
-    void stop();
-    void reset();
+    void stepSimulation(float deltaTime) override;
+    ImageInfo getImageInfo2D() override;
+    void getImageData2D(void *data) override;
+    void applyForce(float positionX, float positionY, float changeX, float changeY, float radius) override;
+    void stop() override;
+    void reset() override;
 
     auto getBorderOffset() const { return borderOffset; }
     auto getSimulationSize() const { return simulationSize; }
