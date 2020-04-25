@@ -28,8 +28,9 @@ int main(int argc, char **argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
 	
+    int full_size = 80; // Size of the edge of the simulation cube
 	int grid_size = my_cbrt(proc_count-1);
-	int node_size = 40 / grid_size;
+    int node_size = full_size / grid_size;
 	
 	if(my_rank==0){
 		Master master(proc_count, grid_size, node_size);

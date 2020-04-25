@@ -42,10 +42,12 @@ Master::Master(int proc_count, int grid_size, int node_size) {
         mapped_buffer[i] = main_buffer + (i + 1) * node_volume;
     }
 
-    pixel_size = 2.0f / (float)full_size;
+    pixelSize = 2.0f / (float)full_size;
 
     // MVP 
-    glm::mat4 Projection = glm::perspective(glm::radians(80.0f), (float)screen_size / (float)screen_size, 0.1f, 100.0f);
+    screenSize = 1000;
+
+    glm::mat4 Projection = glm::perspective(glm::radians(80.0f), (float)screenSize / (float)screenSize, 0.1f, 100.0f);
 
     glm::mat4 View = glm::lookAt(
         glm::vec3(1.5f, 1.5f, 2.5f), // Camera is at (4,3,3), in World Space
@@ -63,9 +65,8 @@ Master::Master(int proc_count, int grid_size, int node_size) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    screen_size = 1000;
 
-    window = glfwCreateWindow(screen_size, screen_size, "WSim", NULL, NULL);
+    window = glfwCreateWindow(screenSize, screenSize, "WSim", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -93,7 +94,7 @@ Master::~Master() {
     MPI_Abort(MPI_COMM_WORLD, 0);
 }
 
-void Master::load_shaders() {
+void Master::loadShaders() {
     int success;
     char infoLog[512];
 
@@ -140,23 +141,7 @@ void Master::load_shaders() {
     mvpUniformLocation = glGetUniformLocation(shaderProgram, "MVP");
 }
 
-void Master::load_buffers() {
-
-    float squareVertices[12] = {
-        1.0f, 1.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-    };
-
-    for (int i = 0; i < 12; i++) {
-        squareVertices[i] *= pixel_size;
-    }
-
-    unsigned int squareIndices[6] = {
-        0, 1, 3,
-        1, 2, 3
-    };
+void Master::loadBuffers() {
 
     float cubeVertices[24] = {
         1.0, -1.0, -1.0,
@@ -172,7 +157,7 @@ void Master::load_buffers() {
     for (int i = 0; i < 24; i++) {
         cubeVertices[i] += 1.0f;
         cubeVertices[i] *= 0.5f;
-        cubeVertices[i] *= pixel_size;
+        cubeVertices[i] *= pixelSize;
     }
 
     unsigned int cubeIndices[36] = {
@@ -216,8 +201,8 @@ void Master::receive_from_nodes() {
 
 void Master::main() {
 
-    for (int z = full_size / 6 * 1; z < full_size / 6 * 4; z++) {
-        for (int y = full_size / 6 * 2; y < full_size / 6 * 5; y++) {
+    for (int z = full_size / 6 * 2; z < full_size / 6 * 4; z++) {
+        for (int y = full_size / 6 * 2; y < full_size / 6 * 4; y++) {
             for (int x = full_size / 6 * 2; x < full_size / 6 * 4; x++) {
 
                 int z_in_node = z % node_size;
@@ -243,9 +228,9 @@ void Master::main() {
 
     send_to_nodes();
 
-    load_shaders();
+    loadShaders();
 
-    load_buffers();
+    loadBuffers();
 
     glUseProgram(shaderProgram);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -276,7 +261,7 @@ void Master::main() {
                     int power = mapped_buffer[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node];
                     
                     if (power > 0) {
-                        glUniform3f(positionUniformLocation, (x - full_size / 2) * pixel_size, (y - full_size / 2) * pixel_size, (z - full_size / 2) * pixel_size);
+                        glUniform3f(positionUniformLocation, (x - full_size / 2) * pixelSize, (y - full_size / 2) * pixelSize, (z - full_size / 2) * pixelSize);
                         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
                     } 
 

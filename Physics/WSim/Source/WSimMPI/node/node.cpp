@@ -583,9 +583,9 @@ void Node::send_to_master() {
 void Node::main() {
     receive_from_master();
     while (true) {
-        pre_share_copy();
-        share();
-        post_share_copy();
+        //pre_share_copy();
+        //share();
+        //post_share_copy();
         iter();
         send_to_master();
     }

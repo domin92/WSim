@@ -11,6 +11,7 @@
 
 class Master{
 
+    // MPI
 	int grid_size;
 	int node_size;
 	int proc_count;
@@ -23,17 +24,18 @@ class Master{
 	void receive_from_nodes();
 	void send_to_nodes();
 
-    int screen_size;
-    float pixel_size;
+    // OGL
+    int screenSize;
+    float pixelSize;
     GLFWwindow *window;
 
-    void load_shaders();
+    void loadShaders();
     unsigned int shaderProgram;
     GLuint positionUniformLocation;
     GLuint mvpUniformLocation;
     glm::mat4 mvp;
 
-    void load_buffers();
+    void loadBuffers();
     unsigned int VAO, VBO, EBO;
 
 public:
