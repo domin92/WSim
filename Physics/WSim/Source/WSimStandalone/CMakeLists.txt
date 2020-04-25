@@ -14,6 +14,7 @@ target_include_directories(${TARGET_WSIM_STANDALONE} PRIVATE
     ${DIR_FREEGLUT}/include
 )
 set_target_properties(${TARGET_WSIM_STANDALONE} PROPERTIES CXX_STANDARD 17)
+set_target_properties(${TARGET_WSIM_STANDALONE} PROPERTIES FOLDER Executables)
 target_compile_definitions(${TARGET_WSIM_STANDALONE} PRIVATE FREEGLUT_STATIC)
 
 # Generate run_standalone.sh script
