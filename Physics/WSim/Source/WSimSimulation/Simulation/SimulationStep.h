@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/WSimCore/Utils/ImagePair.h"
-#include "Source/WSimCore/Utils/OpenCL.h"
+#include "Source/WSimSimulation/Utils/ImagePair.h"
+#include "Source/WSimSimulation/Utils/OpenCL.h"
 
 class Simulation;
 

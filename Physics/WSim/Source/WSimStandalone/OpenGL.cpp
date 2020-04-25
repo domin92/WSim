@@ -1,6 +1,6 @@
 #include "OpenGL.h"
 
-#include "Source/WSimCore/Simulation/Simulation.h"
+#include "Source/WSimSimulation/Simulation/Simulation.h"
 
 #include <chrono>
 #include <thread>

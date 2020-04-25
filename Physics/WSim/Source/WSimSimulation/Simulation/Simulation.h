@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Source/WSimCore/Simulation/BorderMaths.h"
-#include "Source/WSimCore/Utils/ImagePair.h"
-#include "Source/WSimCore/Utils/KernelManager.h"
-#include "Source/WSimCore/Utils/OpenCL.h"
-#include "Source/WSimCore/Simulation/SimulationStep.h"
+#include "Source/WSimSimulation/Simulation/BorderMaths.h"
+#include "Source/WSimSimulation/Utils/ImagePair.h"
+#include "Source/WSimSimulation/Utils/KernelManager.h"
+#include "Source/WSimSimulation/Utils/OpenCL.h"
+#include "Source/WSimSimulation/Simulation/SimulationStep.h"
 
 #include <memory>
 #include <vector>

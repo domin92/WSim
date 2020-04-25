@@ -2,11 +2,11 @@ if (MPI_FOUND)
     # Define WSimMPI - an MPI executable conducting the simulation
     get_sources(SOURCE_FILES)
     add_executable(${TARGET_WSIM_MPI} ${SOURCE_FILES})
-    add_dependencies(${TARGET_WSIM_MPI} ${TARGET_WSIM_CORE_LIB})
+    add_dependencies(${TARGET_WSIM_MPI} ${TARGET_WSIM_SIMULATION_LIB})
     target_link_libraries(${TARGET_WSIM_MPI}
         ${MPI_LIBRARIES}
-        ${TARGET_WSIM_CORE_LIB}
-        $<GENEX_EVAL:$<TARGET_PROPERTY:${TARGET_WSIM_CORE_LIB},LINK_LIBRARIES>>
+        ${TARGET_WSIM_SIMULATION_LIB}
+        $<GENEX_EVAL:$<TARGET_PROPERTY:${TARGET_WSIM_SIMULATION_LIB},LINK_LIBRARIES>>
         $<TARGET_PROPERTY:freeglut_static,LINK_LIBRARIES>
         $<TARGET_PROPERTY:glfw,LINK_LIBRARIES>
         $<TARGET_PROPERTY:glad,LINK_LIBRARIES>
@@ -14,7 +14,7 @@ if (MPI_FOUND)
         $<TARGET_FILE:glad>
     )
     target_include_directories(${TARGET_WSIM_MPI} PRIVATE
-        $<TARGET_PROPERTY:${TARGET_WSIM_CORE_LIB},INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:${TARGET_WSIM_SIMULATION_LIB},INCLUDE_DIRECTORIES>
         ${MPI_INCLUDE_PATH}
         .
         ${DIR_GLFW}/include

@@ -1,6 +1,6 @@
 #include "Simulation.h"
 
-#include "Source/WSimCore/Simulation/SimulationStep.h"
+#include "Source/WSimSimulation/Simulation/SimulationStep.h"
 
 Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid)
     : positionInGrid(positionInGrid),

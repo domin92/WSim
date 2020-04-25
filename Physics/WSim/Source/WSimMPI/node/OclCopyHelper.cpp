@@ -1,6 +1,6 @@
 #include "OclCopyHelper.h"
 
-#include "Source/WSimCore/Utils/Error.h"
+#include "Source/WSimSimulation/Utils/Error.h"
 
 OclCopyHelper::OclCopyHelper(PositionInGrid grid, cl_command_queue &commandQueue, size_t border, cl_mem image, OCL::Vec3 baseSize)
     : grid(grid),

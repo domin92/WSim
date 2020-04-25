@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/WSimCore/Utils/OpenCL.h"
+#include "Source/WSimSimulation/Utils/OpenCL.h"
 
 struct PositionInGrid {
     PositionInGrid() {}

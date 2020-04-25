@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/WSimCore/Simulation/BorderMaths.h"
-#include "Source/WSimCore/Utils/OpenCL.h"
+#include "Source/WSimSimulation/Simulation/BorderMaths.h"
+#include "Source/WSimSimulation/Utils/OpenCL.h"
 
 class OclCopyHelper {
 public:

@@ -1,4 +1,4 @@
-#include "Source/WSimCore/Simulation/BorderMaths.h"
+#include "Source/WSimSimulation/Simulation/BorderMaths.h"
 
 #include <gtest/gtest.h>
 

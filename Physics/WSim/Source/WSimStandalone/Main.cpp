@@ -1,5 +1,5 @@
-#include "Source/WSimCore/Simulation/Simulation.h"
-#include "Source/WSimCore/Utils/OpenCL.h"
+#include "Source/WSimSimulation/Simulation/Simulation.h"
+#include "Source/WSimSimulation/Utils/OpenCL.h"
 #include "Source/WSimStandalone/OpenGL.h"
 
 void update(float deltaTime) {
