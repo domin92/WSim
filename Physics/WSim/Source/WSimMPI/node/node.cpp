@@ -378,6 +378,37 @@ void Node::share_corners() {
 }
 
 void Node::share_edges() {
+
+    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_UL_in, sh_edge_DR_out, -1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_DR_in, sh_edge_UL_out, 1, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_UR_in, sh_edge_DL_out, 1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_DL_in, sh_edge_UR_out, -1, 1, 0);
+
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FL_in, sh_edge_BR_out, -1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BR_in, sh_edge_FL_out, 1, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FR_in, sh_edge_BL_out, 1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BL_in, sh_edge_FR_out, -1, 0, 1);
+
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FU_in, sh_edge_BD_out, 0, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BD_in, sh_edge_FU_out, 0, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FD_in, sh_edge_BU_out, 0, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BU_in, sh_edge_FD_out, 0, -1, 1);
+
+    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_UL_in, sh_edge_DR_out, -1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_DR_in, sh_edge_UL_out, 1, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_UR_in, sh_edge_DL_out, 1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_DL_in, sh_edge_UR_out, -1, 1, 0);
+                                     
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FL_in, sh_edge_BR_out, -1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BR_in, sh_edge_FL_out, 1, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FR_in, sh_edge_BL_out, 1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BL_in, sh_edge_FR_out, -1, 0, 1);
+                                     
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FU_in, sh_edge_BD_out, 0, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BD_in, sh_edge_FU_out, 0, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FD_in, sh_edge_BU_out, 0, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BU_in, sh_edge_FD_out, 0, -1, 1);
+
 }
 
 void Node::pre_share_copy() {
@@ -603,7 +634,7 @@ void Node::share() {
     share_horizontal();
     share_depth();
     share_corners();
-    //share_edges();
+    share_edges();
 }
 
 void Node::main() {
