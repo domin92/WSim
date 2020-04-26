@@ -96,6 +96,9 @@ class Node{
 
 	void share();
 
+    void pre_share_copy_buffer(char *output_buffer, int size_x, int size_y, int size_z, int out_x, int out_y, int out_z);
+    void post_share_copy_buffer(char *input_buffer, int size_x, int size_y, int size_z, int out_x, int out_y, int out_z);
+
 	void pre_share_copy();
 	void post_share_copy();
 
