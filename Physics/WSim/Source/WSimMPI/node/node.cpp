@@ -229,131 +229,28 @@ void Node::recv_buffer(bool condition, char *intput_buffer, char *output_buffer,
 
 void Node::share_vertical() {
 
-    if (y_pos_in_grid % 2 == 0) {
-        if (y_pos_in_grid - 1 >= 0) {
-            MPI_Recv(sh_vertical_U_in, sh_vertical_size, MPI_CHAR, rank - grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (y_pos_in_grid + 1 < grid_size) {
-            MPI_Send(sh_vertical_D_out, sh_vertical_size, MPI_CHAR, rank + grid_size, 1, MPI_COMM_WORLD);
-        }
-    }
+    recv_buffer(y_pos_in_grid % 2 == 0, sh_vertical_U_in, sh_vertical_D_out, sh_vertical_size, 0, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, sh_vertical_D_in, sh_vertical_U_out, sh_vertical_size, 0, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, sh_vertical_U_in, sh_vertical_D_out, sh_vertical_size, 0, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, sh_vertical_D_in, sh_vertical_U_out, sh_vertical_size, 0, 1, 0);
 
-    if (y_pos_in_grid % 2 == 0) {
-        if (y_pos_in_grid + 1 < grid_size) {
-            MPI_Recv(sh_vertical_D_in, sh_vertical_size, MPI_CHAR, rank + grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (y_pos_in_grid - 1 >= 0) {
-            MPI_Send(sh_vertical_U_out, sh_vertical_size, MPI_CHAR, rank - grid_size, 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (y_pos_in_grid % 2 == 1) {
-        if (y_pos_in_grid - 1 >= 0) {
-            MPI_Recv(sh_vertical_U_in, sh_vertical_size, MPI_CHAR, rank - grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (y_pos_in_grid + 1 < grid_size) {
-            MPI_Send(sh_vertical_D_out, sh_vertical_size, MPI_CHAR, rank + grid_size, 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (y_pos_in_grid % 2 == 1) {
-        if (y_pos_in_grid + 1 < grid_size) {
-            MPI_Recv(sh_vertical_D_in, sh_vertical_size, MPI_CHAR, rank + grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (y_pos_in_grid - 1 >= 0) {
-            MPI_Send(sh_vertical_U_out, sh_vertical_size, MPI_CHAR, rank - grid_size, 1, MPI_COMM_WORLD);
-        }
-    }
 }
 
 void Node::share_horizontal() {
 
-    if (x_pos_in_grid % 2 == 0) {
-        if (x_pos_in_grid - 1 >= 0) {
-            MPI_Recv(sh_horizontal_L_in, sh_horizontal_size, MPI_CHAR, rank - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (x_pos_in_grid + 1 < grid_size) {
-            MPI_Send(sh_horizontal_R_out, sh_horizontal_size, MPI_CHAR, rank + 1, 1, MPI_COMM_WORLD);
-        }
-    }
+    recv_buffer(x_pos_in_grid % 2 == 0, sh_horizontal_L_in, sh_horizontal_R_out, sh_horizontal_size, -1, 0, 0);
+    recv_buffer(x_pos_in_grid % 2 == 0, sh_horizontal_R_in, sh_horizontal_L_out, sh_horizontal_size, 1, 0, 0);
+    recv_buffer(x_pos_in_grid % 2 == 1, sh_horizontal_L_in, sh_horizontal_R_out, sh_horizontal_size, -1, 0, 0);
+    recv_buffer(x_pos_in_grid % 2 == 1, sh_horizontal_R_in, sh_horizontal_L_out, sh_horizontal_size, 1, 0, 0);
 
-    if (x_pos_in_grid % 2 == 0) {
-        if (x_pos_in_grid + 1 < grid_size) {
-            MPI_Recv(sh_horizontal_R_in, sh_horizontal_size, MPI_CHAR, rank + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (x_pos_in_grid - 1 >= 0) {
-            MPI_Send(sh_horizontal_L_out, sh_horizontal_size, MPI_CHAR, rank - 1, 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (x_pos_in_grid % 2 == 1) {
-        if (x_pos_in_grid - 1 >= 0) {
-            MPI_Recv(sh_horizontal_L_in, sh_horizontal_size, MPI_CHAR, rank - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (x_pos_in_grid + 1 < grid_size) {
-            MPI_Send(sh_horizontal_R_out, sh_horizontal_size, MPI_CHAR, rank + 1, 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (x_pos_in_grid % 2 == 1) {
-        if (x_pos_in_grid + 1 < grid_size) {
-            MPI_Recv(sh_horizontal_R_in, sh_horizontal_size, MPI_CHAR, rank + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (x_pos_in_grid - 1 >= 0) {
-            MPI_Send(sh_horizontal_L_out, sh_horizontal_size, MPI_CHAR, rank - 1, 1, MPI_COMM_WORLD);
-        }
-    }
 }
 
 void Node::share_depth() {
 
-    if (z_pos_in_grid % 2 == 0) {
-        if (z_pos_in_grid - 1 >= 0) {
-            MPI_Recv(sh_depth_F_in, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (z_pos_in_grid + 1 < grid_size) {
-            MPI_Send(sh_depth_B_out, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (z_pos_in_grid % 2 == 0) {
-        if (z_pos_in_grid + 1 < grid_size) {
-            MPI_Recv(sh_depth_B_in, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (z_pos_in_grid - 1 >= 0) {
-            MPI_Send(sh_depth_F_out, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (z_pos_in_grid % 2 == 1) {
-        if (z_pos_in_grid - 1 >= 0) {
-            MPI_Recv(sh_depth_F_in, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (z_pos_in_grid + 1 < grid_size) {
-            MPI_Send(sh_depth_B_out, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD);
-        }
-    }
-
-    if (z_pos_in_grid % 2 == 1) {
-        if (z_pos_in_grid + 1 < grid_size) {
-            MPI_Recv(sh_depth_B_in, sh_depth_size, MPI_CHAR, rank + grid_size * grid_size, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        if (z_pos_in_grid - 1 >= 0) {
-            MPI_Send(sh_depth_F_out, sh_depth_size, MPI_CHAR, rank - grid_size * grid_size, 1, MPI_COMM_WORLD);
-        }
-    }
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_depth_F_in, sh_depth_B_out, sh_depth_size, 0, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_depth_B_in, sh_depth_F_out, sh_depth_size, 0, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_depth_F_in, sh_depth_B_out, sh_depth_size, 0, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_depth_B_in, sh_depth_F_out, sh_depth_size, 0, 0, 1);
 
 }
 
