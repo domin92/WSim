@@ -200,9 +200,9 @@ Node::~Node() {
 
 bool Node::node_in_grid(int x, int y, int z) {
     // Returns true if neighbour node is withing the grid
-    bool x_in_grid = x_pos_in_grid + x >= 0 & x_pos_in_grid + x < grid_size;
-    bool y_in_grid = y_pos_in_grid + y >= 0 & y_pos_in_grid + y < grid_size;
-    bool z_in_grid = z_pos_in_grid + z >= 0 & z_pos_in_grid + z < grid_size;
+    bool x_in_grid = (x_pos_in_grid + x >= 0) & (x_pos_in_grid + x < grid_size);
+    bool y_in_grid = (y_pos_in_grid + y >= 0) & (y_pos_in_grid + y < grid_size);
+    bool z_in_grid = (z_pos_in_grid + z >= 0) & (z_pos_in_grid + z < grid_size);
     return x_in_grid & y_in_grid & z_in_grid;
 }
 
@@ -211,17 +211,14 @@ int Node::rank_with_offset(int x, int y, int z) {
     return rank + z * grid_size * grid_size + y * grid_size + x;
 }
 
-void Node::recv_buffer(bool condition, char *intput_buffer, char *output_buffer, int size, int in_x, int in_y, int in_z) {
+inline void Node::recv_buffer(bool condition, char *intput_buffer, char *output_buffer, int size, int in_x, int in_y, int in_z) {
     if (condition) {
         if (node_in_grid(in_x, in_y, in_z)) {
             MPI_Recv(intput_buffer, size, MPI_CHAR, rank_with_offset(in_x, in_y, in_z), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
     } else {
-        int out_x = -in_x;
-        int out_y = -in_y;
-        int out_z = -in_z;
-        if (node_in_grid(out_x, out_y, out_z)) {
-            MPI_Send(output_buffer, size, MPI_CHAR, rank_with_offset(out_x, out_y, out_z), 1, MPI_COMM_WORLD);
+        if (node_in_grid(-in_x, -in_y, -in_z)) {
+            MPI_Send(output_buffer, size, MPI_CHAR, rank_with_offset(-in_x, -in_y, -in_z), 1, MPI_COMM_WORLD);
         }
     }
 }
