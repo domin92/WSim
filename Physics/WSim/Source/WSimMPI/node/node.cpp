@@ -198,7 +198,7 @@ Node::~Node() {
     delete[] array[1];
 }
 
-bool Node::node_in_grid(int x, int y, int z) {
+inline bool Node::node_in_grid(int x, int y, int z) {
     // Returns true if neighbour node is withing the grid
     bool x_in_grid = (x_pos_in_grid + x >= 0) & (x_pos_in_grid + x < grid_size);
     bool y_in_grid = (y_pos_in_grid + y >= 0) & (y_pos_in_grid + y < grid_size);
@@ -206,7 +206,7 @@ bool Node::node_in_grid(int x, int y, int z) {
     return x_in_grid & y_in_grid & z_in_grid;
 }
 
-int Node::rank_with_offset(int x, int y, int z) {
+inline int Node::rank_with_offset(int x, int y, int z) {
     // Returns neighbour node rank
     return rank + z * grid_size * grid_size + y * grid_size + x;
 }
