@@ -201,9 +201,9 @@ void Master::receive_from_nodes() {
 
 void Master::main() {
 
-    for (int z = full_size / 6 * 2; z < full_size / 6 * 4; z++) {
-        for (int y = full_size / 6 * 2; y < full_size / 6 * 4; y++) {
-            for (int x = full_size / 6 * 2; x < full_size / 6 * 4; x++) {
+    for (int z = 0; z < full_size; z++) {
+        for (int y = 0; y < full_size; y++) {
+            for (int x = 0; x < full_size; x++) {
 
                 int z_in_node = z % node_size;
                 int y_in_node = y % node_size;
@@ -218,7 +218,7 @@ void Master::main() {
                 int r = rand() % 100;
 
                 if (r > 50) {
-                    mapped_buffer[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node] = 1 + r%4;
+                    mapped_buffer[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node] = 1;// + r%4;
                 } else {
                     mapped_buffer[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node] = 0;
                 }

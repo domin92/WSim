@@ -405,7 +405,6 @@ void Node::iter() {
 
                 int val = 0;
 
-                // sum 26 neighbours
                 for (int i = -1; i <= 1; i++) {
                     for (int j = -1; j <= 1; j++) {
                         for (int k = -1; k <= 1; k++) {
@@ -413,21 +412,20 @@ void Node::iter() {
                                 continue;
                             }
 
-                            val += input_array[z + i][y + j][x + k] > 0 && input_array[z + i][y + j][x + k] < 5;
+                            val += input_array[z + i][y + j][x + k] == 1;
                         }
                     }
                 }
 
-                // 3D CA rules - Amoeba (9-26/5-7,12-13,15/5/M)
                 if (input_array[z][y][x] == 0) {
-                    if ((val >= 5 && val <= 7) || val == 12 || val == 13 || val == 15) {
-                        output_array[z][y][x] = 4;
+                    if ((val >= 13 && val <= 14) || val == 17 || val == 18 || val == 19) {
+                        output_array[z][y][x] = 1;
                     } else {
                         output_array[z][y][x] = 0;
                     }
                 } else {
-                    if (val >= 9 && val <= 26) {
-                        output_array[z][y][x]--;
+                    if (val >= 13 && val <= 26) {
+                        output_array[z][y][x] = 1;
                     } else {
                         output_array[z][y][x] = 0;
                     }
