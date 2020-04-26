@@ -10,7 +10,7 @@ Node::Node(int rank, int grid_size, int node_size) {
     this->node_size = node_size;
     node_volume = node_size * node_size * node_size;
 
-    this->share_thickness = 1;
+    share_thickness = 1;
 
     sh_horizontal_size = node_size * node_size * share_thickness;
     sh_horizontal_L_in = new char[sh_horizontal_size];
@@ -74,9 +74,8 @@ Node::Node(int rank, int grid_size, int node_size) {
     sh_edge_BD_in = new char[sh_edge_size];
     sh_edge_BD_out = new char[sh_edge_size];
 
-    adjusted_rank = rank - 1;
-
     // Calculating node position in 3D space - VERY IMPORTANT!
+    int adjusted_rank = rank - 1; // Rank excluding master
     x_pos_in_grid = (adjusted_rank) % grid_size;
     y_pos_in_grid = ((adjusted_rank) % (grid_size * grid_size)) / grid_size;
     z_pos_in_grid = (adjusted_rank) / (grid_size * grid_size);
@@ -231,6 +230,7 @@ void Node::share_vertical() {
 
     recv_buffer(y_pos_in_grid % 2 == 0, sh_vertical_U_in, sh_vertical_D_out, sh_vertical_size, 0, -1, 0);
     recv_buffer(y_pos_in_grid % 2 == 0, sh_vertical_D_in, sh_vertical_U_out, sh_vertical_size, 0, 1, 0);
+
     recv_buffer(y_pos_in_grid % 2 == 1, sh_vertical_U_in, sh_vertical_D_out, sh_vertical_size, 0, -1, 0);
     recv_buffer(y_pos_in_grid % 2 == 1, sh_vertical_D_in, sh_vertical_U_out, sh_vertical_size, 0, 1, 0);
 
@@ -240,6 +240,7 @@ void Node::share_horizontal() {
 
     recv_buffer(x_pos_in_grid % 2 == 0, sh_horizontal_L_in, sh_horizontal_R_out, sh_horizontal_size, -1, 0, 0);
     recv_buffer(x_pos_in_grid % 2 == 0, sh_horizontal_R_in, sh_horizontal_L_out, sh_horizontal_size, 1, 0, 0);
+
     recv_buffer(x_pos_in_grid % 2 == 1, sh_horizontal_L_in, sh_horizontal_R_out, sh_horizontal_size, -1, 0, 0);
     recv_buffer(x_pos_in_grid % 2 == 1, sh_horizontal_R_in, sh_horizontal_L_out, sh_horizontal_size, 1, 0, 0);
 
@@ -249,6 +250,7 @@ void Node::share_depth() {
 
     recv_buffer(z_pos_in_grid % 2 == 0, sh_depth_F_in, sh_depth_B_out, sh_depth_size, 0, 0, -1);
     recv_buffer(z_pos_in_grid % 2 == 0, sh_depth_B_in, sh_depth_F_out, sh_depth_size, 0, 0, 1);
+
     recv_buffer(z_pos_in_grid % 2 == 1, sh_depth_F_in, sh_depth_B_out, sh_depth_size, 0, 0, -1);
     recv_buffer(z_pos_in_grid % 2 == 1, sh_depth_B_in, sh_depth_F_out, sh_depth_size, 0, 0, 1);
 
@@ -526,6 +528,7 @@ void Node::send_to_master() {
     }
 
     MPI_Gather(send_array, node_volume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
+
 }
 
 void Node::share() {

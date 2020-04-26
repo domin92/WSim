@@ -10,8 +10,6 @@ class Node{
 
     int share_thickness; // Thickness of shared areas in bytes
 
-	int adjusted_rank; // Rank excluding master
-
 	int main_array_size;
 	char ***array[2]; // Two 3D arrays - input, output
 	int current_array_idx; // Index of the current input array
