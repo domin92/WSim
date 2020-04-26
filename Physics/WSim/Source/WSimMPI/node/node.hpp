@@ -6,6 +6,7 @@ class Node{
 	int rank;
 	int grid_size; // Number of nodes in side of 3d grid
 	int node_size; // Size of the cude side in bytes
+    int node_volume;
 
     int share_thickness; // Thickness of shared areas in bytes
 
@@ -22,7 +23,7 @@ class Node{
 
 	// Share arrays
 	int sh_horizontal_size;
-	char *sh_horizontal_L_in; // Left
+    char* sh_horizontal_L_in; // Left
 	char *sh_horizontal_L_out;
 	char *sh_horizontal_R_in; // Right
 	char *sh_horizontal_R_out;
@@ -87,7 +88,7 @@ class Node{
 
     bool node_in_grid(int x, int y, int z);
     int rank_with_offset(int x, int y, int z);
-    void recv_buffer(bool condition, char *intput_buffer, char *output_buffer, int in_x, int in_y, int in_z);
+    void recv_buffer(bool condition, char *intput_buffer, char *output_buffer, int size, int in_x, int in_y, int in_z);
 
 	void share_horizontal();
 	void share_vertical();

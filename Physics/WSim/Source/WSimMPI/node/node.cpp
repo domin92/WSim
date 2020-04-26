@@ -8,6 +8,7 @@ Node::Node(int rank, int grid_size, int node_size) {
     this->rank = rank;
     this->grid_size = grid_size;
     this->node_size = node_size;
+    node_volume = node_size * node_size * node_size;
 
     this->share_thickness = 1;
 
@@ -125,7 +126,7 @@ Node::Node(int rank, int grid_size, int node_size) {
 
     current_array_idx = 0;
 
-    send_array = new char[node_size * node_size * node_size];
+    send_array = new char[node_volume];
 }
 
 Node::~Node() {
@@ -199,7 +200,7 @@ Node::~Node() {
 }
 
 bool Node::node_in_grid(int x, int y, int z) {
-    // Returns true if neighbour node is withing grid
+    // Returns true if neighbour node is withing the grid
     bool x_in_grid = x_pos_in_grid + x >= 0 & x_pos_in_grid + x < grid_size;
     bool y_in_grid = y_pos_in_grid + y >= 0 & y_pos_in_grid + y < grid_size;
     bool z_in_grid = z_pos_in_grid + z >= 0 & z_pos_in_grid + z < grid_size;
@@ -207,7 +208,23 @@ bool Node::node_in_grid(int x, int y, int z) {
 }
 
 int Node::rank_with_offset(int x, int y, int z) {
+    // Returns neighbour node rank
     return rank + z * grid_size * grid_size + y * grid_size + x;
+}
+
+void Node::recv_buffer(bool condition, char *intput_buffer, char *output_buffer, int size, int in_x, int in_y, int in_z) {
+    if (condition) {
+        if (node_in_grid(in_x, in_y, in_z)) {
+            MPI_Recv(intput_buffer, size, MPI_CHAR, rank_with_offset(in_x, in_y, in_z), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    } else {
+        int out_x = -in_x;
+        int out_y = -in_y;
+        int out_z = -in_z;
+        if (node_in_grid(out_x, out_y, out_z)) {
+            MPI_Send(output_buffer, size, MPI_CHAR, rank_with_offset(out_x, out_y, out_z), 1, MPI_COMM_WORLD);
+        }
+    }
 }
 
 void Node::share_vertical() {
@@ -340,74 +357,59 @@ void Node::share_depth() {
 
 }
 
-void Node::recv_buffer(bool condition, char *intput_buffer, char *output_buffer, int in_x, int in_y, int in_z) {
-    if (condition) {
-        if (node_in_grid(in_x, in_y, in_z)) {
-            MPI_Recv(intput_buffer, 1, MPI_CHAR, rank_with_offset(in_x, in_y, in_z), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    } else {
-        int out_x = -in_x;
-        int out_y = -in_y;
-        int out_z = -in_z;
-        if (node_in_grid(out_x, out_y, out_z)) {
-            MPI_Send(output_buffer, 1, MPI_CHAR, rank_with_offset(out_x, out_y, out_z), 1, MPI_COMM_WORLD);
-        }
-    }
-}
-
 void Node::share_corners() {
 
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FUL_in, sh_corner_BDR_out, -1, -1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BDR_in, sh_corner_FUL_out, 1, 1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FUR_in, sh_corner_BDL_out, 1, -1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BDL_in, sh_corner_FUR_out, -1, 1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FDL_in, sh_corner_BUR_out, -1, 1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BUR_in, sh_corner_FDL_out, 1, -1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FDR_in, sh_corner_BUL_out, 1, 1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BUL_in, sh_corner_FDR_out, -1, -1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FUL_in, sh_corner_BDR_out, sh_corner_size, -1, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BDR_in, sh_corner_FUL_out, sh_corner_size, 1, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FUR_in, sh_corner_BDL_out, sh_corner_size, 1, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BDL_in, sh_corner_FUR_out, sh_corner_size, -1, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FDL_in, sh_corner_BUR_out, sh_corner_size, -1, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BUR_in, sh_corner_FDL_out, sh_corner_size, 1, -1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FDR_in, sh_corner_BUL_out, sh_corner_size, 1, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BUL_in, sh_corner_FDR_out, sh_corner_size, -1, -1, 1);
 
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FUL_in, sh_corner_BDR_out, -1, -1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BDR_in, sh_corner_FUL_out, 1, 1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FUR_in, sh_corner_BDL_out, 1, -1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BDL_in, sh_corner_FUR_out, -1, 1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FDL_in, sh_corner_BUR_out, -1, 1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BUR_in, sh_corner_FDL_out, 1, -1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FDR_in, sh_corner_BUL_out, 1, 1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BUL_in, sh_corner_FDR_out, -1, -1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FUL_in, sh_corner_BDR_out, sh_corner_size, -1, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BDR_in, sh_corner_FUL_out, sh_corner_size, 1, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FUR_in, sh_corner_BDL_out, sh_corner_size, 1, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BDL_in, sh_corner_FUR_out, sh_corner_size, -1, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FDL_in, sh_corner_BUR_out, sh_corner_size, -1, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BUR_in, sh_corner_FDL_out, sh_corner_size, 1, -1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FDR_in, sh_corner_BUL_out, sh_corner_size, 1, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BUL_in, sh_corner_FDR_out, sh_corner_size, -1, -1, 1);
 
 }
 
 void Node::share_edges() {
 
-    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_UL_in, sh_edge_DR_out, -1, -1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_DR_in, sh_edge_UL_out, 1, 1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_UR_in, sh_edge_DL_out, 1, -1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_DL_in, sh_edge_UR_out, -1, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_UL_in, sh_edge_DR_out, sh_edge_size, -1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_DR_in, sh_edge_UL_out, sh_edge_size, 1, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_UR_in, sh_edge_DL_out, sh_edge_size, 1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_DL_in, sh_edge_UR_out, sh_edge_size, -1, 1, 0);
 
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FL_in, sh_edge_BR_out, -1, 0, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BR_in, sh_edge_FL_out, 1, 0, 1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FR_in, sh_edge_BL_out, 1, 0, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BL_in, sh_edge_FR_out, -1, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FL_in, sh_edge_BR_out, sh_edge_size, -1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BR_in, sh_edge_FL_out, sh_edge_size, 1, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FR_in, sh_edge_BL_out, sh_edge_size, 1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BL_in, sh_edge_FR_out, sh_edge_size, -1, 0, 1);
 
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FU_in, sh_edge_BD_out, 0, -1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BD_in, sh_edge_FU_out, 0, 1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FD_in, sh_edge_BU_out, 0, 1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BU_in, sh_edge_FD_out, 0, -1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FU_in, sh_edge_BD_out, sh_edge_size, 0, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BD_in, sh_edge_FU_out, sh_edge_size, 0, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FD_in, sh_edge_BU_out, sh_edge_size, 0, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BU_in, sh_edge_FD_out, sh_edge_size, 0, -1, 1);
 
-    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_UL_in, sh_edge_DR_out, -1, -1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_DR_in, sh_edge_UL_out, 1, 1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_UR_in, sh_edge_DL_out, 1, -1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_DL_in, sh_edge_UR_out, -1, 1, 0);
-                                     
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FL_in, sh_edge_BR_out, -1, 0, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BR_in, sh_edge_FL_out, 1, 0, 1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FR_in, sh_edge_BL_out, 1, 0, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BL_in, sh_edge_FR_out, -1, 0, 1);
-                                     
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FU_in, sh_edge_BD_out, 0, -1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BD_in, sh_edge_FU_out, 0, 1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FD_in, sh_edge_BU_out, 0, 1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BU_in, sh_edge_FD_out, 0, -1, 1);
+    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_UL_in, sh_edge_DR_out, sh_edge_size, -1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_DR_in, sh_edge_UL_out, sh_edge_size, 1, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_UR_in, sh_edge_DL_out, sh_edge_size, 1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_DL_in, sh_edge_UR_out, sh_edge_size, -1, 1, 0);
+
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FL_in, sh_edge_BR_out, sh_edge_size, -1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BR_in, sh_edge_FL_out, sh_edge_size, 1, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FR_in, sh_edge_BL_out, sh_edge_size, 1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BL_in, sh_edge_FR_out, sh_edge_size, -1, 0, 1);
+
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FU_in, sh_edge_BD_out, sh_edge_size, 0, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BD_in, sh_edge_FU_out, sh_edge_size, 0, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FD_in, sh_edge_BU_out, sh_edge_size, 0, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BU_in, sh_edge_FD_out, sh_edge_size, 0, -1, 1);
 
 }
 
@@ -605,7 +607,7 @@ void Node::iter() {
 
 void Node::receive_from_master() {
 
-    MPI_Scatter(MPI_IN_PLACE, 0, MPI_CHAR, send_array, node_size * node_size * node_size, MPI_CHAR, 0, MPI_COMM_WORLD);
+    MPI_Scatter(MPI_IN_PLACE, 0, MPI_CHAR, send_array, node_volume, MPI_CHAR, 0, MPI_COMM_WORLD);
 
     for (int z = 0; z < node_size; z++) {
         for (int y = 0; y < node_size; y++) {
@@ -626,7 +628,7 @@ void Node::send_to_master() {
         }
     }
 
-    MPI_Gather(send_array, node_size * node_size * node_size, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
+    MPI_Gather(send_array, node_volume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
 }
 
 void Node::share() {
