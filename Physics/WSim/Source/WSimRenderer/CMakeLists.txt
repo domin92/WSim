@@ -7,12 +7,14 @@ target_include_directories(${TARGET_WSIM_RENDERER_LIB} PRIVATE
     ${DIR_GLAD}/include
     ${DIR_STB}
     ${DIR_WSIM}
+    ${DIR_GLM}
 )
 target_link_libraries(${TARGET_WSIM_RENDERER_LIB}
     $<TARGET_PROPERTY:glfw,LINK_LIBRARIES>
     $<TARGET_PROPERTY:glad,LINK_LIBRARIES>
     $<TARGET_FILE:glfw>
     $<TARGET_FILE:glad>
+    $<TARGET_FILE:glm_static>
 )
 set_target_properties(${TARGET_WSIM_RENDERER_LIB} PROPERTIES FOLDER Libraries)
 set_target_properties(${TARGET_WSIM_RENDERER_LIB} PROPERTIES CXX_STANDARD 17)

@@ -32,6 +32,10 @@ Renderer::Renderer(int oglProfile, int width, int height) {
     lastFrameTime = Clock::now();
 }
 
+Renderer::~Renderer() {
+    glfwTerminate();
+}
+
 void Renderer::mainLoop() {
 
     while (!glfwWindowShouldClose(window)) {

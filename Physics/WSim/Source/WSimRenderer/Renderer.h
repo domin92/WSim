@@ -22,6 +22,7 @@
 class Renderer {
 public:
     Renderer(int oglProfile, int width, int height);
+    virtual ~Renderer();
     void mainLoop();
 
 protected:

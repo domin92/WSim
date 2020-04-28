@@ -1,50 +1,39 @@
 #ifndef MASTER_HPP
 #define MASTER_HPP
 
-// clang-format off
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/vec3.hpp>
-// clang-format on
+#include <memory>
 
-class Master{
+class MasterRendererInterface;
 
-    // MPI
-	int grid_size;
-    int node_size;
-    int full_size;
-	int proc_count;
-    int node_volume;
+class Master {
+    // Sizes
+    const int grid_size;
+    const int node_size;
+    const int full_size;
+    const int proc_count;
+    const int node_volume;
 
-	char** mapped_buffer;
-	char* main_buffer;
+    // Allocations
+    char **mapped_buffer;
+    char *main_buffer;
 
-	void receive_from_nodes();
-	void send_to_nodes();
-
-    // OGL
-    int screenSize;
-    float pixelSize;
-    GLFWwindow *window;
-
-    void loadShaders();
-    unsigned int shaderProgram;
-    GLuint positionUniformLocation;
-    GLuint mvpUniformLocation;
-    glm::mat4 mvp;
-
-    void loadBuffers();
-    unsigned int VAO, VBO, EBO;
+    // Renderer
+    std::unique_ptr<MasterRendererInterface> rendererInterface;
 
 public:
+    // General
+    Master(int proc_count, int grid_size, int node_size);
+    ~Master();
+    void main();
 
-	Master(int proc_count, int grid_size, int node_size);
-	~Master();
-
-	void main();
-
+    // Getters
+    auto getGridSize() const { return grid_size; }
+    auto getNodeSize() const { return node_size; }
+    auto getFullSize() const { return full_size; }
+    auto getProcCount() const { return proc_count; }
+    auto getNodeVolume() const { return node_volume; }
+    auto getMainBuffer() const { return main_buffer; }
+    auto getMappedBuffer() const { return mapped_buffer; }
 };
 
 #endif
