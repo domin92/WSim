@@ -96,9 +96,9 @@ fi
 run_cmake "." "$build_path" $architecture $configuration
 if [ "$build_dependencies" == 1 ]; then
     compile gtest
-    compile freeglut_static
     compile glfw
     compile glad
+    compile glm_static
 fi
 if [ "$build_wsim" == 1 ]; then
     compile WSimStandalone

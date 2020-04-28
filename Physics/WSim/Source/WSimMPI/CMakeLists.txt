@@ -11,6 +11,7 @@ if (MPI_FOUND)
         $<TARGET_PROPERTY:glad,LINK_LIBRARIES>
         $<TARGET_FILE:glfw>
         $<TARGET_FILE:glad>
+        $<TARGET_FILE:glm_static>
     )
     target_include_directories(${TARGET_WSIM_MPI} PRIVATE
         $<TARGET_PROPERTY:${TARGET_WSIM_SIMULATION_LIB},INCLUDE_DIRECTORIES>
@@ -19,6 +20,7 @@ if (MPI_FOUND)
         ${DIR_GLFW}/include
         ${DIR_GLAD}/include
         ${DIR_STB}
+        ${DIR_GLM}
     )
     set_target_properties(${TARGET_WSIM_MPI} PROPERTIES FOLDER Executables)
     set_target_properties(${TARGET_WSIM_MPI} PROPERTIES CXX_STANDARD 17)
