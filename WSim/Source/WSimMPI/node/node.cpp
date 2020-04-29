@@ -11,26 +11,27 @@ Node::Node(int rank, int grid_size, int node_size) {
     node_volume = node_size * node_size * node_size;
 
     share_thickness = 1;
+    number_of_main_arrays = 2;
 
-    sh_horizontal_size = node_size * node_size * share_thickness;
+    sh_horizontal_size = node_size * node_size * share_thickness * number_of_main_arrays;
     sh_horizontal_L_in = new char[sh_horizontal_size];
     sh_horizontal_L_out = new char[sh_horizontal_size];
     sh_horizontal_R_in = new char[sh_horizontal_size];
     sh_horizontal_R_out = new char[sh_horizontal_size];
 
-    sh_vertical_size = node_size * node_size * share_thickness;
+    sh_vertical_size = node_size * node_size * share_thickness * number_of_main_arrays;
     sh_vertical_U_in = new char[sh_vertical_size];
     sh_vertical_U_out = new char[sh_vertical_size];
     sh_vertical_D_in = new char[sh_vertical_size];
     sh_vertical_D_out = new char[sh_vertical_size];
 
-    sh_depth_size = node_size * node_size * share_thickness;
+    sh_depth_size = node_size * node_size * share_thickness * number_of_main_arrays;
     sh_depth_F_in = new char[sh_depth_size];
     sh_depth_F_out = new char[sh_depth_size];
     sh_depth_B_in = new char[sh_depth_size];
     sh_depth_B_out = new char[sh_depth_size];
 
-    sh_corner_size = share_thickness * share_thickness * share_thickness;
+    sh_corner_size = share_thickness * share_thickness * share_thickness * number_of_main_arrays;
     sh_corner_FUL_in = new char[sh_corner_size];
     sh_corner_FUL_out = new char[sh_corner_size];
     sh_corner_FUR_in = new char[sh_corner_size];
@@ -48,7 +49,7 @@ Node::Node(int rank, int grid_size, int node_size) {
     sh_corner_BDR_in = new char[sh_corner_size];
     sh_corner_BDR_out = new char[sh_corner_size];
 
-    sh_edge_size = share_thickness * share_thickness * node_size;
+    sh_edge_size = share_thickness * share_thickness * node_size * number_of_main_arrays;
     sh_edge_UL_in = new char[sh_edge_size];
     sh_edge_UL_out = new char[sh_edge_size];
     sh_edge_UR_in = new char[sh_edge_size];
@@ -95,8 +96,8 @@ Node::Node(int rank, int grid_size, int node_size) {
     // Creating two 3D arrays
     main_array_size = node_size + 2 * share_thickness;
 
-    array[0] = new char **[main_array_size];
-    for (int i = 0; i < main_array_size; i++) {
+    array[0] = new char **[main_array_size * number_of_main_arrays];
+    for (int i = 0; i < main_array_size * number_of_main_arrays; i++) {
 
         array[0][i] = new char *[main_array_size];
         for (int j = 0; j < main_array_size; j++) {
@@ -109,8 +110,8 @@ Node::Node(int rank, int grid_size, int node_size) {
         }
     }
 
-    array[1] = new char **[main_array_size];
-    for (int i = 0; i < main_array_size; i++) {
+    array[1] = new char **[main_array_size * number_of_main_arrays];
+    for (int i = 0; i < main_array_size * number_of_main_arrays; i++) {
 
         array[1][i] = new char *[main_array_size];
         for (int j = 0; j < main_array_size; j++) {
@@ -184,7 +185,7 @@ Node::~Node() {
 
     delete[] send_array;
 
-    for (int i = 0; i < main_array_size; i++) {
+    for (int i = 0; i < main_array_size *number_of_main_arrays; i++) {
         for (int j = 0; j < main_array_size; j++) {
             delete[] array[0][i][j];
             delete[] array[1][i][j];
@@ -402,6 +403,9 @@ void Node::iter() {
     for (int z = share_thickness; z < node_size + share_thickness; z++) {
         for (int y = share_thickness; y < node_size + share_thickness; y++) {
             for (int x = share_thickness; x < node_size + share_thickness; x++) {
+
+                input_array[main_array_size + z][y][x] = 69;
+                output_array[main_array_size + z][y][x] = 69;
 
                 int val = 0;
 

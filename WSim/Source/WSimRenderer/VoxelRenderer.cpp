@@ -47,14 +47,17 @@ std::string VoxelRenderer::loadShader(const std::string &path) {
 
 void VoxelRenderer::loadBuffers() {
     float cubeVertices[24] = {
-        1.0, -1.0, -1.0,
-        1.0, -1.0, 1.0,
+        // front
         -1.0, -1.0, 1.0,
-        -1.0, -1.0, -1.0,
-        1.0, 1.0, -1.0,
+        1.0, -1.0, 1.0,
         1.0, 1.0, 1.0,
         -1.0, 1.0, 1.0,
-        -1.0, 1.0, -1.0};
+        // back
+        -1.0, -1.0, -1.0,
+        1.0, -1.0, -1.0,
+        1.0, 1.0, -1.0,
+        -1.0, 1.0, -1.0
+    };
 
     for (int i = 0; i < 24; i++) {
         cubeVertices[i] += 1.0f;
@@ -63,19 +66,25 @@ void VoxelRenderer::loadBuffers() {
     }
 
     unsigned int cubeIndices[36] = {
-        1, 2, 4,
-        2, 3, 4,
-        5, 8, 6,
-        8, 7, 6,
+        // front
+        0, 1, 2,
+        2, 3, 0,
+        // right
+        1, 5, 6,
+        6, 2, 1,
+        // back
+        7, 6, 5,
+        5, 4, 7,
+        // left
+        4, 0, 3,
         3, 7, 4,
-        7, 8, 4,
-        1, 5, 2,
-        5, 6, 2,
-        5, 1, 8,
-        1, 4, 8,
-        2, 6, 3,
-        6, 7, 3};
-
+        // bottom
+        4, 5, 1,
+        1, 0, 4,
+        // top
+        3, 2, 6,
+        6, 7, 3
+    };
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -152,6 +161,9 @@ void VoxelRenderer::update(float dt) {
 }
 
 void VoxelRenderer::render() {
+
+    glEnable(GL_CULL_FACE);
+
     const auto gridSizeInVoxels = nodeSizeInVoxels * gridSizeInNodes;
     for (int z = 0; z < gridSizeInVoxels; z++) {
         for (int y = 0; y < gridSizeInVoxels; y++) {

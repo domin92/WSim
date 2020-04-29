@@ -13,6 +13,7 @@ public:
     ~VoxelRenderer() override;
 
 protected:
+
     static std::string loadShader(const std::string &path);
     static glm::mat4 createMvp(int screenSize);
     void loadBuffers();

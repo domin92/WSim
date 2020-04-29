@@ -13,11 +13,11 @@ Master::Master(int proc_count, int grid_size, int node_size)
       node_size(node_size),
       full_size(node_size * grid_size),
       node_volume(node_size * node_size * node_size),
-      main_buffer(new char[proc_count * node_volume]),
+      main_buffer(new char[(proc_count - 1) * node_volume]),
       mapped_buffer(new char *[proc_count - 1]),
       rendererInterface(new MasterRendererInterfaceVoxel(*this)) {
     for (int i = 0; i < proc_count - 1; i++) {
-        mapped_buffer[i] = main_buffer + (i + 1) * node_volume;
+        mapped_buffer[i] = main_buffer + i * node_volume;
     }
 }
 

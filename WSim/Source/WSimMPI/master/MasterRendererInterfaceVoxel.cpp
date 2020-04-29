@@ -13,9 +13,9 @@ std::unique_ptr<Renderer> MasterRendererInterfaceVoxel::createRenderer(Master &m
 }
 
 void MasterRendererInterfaceVoxel::sendToNodes() {
-    MPI_Scatter(master.getMainBuffer(), master.getNodeVolume(), MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
+    MPI_Scatter(master.getMainBuffer() - master.getNodeVolume(), master.getNodeVolume(), MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
 }
 
 void MasterRendererInterfaceVoxel::stepSimulation(float dt) {
-    MPI_Gather(MPI_IN_PLACE, 0, MPI_CHAR, master.getMainBuffer(), master.getNodeVolume(), MPI_CHAR, 0, MPI_COMM_WORLD);
+    MPI_Gather(MPI_IN_PLACE, 0, MPI_CHAR, master.getMainBuffer() - master.getNodeVolume(), master.getNodeVolume(), MPI_CHAR, 0, MPI_COMM_WORLD);
 }
