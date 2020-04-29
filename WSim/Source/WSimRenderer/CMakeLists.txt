@@ -18,4 +18,4 @@ target_link_libraries(${TARGET_WSIM_RENDERER_LIB} PUBLIC
 )
 set_target_properties(${TARGET_WSIM_RENDERER_LIB} PROPERTIES FOLDER Libraries)
 set_target_properties(${TARGET_WSIM_RENDERER_LIB} PROPERTIES CXX_STANDARD 17)
-
+target_compile_definitions(${TARGET_WSIM_RENDERER_LIB} PRIVATE SHADERS_DIR="${SOURCE_DIR}/Shaders")

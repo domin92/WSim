@@ -5,7 +5,7 @@
 namespace OGL {
 
 Shader createShaderFromFile(GLenum shaderType, const std::string &filePath) {
-    std::ifstream file(filePath);
+    std::ifstream file(std::string{SHADERS_DIR} + "/" + filePath);
     wsimErrorUnless(file.good());
 
     const std::string source{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};

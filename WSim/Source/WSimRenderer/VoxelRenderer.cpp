@@ -92,8 +92,8 @@ void VoxelRenderer::loadBuffers() {
 }
 
 void VoxelRenderer::loadShaders() {
-    OGL::Shader vertexShader = OGL::createShaderFromFile(GL_VERTEX_SHADER, "..\\..\\..\\..\\WSim\\Source\\WSimMPI\\Shaders\\Vertex.glsl");
-    OGL::Shader fragmentShader = OGL::createShaderFromFile(GL_FRAGMENT_SHADER, "..\\..\\..\\..\\WSim\\Source\\WSimMPI\\Shaders\\Fragment.glsl");
+    OGL::Shader vertexShader = OGL::createShaderFromFile(GL_VERTEX_SHADER, "Vertex/VoxelVertex.glsl");
+    OGL::Shader fragmentShader = OGL::createShaderFromFile(GL_FRAGMENT_SHADER, "Fragment/VoxelFragment.glsl");
     this->shaderProgram = OGL::createShaderProgram(vertexShader, fragmentShader);
     this->positionUniformLocation = glGetUniformLocation(shaderProgram, "position");
     this->mvpUniformLocation = glGetUniformLocation(shaderProgram, "MVP");
