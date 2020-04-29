@@ -38,13 +38,6 @@ glm::mat4 VoxelRenderer::createMvp(int screenSize) {
     return mvp;
 }
 
-std::string VoxelRenderer::loadShader(const std::string &path) {
-    std::ifstream ifs(path);
-    std::string content((std::istreambuf_iterator<char>(ifs)),
-                        (std::istreambuf_iterator<char>()));
-    return content;
-}
-
 void VoxelRenderer::loadBuffers() {
     float cubeVertices[24] = {
         // front
@@ -56,8 +49,7 @@ void VoxelRenderer::loadBuffers() {
         -1.0, -1.0, -1.0,
         1.0, -1.0, -1.0,
         1.0, 1.0, -1.0,
-        -1.0, 1.0, -1.0
-    };
+        -1.0, 1.0, -1.0};
 
     for (int i = 0; i < 24; i++) {
         cubeVertices[i] += 1.0f;
@@ -83,8 +75,7 @@ void VoxelRenderer::loadBuffers() {
         1, 0, 4,
         // top
         3, 2, 6,
-        6, 7, 3
-    };
+        6, 7, 3};
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -101,53 +92,11 @@ void VoxelRenderer::loadBuffers() {
 }
 
 void VoxelRenderer::loadShaders() {
-    int success;
-    char infoLog[512];
-
-    std::string shaderCode = loadShader("..\\..\\..\\..\\WSim\\Source\\WSimMPI\\Shaders\\Vertex.glsl");
-    const char *vertexShaderSource = shaderCode.c_str();
-
-    std::string shaderCode2 = loadShader("..\\..\\..\\..\\WSim\\Source\\WSimMPI\\Shaders\\Fragment.glsl");
-    const GLchar *fragmentShaderSource = shaderCode2.c_str();
-
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
-                  << infoLog << std::endl;
-    }
-
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
-                  << infoLog << std::endl;
-    }
-
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    glGetShaderiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
-                  << infoLog << std::endl;
-    }
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    positionUniformLocation = glGetUniformLocation(shaderProgram, "position");
-    mvpUniformLocation = glGetUniformLocation(shaderProgram, "MVP");
+    OGL::Shader vertexShader = OGL::createShaderFromFile(GL_VERTEX_SHADER, "..\\..\\..\\..\\WSim\\Source\\WSimMPI\\Shaders\\Vertex.glsl");
+    OGL::Shader fragmentShader = OGL::createShaderFromFile(GL_FRAGMENT_SHADER, "..\\..\\..\\..\\WSim\\Source\\WSimMPI\\Shaders\\Fragment.glsl");
+    this->shaderProgram = OGL::createShaderProgram(vertexShader, fragmentShader);
+    this->positionUniformLocation = glGetUniformLocation(shaderProgram, "position");
+    this->mvpUniformLocation = glGetUniformLocation(shaderProgram, "MVP");
 }
 
 void VoxelRenderer::processInput(int button, int action, int mods) {

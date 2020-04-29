@@ -9,6 +9,9 @@ ColorRenderer::ColorRenderer(AbstractSimulation &simulation)
       texture1Info(simulation.getImageInfo2D()),
       texture1Data(std::make_unique<char[]>(texture1Info.totalSize)) {
     glGenTextures(1, &texture1);
+    glMatrixMode(GL_PROJECTION);
+    glOrtho(0, initialWidth, 0, initialHeight, -1, 1);
+    ASSERT_GL_NO_ERROR();
 }
 
 void ColorRenderer::processInput(int button, int action, int mods) {

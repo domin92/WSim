@@ -13,8 +13,6 @@ public:
     ~VoxelRenderer() override;
 
 protected:
-
-    static std::string loadShader(const std::string &path);
     static glm::mat4 createMvp(int screenSize);
     void loadBuffers();
     void loadShaders();
@@ -33,7 +31,7 @@ protected:
     const glm::mat4 mvp;
 
     unsigned int VAO, VBO, EBO;
-    unsigned int shaderProgram;
+    OGL::ShaderProgram shaderProgram;
 
     GLuint positionUniformLocation;
     GLuint mvpUniformLocation;

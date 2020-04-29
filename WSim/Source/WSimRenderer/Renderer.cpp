@@ -26,9 +26,6 @@ Renderer::Renderer(int oglProfile, int width, int height) {
         std::abort();
     }
 
-    glMatrixMode(GL_PROJECTION);
-    glOrtho(0, width, 0, height, -1, 1);
-
     lastFrameTime = Clock::now();
 }
 
