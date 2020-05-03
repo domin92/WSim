@@ -1,6 +1,10 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
+#include <memory>
+
+class NodeSimulationInterface;
+
 struct ShareBuffers {
 	ShareBuffers(int sh_horizontal_size, int sh_vertical_size, int sh_depth_size, int sh_corner_size, int sh_edge_size);
 	~ShareBuffers();
@@ -64,7 +68,6 @@ struct ShareBuffers {
 };
 
 class Node{
-
 	int rank;
 	int grid_size; // Number of nodes in side of 3d grid
 	int node_size; // Size of the cude side in bytes
@@ -91,9 +94,10 @@ class Node{
 	const int sh_edge_size;
 	const ShareBuffers shareBuffers;
 
+	std::unique_ptr<NodeSimulationInterface> simulationInterface;
+
 	char *send_array;
 
-    bool node_in_grid(int x, int y, int z);
     int rank_with_offset(int x, int y, int z);
     void recv_buffer(bool condition, char *intput_buffer, char *output_buffer, int size, int in_x, int in_y, int in_z);
 
@@ -105,24 +109,25 @@ class Node{
 
 	void share();
 
-    void pre_share_copy_buffer(char *output_buffer, int size_x, int size_y, int size_z, int out_x, int out_y, int out_z);
-    void post_share_copy_buffer(char *input_buffer, int size_x, int size_y, int size_z, int out_x, int out_y, int out_z);
-
-	void pre_share_copy();
-	void post_share_copy();
-
-	void iter();
-
 	void receive_from_master();
 	void send_to_master();
 	
 public:
-
 	Node(int rank, int grid_size, int node_size);
 	~Node();
 
 	void main();
 
+	bool node_in_grid(int x, int y, int z);
+
+	// Getters
+	auto& get_share_buffers() const { return shareBuffers; }
+	auto get_node_size() const { return node_size; }
+	auto get_share_thickness() const { return share_thickness; }
+	auto get_current_array_idx() const { return current_array_idx; }
+	auto get_main_array_size() const { return main_array_size; }
+	char*** get_main_array_input() const { return array[current_array_idx]; }
+	char*** get_main_array_output() const { return array[current_array_idx ^ 1]; }
 };
 
 #endif
