@@ -94,6 +94,9 @@ fi
 
 # Build
 run_cmake "." "$build_path" $architecture $configuration
+if [ $? != 0 ]; then
+    exit
+fi
 if [ "$build_dependencies" == 1 ]; then
     compile gtest
     compile glfw
