@@ -1,6 +1,68 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
+struct ShareBuffers {
+	ShareBuffers(int sh_horizontal_size, int sh_vertical_size, int sh_depth_size, int sh_corner_size, int sh_edge_size);
+	~ShareBuffers();
+
+	char* sh_horizontal_L_in; // Left
+	char* sh_horizontal_L_out;
+	char* sh_horizontal_R_in; // Right
+	char* sh_horizontal_R_out;
+
+	char* sh_vertical_U_in; // Up
+	char* sh_vertical_U_out;
+	char* sh_vertical_D_in; // Down
+	char* sh_vertical_D_out;
+
+	char* sh_depth_F_in; // Front
+	char* sh_depth_F_out;
+	char* sh_depth_B_in; // Back
+	char* sh_depth_B_out;
+
+	char* sh_corner_FUL_in; // Front Upper Left
+	char* sh_corner_FUL_out;
+	char* sh_corner_FUR_in; // Front Upper Right
+	char* sh_corner_FUR_out;
+	char* sh_corner_FDL_in; // Front Down Left
+	char* sh_corner_FDL_out;
+	char* sh_corner_FDR_in; // Front Down Right
+	char* sh_corner_FDR_out;
+	char* sh_corner_BUL_in; // Back Upper Left
+	char* sh_corner_BUL_out;
+	char* sh_corner_BUR_in; // Back Upper Right
+	char* sh_corner_BUR_out;
+	char* sh_corner_BDL_in; // Back Down Left
+	char* sh_corner_BDL_out;
+	char* sh_corner_BDR_in; // Back Down Right
+	char* sh_corner_BDR_out;
+
+	char* sh_edge_UL_in; // Up Left
+	char* sh_edge_UL_out;
+	char* sh_edge_UR_in; // Up Right
+	char* sh_edge_UR_out;
+	char* sh_edge_DL_in; // Down Left
+	char* sh_edge_DL_out;
+	char* sh_edge_DR_in; // Down Right
+	char* sh_edge_DR_out;
+	char* sh_edge_FL_in; // Front Left
+	char* sh_edge_FL_out;
+	char* sh_edge_FR_in; // Front Right
+	char* sh_edge_FR_out;
+	char* sh_edge_FU_in; // Front Up
+	char* sh_edge_FU_out;
+	char* sh_edge_FD_in; // Front Down
+	char* sh_edge_FD_out;
+	char* sh_edge_BL_in; // Back Left
+	char* sh_edge_BL_out;
+	char* sh_edge_BR_in; // Back Right
+	char* sh_edge_BR_out;
+	char* sh_edge_BU_in; // Back Up
+	char* sh_edge_BU_out;
+	char* sh_edge_BD_in; // Back Down
+	char* sh_edge_BD_out;
+};
+
 class Node{
 
 	int rank;
@@ -8,9 +70,9 @@ class Node{
 	int node_size; // Size of the cude side in bytes
     int node_volume;
 
-    int share_thickness; // Thickness of shared areas in bytes
+    const int share_thickness; // Thickness of shared areas in bytes
 
-    int number_of_main_arrays;
+    const int number_of_main_arrays;
 
 	int main_array_size;
 	char ***array[2]; // Two 3D arrays - input, output
@@ -22,67 +84,12 @@ class Node{
 	int z_pos_in_grid;
 
 	// Share arrays
-	int sh_horizontal_size;
-    char* sh_horizontal_L_in; // Left
-	char *sh_horizontal_L_out;
-	char *sh_horizontal_R_in; // Right
-	char *sh_horizontal_R_out;
-
-	int sh_vertical_size;
-	char *sh_vertical_U_in; // Up
-	char *sh_vertical_U_out;
-	char *sh_vertical_D_in; // Down
-	char *sh_vertical_D_out;
-
-	int sh_depth_size;
-	char *sh_depth_F_in; // Front
-	char *sh_depth_F_out;
-	char *sh_depth_B_in; // Back
-	char *sh_depth_B_out;
-
-	int sh_corner_size;
-	char *sh_corner_FUL_in; // Front Upper Left
-	char *sh_corner_FUL_out;
-	char *sh_corner_FUR_in; // Front Upper Right
-	char *sh_corner_FUR_out;
-	char *sh_corner_FDL_in; // Front Down Left
-	char *sh_corner_FDL_out;
-	char *sh_corner_FDR_in; // Front Down Right
-	char *sh_corner_FDR_out;
-    char *sh_corner_BUL_in; // Back Upper Left
-	char *sh_corner_BUL_out;
-	char *sh_corner_BUR_in; // Back Upper Right
-	char *sh_corner_BUR_out;
-	char *sh_corner_BDL_in; // Back Down Left
-	char *sh_corner_BDL_out;
-	char *sh_corner_BDR_in; // Back Down Right
-	char *sh_corner_BDR_out;
-
-    int sh_edge_size;
-    char *sh_edge_UL_in; // Up Left
-    char *sh_edge_UL_out;
-    char *sh_edge_UR_in; // Up Right
-    char *sh_edge_UR_out;
-    char *sh_edge_DL_in; // Down Left
-    char *sh_edge_DL_out;
-    char *sh_edge_DR_in; // Down Right
-    char *sh_edge_DR_out;
-    char *sh_edge_FL_in; // Front Left
-    char *sh_edge_FL_out;
-    char *sh_edge_FR_in; // Front Right
-    char *sh_edge_FR_out;
-    char *sh_edge_FU_in; // Front Up
-    char *sh_edge_FU_out;
-    char *sh_edge_FD_in; // Front Down
-    char *sh_edge_FD_out;
-    char *sh_edge_BL_in; // Back Left
-    char *sh_edge_BL_out;
-    char *sh_edge_BR_in; // Back Right
-    char *sh_edge_BR_out;
-    char *sh_edge_BU_in; // Back Up
-    char *sh_edge_BU_out;
-    char *sh_edge_BD_in; // Back Down
-    char *sh_edge_BD_out;
+	const int sh_horizontal_size;
+	const int sh_vertical_size;
+	const int sh_depth_size;
+	const int sh_corner_size;
+	const int sh_edge_size;
+	const ShareBuffers shareBuffers;
 
 	char *send_array;
 

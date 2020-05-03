@@ -4,34 +4,22 @@
 #include <iostream>
 #include <mpi.h>
 
-Node::Node(int rank, int grid_size, int node_size) {
-    this->rank = rank;
-    this->grid_size = grid_size;
-    this->node_size = node_size;
-    node_volume = node_size * node_size * node_size;
-
-    share_thickness = 1;
-    number_of_main_arrays = 2;
-
-    sh_horizontal_size = node_size * node_size * share_thickness * number_of_main_arrays;
+ShareBuffers::ShareBuffers(int sh_horizontal_size, int sh_vertical_size, int sh_depth_size, int sh_corner_size, int sh_edge_size) {
     sh_horizontal_L_in = new char[sh_horizontal_size];
     sh_horizontal_L_out = new char[sh_horizontal_size];
     sh_horizontal_R_in = new char[sh_horizontal_size];
     sh_horizontal_R_out = new char[sh_horizontal_size];
 
-    sh_vertical_size = node_size * node_size * share_thickness * number_of_main_arrays;
     sh_vertical_U_in = new char[sh_vertical_size];
     sh_vertical_U_out = new char[sh_vertical_size];
     sh_vertical_D_in = new char[sh_vertical_size];
     sh_vertical_D_out = new char[sh_vertical_size];
 
-    sh_depth_size = node_size * node_size * share_thickness * number_of_main_arrays;
     sh_depth_F_in = new char[sh_depth_size];
     sh_depth_F_out = new char[sh_depth_size];
     sh_depth_B_in = new char[sh_depth_size];
     sh_depth_B_out = new char[sh_depth_size];
 
-    sh_corner_size = share_thickness * share_thickness * share_thickness * number_of_main_arrays;
     sh_corner_FUL_in = new char[sh_corner_size];
     sh_corner_FUL_out = new char[sh_corner_size];
     sh_corner_FUR_in = new char[sh_corner_size];
@@ -49,7 +37,6 @@ Node::Node(int rank, int grid_size, int node_size) {
     sh_corner_BDR_in = new char[sh_corner_size];
     sh_corner_BDR_out = new char[sh_corner_size];
 
-    sh_edge_size = share_thickness * share_thickness * node_size * number_of_main_arrays;
     sh_edge_UL_in = new char[sh_edge_size];
     sh_edge_UL_out = new char[sh_edge_size];
     sh_edge_UR_in = new char[sh_edge_size];
@@ -74,6 +61,21 @@ Node::Node(int rank, int grid_size, int node_size) {
     sh_edge_BU_out = new char[sh_edge_size];
     sh_edge_BD_in = new char[sh_edge_size];
     sh_edge_BD_out = new char[sh_edge_size];
+}
+
+Node::Node(int rank, int grid_size, int node_size)
+    : share_thickness(1),
+      number_of_main_arrays(2),
+      sh_horizontal_size(node_size* node_size* share_thickness* number_of_main_arrays),
+      sh_vertical_size(node_size* node_size* share_thickness* number_of_main_arrays),
+      sh_depth_size(node_size* node_size* share_thickness* number_of_main_arrays),
+      sh_corner_size(share_thickness* share_thickness* share_thickness* number_of_main_arrays),
+      sh_edge_size(share_thickness* share_thickness* node_size* number_of_main_arrays),
+      shareBuffers(sh_horizontal_size, sh_vertical_size, sh_depth_size, sh_corner_size, sh_edge_size) {
+    this->rank = rank;
+    this->grid_size = grid_size;
+    this->node_size = node_size;
+    node_volume = node_size * node_size * node_size;
 
     // Calculating node position in 3D space - VERY IMPORTANT!
     int adjusted_rank = rank - 1; // Rank excluding master
@@ -129,7 +131,7 @@ Node::Node(int rank, int grid_size, int node_size) {
     send_array = new char[node_volume];
 }
 
-Node::~Node() {
+ShareBuffers::~ShareBuffers() {
     delete[] sh_horizontal_L_in;
     delete[] sh_horizontal_L_out;
     delete[] sh_horizontal_R_in;
@@ -182,7 +184,9 @@ Node::~Node() {
     delete[] sh_edge_BU_out;
     delete[] sh_edge_BD_in;
     delete[] sh_edge_BD_out;
+}
 
+Node::~Node() {
     delete[] send_array;
 
     for (int i = 0; i < main_array_size *number_of_main_arrays; i++) {
@@ -224,79 +228,79 @@ inline void Node::recv_buffer(bool condition, char *intput_buffer, char *output_
 }
 
 void Node::share_vertical() {
-    recv_buffer(y_pos_in_grid % 2 == 0, sh_vertical_U_in, sh_vertical_D_out, sh_vertical_size, 0, -1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 0, sh_vertical_D_in, sh_vertical_U_out, sh_vertical_size, 0, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, shareBuffers.sh_vertical_U_in, shareBuffers.sh_vertical_D_out, sh_vertical_size, 0, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, shareBuffers.sh_vertical_D_in, shareBuffers.sh_vertical_U_out, sh_vertical_size, 0, 1, 0);
 
-    recv_buffer(y_pos_in_grid % 2 == 1, sh_vertical_U_in, sh_vertical_D_out, sh_vertical_size, 0, -1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 1, sh_vertical_D_in, sh_vertical_U_out, sh_vertical_size, 0, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, shareBuffers.sh_vertical_U_in, shareBuffers.sh_vertical_D_out, sh_vertical_size, 0, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, shareBuffers.sh_vertical_D_in, shareBuffers.sh_vertical_U_out, sh_vertical_size, 0, 1, 0);
 }
 
 void Node::share_horizontal() {
-    recv_buffer(x_pos_in_grid % 2 == 0, sh_horizontal_L_in, sh_horizontal_R_out, sh_horizontal_size, -1, 0, 0);
-    recv_buffer(x_pos_in_grid % 2 == 0, sh_horizontal_R_in, sh_horizontal_L_out, sh_horizontal_size, 1, 0, 0);
+    recv_buffer(x_pos_in_grid % 2 == 0, shareBuffers.sh_horizontal_L_in, shareBuffers.sh_horizontal_R_out, sh_horizontal_size, -1, 0, 0);
+    recv_buffer(x_pos_in_grid % 2 == 0, shareBuffers.sh_horizontal_R_in, shareBuffers.sh_horizontal_L_out, sh_horizontal_size, 1, 0, 0);
 
-    recv_buffer(x_pos_in_grid % 2 == 1, sh_horizontal_L_in, sh_horizontal_R_out, sh_horizontal_size, -1, 0, 0);
-    recv_buffer(x_pos_in_grid % 2 == 1, sh_horizontal_R_in, sh_horizontal_L_out, sh_horizontal_size, 1, 0, 0);
+    recv_buffer(x_pos_in_grid % 2 == 1, shareBuffers.sh_horizontal_L_in, shareBuffers.sh_horizontal_R_out, sh_horizontal_size, -1, 0, 0);
+    recv_buffer(x_pos_in_grid % 2 == 1, shareBuffers.sh_horizontal_R_in, shareBuffers.sh_horizontal_L_out, sh_horizontal_size, 1, 0, 0);
 }
 
 void Node::share_depth() {
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_depth_F_in, sh_depth_B_out, sh_depth_size, 0, 0, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_depth_B_in, sh_depth_F_out, sh_depth_size, 0, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_depth_F_in, shareBuffers.sh_depth_B_out, sh_depth_size, 0, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_depth_B_in, shareBuffers.sh_depth_F_out, sh_depth_size, 0, 0, 1);
 
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_depth_F_in, sh_depth_B_out, sh_depth_size, 0, 0, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_depth_B_in, sh_depth_F_out, sh_depth_size, 0, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_depth_F_in, shareBuffers.sh_depth_B_out, sh_depth_size, 0, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_depth_B_in, shareBuffers.sh_depth_F_out, sh_depth_size, 0, 0, 1);
 }
 
 void Node::share_corners() {
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FUL_in, sh_corner_BDR_out, sh_corner_size, -1, -1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BDR_in, sh_corner_FUL_out, sh_corner_size, 1, 1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FUR_in, sh_corner_BDL_out, sh_corner_size, 1, -1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BDL_in, sh_corner_FUR_out, sh_corner_size, -1, 1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FDL_in, sh_corner_BUR_out, sh_corner_size, -1, 1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BUR_in, sh_corner_FDL_out, sh_corner_size, 1, -1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_FDR_in, sh_corner_BUL_out, sh_corner_size, 1, 1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_corner_BUL_in, sh_corner_FDR_out, sh_corner_size, -1, -1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_corner_FUL_in, shareBuffers.sh_corner_BDR_out, sh_corner_size, -1, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_corner_BDR_in, shareBuffers.sh_corner_FUL_out, sh_corner_size, 1, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_corner_FUR_in, shareBuffers.sh_corner_BDL_out, sh_corner_size, 1, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_corner_BDL_in, shareBuffers.sh_corner_FUR_out, sh_corner_size, -1, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_corner_FDL_in, shareBuffers.sh_corner_BUR_out, sh_corner_size, -1, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_corner_BUR_in, shareBuffers.sh_corner_FDL_out, sh_corner_size, 1, -1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_corner_FDR_in, shareBuffers.sh_corner_BUL_out, sh_corner_size, 1, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_corner_BUL_in, shareBuffers.sh_corner_FDR_out, sh_corner_size, -1, -1, 1);
 
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FUL_in, sh_corner_BDR_out, sh_corner_size, -1, -1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BDR_in, sh_corner_FUL_out, sh_corner_size, 1, 1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FUR_in, sh_corner_BDL_out, sh_corner_size, 1, -1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BDL_in, sh_corner_FUR_out, sh_corner_size, -1, 1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FDL_in, sh_corner_BUR_out, sh_corner_size, -1, 1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BUR_in, sh_corner_FDL_out, sh_corner_size, 1, -1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_FDR_in, sh_corner_BUL_out, sh_corner_size, 1, 1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_corner_BUL_in, sh_corner_FDR_out, sh_corner_size, -1, -1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_corner_FUL_in, shareBuffers.sh_corner_BDR_out, sh_corner_size, -1, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_corner_BDR_in, shareBuffers.sh_corner_FUL_out, sh_corner_size, 1, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_corner_FUR_in, shareBuffers.sh_corner_BDL_out, sh_corner_size, 1, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_corner_BDL_in, shareBuffers.sh_corner_FUR_out, sh_corner_size, -1, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_corner_FDL_in, shareBuffers.sh_corner_BUR_out, sh_corner_size, -1, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_corner_BUR_in, shareBuffers.sh_corner_FDL_out, sh_corner_size, 1, -1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_corner_FDR_in, shareBuffers.sh_corner_BUL_out, sh_corner_size, 1, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_corner_BUL_in, shareBuffers.sh_corner_FDR_out, sh_corner_size, -1, -1, 1);
 }
 
 void Node::share_edges() {
-    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_UL_in, sh_edge_DR_out, sh_edge_size, -1, -1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_DR_in, sh_edge_UL_out, sh_edge_size, 1, 1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_UR_in, sh_edge_DL_out, sh_edge_size, 1, -1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 0, sh_edge_DL_in, sh_edge_UR_out, sh_edge_size, -1, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, shareBuffers.sh_edge_UL_in, shareBuffers.sh_edge_DR_out,sh_edge_size, -1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, shareBuffers.sh_edge_DR_in, shareBuffers.sh_edge_UL_out,sh_edge_size, 1, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, shareBuffers.sh_edge_UR_in, shareBuffers.sh_edge_DL_out,sh_edge_size, 1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, shareBuffers.sh_edge_DL_in, shareBuffers.sh_edge_UR_out,sh_edge_size, -1, 1, 0);
 
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FL_in, sh_edge_BR_out, sh_edge_size, -1, 0, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BR_in, sh_edge_FL_out, sh_edge_size, 1, 0, 1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FR_in, sh_edge_BL_out, sh_edge_size, 1, 0, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BL_in, sh_edge_FR_out, sh_edge_size, -1, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_FL_in, shareBuffers.sh_edge_BR_out,sh_edge_size, -1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_BR_in, shareBuffers.sh_edge_FL_out,sh_edge_size, 1, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_FR_in, shareBuffers.sh_edge_BL_out,sh_edge_size, 1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_BL_in, shareBuffers.sh_edge_FR_out,sh_edge_size, -1, 0, 1);
 
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FU_in, sh_edge_BD_out, sh_edge_size, 0, -1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BD_in, sh_edge_FU_out, sh_edge_size, 0, 1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_FD_in, sh_edge_BU_out, sh_edge_size, 0, 1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, sh_edge_BU_in, sh_edge_FD_out, sh_edge_size, 0, -1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_FU_in, shareBuffers.sh_edge_BD_out,sh_edge_size, 0, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_BD_in, shareBuffers.sh_edge_FU_out,sh_edge_size, 0, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_FD_in, shareBuffers.sh_edge_BU_out,sh_edge_size, 0, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_BU_in, shareBuffers.sh_edge_FD_out,sh_edge_size, 0, -1, 1);
 
-    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_UL_in, sh_edge_DR_out, sh_edge_size, -1, -1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_DR_in, sh_edge_UL_out, sh_edge_size, 1, 1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_UR_in, sh_edge_DL_out, sh_edge_size, 1, -1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 1, sh_edge_DL_in, sh_edge_UR_out, sh_edge_size, -1, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, shareBuffers.sh_edge_UL_in, shareBuffers.sh_edge_DR_out,sh_edge_size, -1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, shareBuffers.sh_edge_DR_in, shareBuffers.sh_edge_UL_out,sh_edge_size, 1, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, shareBuffers.sh_edge_UR_in, shareBuffers.sh_edge_DL_out,sh_edge_size, 1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, shareBuffers.sh_edge_DL_in, shareBuffers.sh_edge_UR_out,sh_edge_size, -1, 1, 0);
 
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FL_in, sh_edge_BR_out, sh_edge_size, -1, 0, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BR_in, sh_edge_FL_out, sh_edge_size, 1, 0, 1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FR_in, sh_edge_BL_out, sh_edge_size, 1, 0, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BL_in, sh_edge_FR_out, sh_edge_size, -1, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_FL_in, shareBuffers.sh_edge_BR_out,sh_edge_size, -1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_BR_in, shareBuffers.sh_edge_FL_out,sh_edge_size, 1, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_FR_in, shareBuffers.sh_edge_BL_out,sh_edge_size, 1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_BL_in, shareBuffers.sh_edge_FR_out,sh_edge_size, -1, 0, 1);
 
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FU_in, sh_edge_BD_out, sh_edge_size, 0, -1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BD_in, sh_edge_FU_out, sh_edge_size, 0, 1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_FD_in, sh_edge_BU_out, sh_edge_size, 0, 1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, sh_edge_BU_in, sh_edge_FD_out, sh_edge_size, 0, -1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_FU_in, shareBuffers.sh_edge_BD_out,sh_edge_size, 0, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_BD_in, shareBuffers.sh_edge_FU_out,sh_edge_size, 0, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_FD_in, shareBuffers.sh_edge_BU_out,sh_edge_size, 0, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_BU_in, shareBuffers.sh_edge_FD_out,sh_edge_size, 0, -1, 1);
 }
 
 inline void Node::pre_share_copy_buffer(char* output_buffer, int size_x, int size_y, int size_z, int out_x, int out_y, int out_z) {
@@ -315,36 +319,36 @@ inline void Node::pre_share_copy_buffer(char* output_buffer, int size_x, int siz
 }
 
 void Node::pre_share_copy() {
-    pre_share_copy_buffer(sh_vertical_D_out, node_size, share_thickness, node_size, 0, 1, 0);
-    pre_share_copy_buffer(sh_vertical_U_out, node_size, share_thickness, node_size, 0, -1, 0);
-    pre_share_copy_buffer(sh_horizontal_R_out, share_thickness, node_size, node_size, 1, 0, 0);
-    pre_share_copy_buffer(sh_horizontal_L_out, share_thickness, node_size, node_size, -1, 0, 0);
-    pre_share_copy_buffer(sh_depth_B_out, node_size, node_size, share_thickness, 0, 0, 1);
-    pre_share_copy_buffer(sh_depth_F_out, node_size, node_size, share_thickness, 0, 0, -1);
+    pre_share_copy_buffer(shareBuffers.sh_vertical_D_out, node_size, share_thickness, node_size, 0, 1, 0);
+    pre_share_copy_buffer(shareBuffers.sh_vertical_U_out, node_size, share_thickness, node_size, 0, -1, 0);
+    pre_share_copy_buffer(shareBuffers.sh_horizontal_R_out, share_thickness, node_size, node_size, 1, 0, 0);
+    pre_share_copy_buffer(shareBuffers.sh_horizontal_L_out, share_thickness, node_size, node_size, -1, 0, 0);
+    pre_share_copy_buffer(shareBuffers.sh_depth_B_out, node_size, node_size, share_thickness, 0, 0, 1);
+    pre_share_copy_buffer(shareBuffers.sh_depth_F_out, node_size, node_size, share_thickness, 0, 0, -1);
 
-    pre_share_copy_buffer(sh_corner_FUL_out, share_thickness, share_thickness, share_thickness, -1, -1, -1);
-    pre_share_copy_buffer(sh_corner_BDR_out, share_thickness, share_thickness, share_thickness, 1, 1, 1);
-    pre_share_copy_buffer(sh_corner_FUR_out, share_thickness, share_thickness, share_thickness, 1, -1, -1);
-    pre_share_copy_buffer(sh_corner_BDL_out, share_thickness, share_thickness, share_thickness, -1, 1, 1);
-    pre_share_copy_buffer(sh_corner_FDL_out, share_thickness, share_thickness, share_thickness, -1, 1, -1);
-    pre_share_copy_buffer(sh_corner_BUR_out, share_thickness, share_thickness, share_thickness, 1, -1, 1);
-    pre_share_copy_buffer(sh_corner_FDR_out, share_thickness, share_thickness, share_thickness, 1, 1, -1);
-    pre_share_copy_buffer(sh_corner_BUL_out, share_thickness, share_thickness, share_thickness, -1, -1, 1);
+    pre_share_copy_buffer(shareBuffers.sh_corner_FUL_out, share_thickness, share_thickness, share_thickness, -1, -1, -1);
+    pre_share_copy_buffer(shareBuffers.sh_corner_BDR_out, share_thickness, share_thickness, share_thickness, 1, 1, 1);
+    pre_share_copy_buffer(shareBuffers.sh_corner_FUR_out, share_thickness, share_thickness, share_thickness, 1, -1, -1);
+    pre_share_copy_buffer(shareBuffers.sh_corner_BDL_out, share_thickness, share_thickness, share_thickness, -1, 1, 1);
+    pre_share_copy_buffer(shareBuffers.sh_corner_FDL_out, share_thickness, share_thickness, share_thickness, -1, 1, -1);
+    pre_share_copy_buffer(shareBuffers.sh_corner_BUR_out, share_thickness, share_thickness, share_thickness, 1, -1, 1);
+    pre_share_copy_buffer(shareBuffers.sh_corner_FDR_out, share_thickness, share_thickness, share_thickness, 1, 1, -1);
+    pre_share_copy_buffer(shareBuffers.sh_corner_BUL_out, share_thickness, share_thickness, share_thickness, -1, -1, 1);
 
-    pre_share_copy_buffer(sh_edge_UL_out, share_thickness, share_thickness, node_size, -1, -1, 0);
-    pre_share_copy_buffer(sh_edge_DR_out, share_thickness, share_thickness, node_size, 1, 1, 0);
-    pre_share_copy_buffer(sh_edge_UR_out, share_thickness, share_thickness, node_size, 1, -1, 0);
-    pre_share_copy_buffer(sh_edge_DL_out, share_thickness, share_thickness, node_size, -1, 1, 0);
+    pre_share_copy_buffer(shareBuffers.sh_edge_UL_out, share_thickness, share_thickness, node_size, -1, -1, 0);
+    pre_share_copy_buffer(shareBuffers.sh_edge_DR_out, share_thickness, share_thickness, node_size, 1, 1, 0);
+    pre_share_copy_buffer(shareBuffers.sh_edge_UR_out, share_thickness, share_thickness, node_size, 1, -1, 0);
+    pre_share_copy_buffer(shareBuffers.sh_edge_DL_out, share_thickness, share_thickness, node_size, -1, 1, 0);
 
-    pre_share_copy_buffer(sh_edge_FL_out, share_thickness, node_size, share_thickness, -1, 0, -1);
-    pre_share_copy_buffer(sh_edge_BR_out, share_thickness, node_size, share_thickness, 1, 0, 1);
-    pre_share_copy_buffer(sh_edge_FR_out, share_thickness, node_size, share_thickness, 1, 0, -1);
-    pre_share_copy_buffer(sh_edge_BL_out, share_thickness, node_size, share_thickness, -1, 0, 1);
+    pre_share_copy_buffer(shareBuffers.sh_edge_FL_out, share_thickness, node_size, share_thickness, -1, 0, -1);
+    pre_share_copy_buffer(shareBuffers.sh_edge_BR_out, share_thickness, node_size, share_thickness, 1, 0, 1);
+    pre_share_copy_buffer(shareBuffers.sh_edge_FR_out, share_thickness, node_size, share_thickness, 1, 0, -1);
+    pre_share_copy_buffer(shareBuffers.sh_edge_BL_out, share_thickness, node_size, share_thickness, -1, 0, 1);
 
-    pre_share_copy_buffer(sh_edge_FU_out, node_size, share_thickness, share_thickness, 0, -1, -1);
-    pre_share_copy_buffer(sh_edge_BD_out, node_size, share_thickness, share_thickness, 0, 1, 1);
-    pre_share_copy_buffer(sh_edge_FD_out, node_size, share_thickness, share_thickness, 0, 1, -1);
-    pre_share_copy_buffer(sh_edge_BU_out, node_size, share_thickness, share_thickness, 0, -1, 1);
+    pre_share_copy_buffer(shareBuffers.sh_edge_FU_out, node_size, share_thickness, share_thickness, 0, -1, -1);
+    pre_share_copy_buffer(shareBuffers.sh_edge_BD_out, node_size, share_thickness, share_thickness, 0, 1, 1);
+    pre_share_copy_buffer(shareBuffers.sh_edge_FD_out, node_size, share_thickness, share_thickness, 0, 1, -1);
+    pre_share_copy_buffer(shareBuffers.sh_edge_BU_out, node_size, share_thickness, share_thickness, 0, -1, 1);
 }
 
 inline void Node::post_share_copy_buffer(char *input_buffer, int size_x, int size_y, int size_z, int out_x, int out_y, int out_z) {
@@ -363,36 +367,36 @@ inline void Node::post_share_copy_buffer(char *input_buffer, int size_x, int siz
 }
 
 void Node::post_share_copy() {
-    post_share_copy_buffer(sh_vertical_U_in, node_size, share_thickness, node_size, 0, -1, 0);
-    post_share_copy_buffer(sh_vertical_D_in, node_size, share_thickness, node_size, 0, 1, 0);
-    post_share_copy_buffer(sh_horizontal_L_in, share_thickness, node_size, node_size, -1, 0, 0);
-    post_share_copy_buffer(sh_horizontal_R_in, share_thickness, node_size, node_size, 1, 0, 0);
-    post_share_copy_buffer(sh_depth_B_in, node_size, node_size, share_thickness, 0, 0, 1);
-    post_share_copy_buffer(sh_depth_F_in, node_size, node_size, share_thickness, 0, 0, -1);
+    post_share_copy_buffer(shareBuffers.sh_vertical_U_in, node_size, share_thickness, node_size, 0, -1, 0);
+    post_share_copy_buffer(shareBuffers.sh_vertical_D_in, node_size, share_thickness, node_size, 0, 1, 0);
+    post_share_copy_buffer(shareBuffers.sh_horizontal_L_in, share_thickness, node_size, node_size, -1, 0, 0);
+    post_share_copy_buffer(shareBuffers.sh_horizontal_R_in, share_thickness, node_size, node_size, 1, 0, 0);
+    post_share_copy_buffer(shareBuffers.sh_depth_B_in, node_size, node_size, share_thickness, 0, 0, 1);
+    post_share_copy_buffer(shareBuffers.sh_depth_F_in, node_size, node_size, share_thickness, 0, 0, -1);
 
-    post_share_copy_buffer(sh_corner_FUL_in, share_thickness, share_thickness, share_thickness, -1, -1, -1);
-    post_share_copy_buffer(sh_corner_BDR_in, share_thickness, share_thickness, share_thickness, 1, 1, 1);
-    post_share_copy_buffer(sh_corner_FUR_in, share_thickness, share_thickness, share_thickness, 1, -1, -1);
-    post_share_copy_buffer(sh_corner_BDL_in, share_thickness, share_thickness, share_thickness, -1, 1, 1);
-    post_share_copy_buffer(sh_corner_FDL_in, share_thickness, share_thickness, share_thickness, -1, 1, -1);
-    post_share_copy_buffer(sh_corner_BUR_in, share_thickness, share_thickness, share_thickness, 1, -1, 1);
-    post_share_copy_buffer(sh_corner_FDR_in, share_thickness, share_thickness, share_thickness, 1, 1, -1);
-    post_share_copy_buffer(sh_corner_BUL_in, share_thickness, share_thickness, share_thickness, -1, -1, 1);
+    post_share_copy_buffer(shareBuffers.sh_corner_FUL_in, share_thickness, share_thickness, share_thickness, -1, -1, -1);
+    post_share_copy_buffer(shareBuffers.sh_corner_BDR_in, share_thickness, share_thickness, share_thickness, 1, 1, 1);
+    post_share_copy_buffer(shareBuffers.sh_corner_FUR_in, share_thickness, share_thickness, share_thickness, 1, -1, -1);
+    post_share_copy_buffer(shareBuffers.sh_corner_BDL_in, share_thickness, share_thickness, share_thickness, -1, 1, 1);
+    post_share_copy_buffer(shareBuffers.sh_corner_FDL_in, share_thickness, share_thickness, share_thickness, -1, 1, -1);
+    post_share_copy_buffer(shareBuffers.sh_corner_BUR_in, share_thickness, share_thickness, share_thickness, 1, -1, 1);
+    post_share_copy_buffer(shareBuffers.sh_corner_FDR_in, share_thickness, share_thickness, share_thickness, 1, 1, -1);
+    post_share_copy_buffer(shareBuffers.sh_corner_BUL_in, share_thickness, share_thickness, share_thickness, -1, -1, 1);
 
-    post_share_copy_buffer(sh_edge_UL_in, share_thickness, share_thickness, node_size, -1, -1, 0);
-    post_share_copy_buffer(sh_edge_DR_in, share_thickness, share_thickness, node_size, 1, 1, 0);
-    post_share_copy_buffer(sh_edge_UR_in, share_thickness, share_thickness, node_size, 1, -1, 0);
-    post_share_copy_buffer(sh_edge_DL_in, share_thickness, share_thickness, node_size, -1, 1, 0);
+    post_share_copy_buffer(shareBuffers.sh_edge_UL_in, share_thickness, share_thickness, node_size, -1, -1, 0);
+    post_share_copy_buffer(shareBuffers.sh_edge_DR_in, share_thickness, share_thickness, node_size, 1, 1, 0);
+    post_share_copy_buffer(shareBuffers.sh_edge_UR_in, share_thickness, share_thickness, node_size, 1, -1, 0);
+    post_share_copy_buffer(shareBuffers.sh_edge_DL_in, share_thickness, share_thickness, node_size, -1, 1, 0);
 
-    post_share_copy_buffer(sh_edge_FL_in, share_thickness, node_size, share_thickness, -1, 0, -1);
-    post_share_copy_buffer(sh_edge_BR_in, share_thickness, node_size, share_thickness, 1, 0, 1);
-    post_share_copy_buffer(sh_edge_FR_in, share_thickness, node_size, share_thickness, 1, 0, -1);
-    post_share_copy_buffer(sh_edge_BL_in, share_thickness, node_size, share_thickness, -1, 0, 1);
+    post_share_copy_buffer(shareBuffers.sh_edge_FL_in, share_thickness, node_size, share_thickness, -1, 0, -1);
+    post_share_copy_buffer(shareBuffers.sh_edge_BR_in, share_thickness, node_size, share_thickness, 1, 0, 1);
+    post_share_copy_buffer(shareBuffers.sh_edge_FR_in, share_thickness, node_size, share_thickness, 1, 0, -1);
+    post_share_copy_buffer(shareBuffers.sh_edge_BL_in, share_thickness, node_size, share_thickness, -1, 0, 1);
 
-    post_share_copy_buffer(sh_edge_FU_in, node_size, share_thickness, share_thickness, 0, -1, -1);
-    post_share_copy_buffer(sh_edge_BD_in, node_size, share_thickness, share_thickness, 0, 1, 1);
-    post_share_copy_buffer(sh_edge_FD_in, node_size, share_thickness, share_thickness, 0, 1, -1);
-    post_share_copy_buffer(sh_edge_BU_in, node_size, share_thickness, share_thickness, 0, -1, 1);
+    post_share_copy_buffer(shareBuffers.sh_edge_FU_in, node_size, share_thickness, share_thickness, 0, -1, -1);
+    post_share_copy_buffer(shareBuffers.sh_edge_BD_in, node_size, share_thickness, share_thickness, 0, 1, 1);
+    post_share_copy_buffer(shareBuffers.sh_edge_FD_in, node_size, share_thickness, share_thickness, 0, 1, -1);
+    post_share_copy_buffer(shareBuffers.sh_edge_BU_in, node_size, share_thickness, share_thickness, 0, -1, 1);
 }
 
 void Node::iter() {
