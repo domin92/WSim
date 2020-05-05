@@ -4,7 +4,7 @@
 
 OCL::Vec3 increaseBorder(OCL::Vec3 simulationSize, PositionInGrid positionInGrid, int borderWidthChange) {
     const auto borderX = 2 - static_cast<int>(positionInGrid.edgeL) - static_cast<int>(positionInGrid.edgeR);
-    const auto borderY = 2 - static_cast<int>(positionInGrid.edgeD) - static_cast<int>(positionInGrid.edgeU);
+    const auto borderY = 2 - static_cast<int>(positionInGrid.edgeU) - static_cast<int>(positionInGrid.edgeD);
     const auto borderZ = 2 - static_cast<int>(positionInGrid.edgeF) - static_cast<int>(positionInGrid.edgeB);
     const OCL::Vec3 result = {
         simulationSize.x + borderX * borderWidthChange,
@@ -38,7 +38,7 @@ OCL::Vec3 calculateBorderOffset(OCL::Vec3 totalSize, OCL::Vec3 usedSize, Positio
 
     const OCL::Vec3 result{
         calcualateOffsetComponent(positionInGrid.edgeL, positionInGrid.edgeR, borderSize.x),
-        calcualateOffsetComponent(positionInGrid.edgeD, positionInGrid.edgeU, borderSize.y),
+        calcualateOffsetComponent(positionInGrid.edgeU, positionInGrid.edgeD, borderSize.y),
         calcualateOffsetComponent(positionInGrid.edgeF, positionInGrid.edgeB, borderSize.z),
     };
     return result;

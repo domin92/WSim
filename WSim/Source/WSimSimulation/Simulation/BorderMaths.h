@@ -6,7 +6,7 @@ struct PositionInGrid {
     PositionInGrid() {}
     PositionInGrid(OCL::Vec3 positionInGrid, OCL::Vec3 gridSize) {
         isBorder(positionInGrid.x, gridSize.x, edgeL, edgeR);
-        isBorder(positionInGrid.y, gridSize.y, edgeD, edgeU);
+        isBorder(positionInGrid.y, gridSize.y, edgeU, edgeD);
         isBorder(positionInGrid.z, gridSize.z, edgeF, edgeB);
     }
 
