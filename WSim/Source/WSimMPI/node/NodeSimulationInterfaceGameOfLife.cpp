@@ -5,8 +5,36 @@
 NodeSimulationInterfaceGameOfLife::NodeSimulationInterfaceGameOfLife(Node &node)
     : NodeSimulationInterface(node) {}
 
+void NodeSimulationInterfaceGameOfLife::postReceiveFromMaster(const char *receivedArray) {
+    const auto nodeSize = node.get_node_size();
+    const auto shareThickness = node.get_share_thickness();
+    char ***array = node.get_main_array_input();
+
+    for (int z = 0; z < nodeSize; z++) {
+        for (int y = 0; y < nodeSize; y++) {
+            for (int x = 0; x < nodeSize; x++) {
+                array[z + shareThickness][y + shareThickness][x + shareThickness] = receivedArray[z * (nodeSize * nodeSize) + y * nodeSize + x];
+            }
+        }
+    }
+}
+
+void NodeSimulationInterfaceGameOfLife::preSendToMaster(char *arrayToSend) {
+    const auto nodeSize = node.get_node_size();
+    const auto shareThickness = node.get_share_thickness();
+    char ***array = node.get_main_array_input();
+
+    for (int z = 0; z < nodeSize; z++) {
+        for (int y = 0; y < nodeSize; y++) {
+            for (int x = 0; x < nodeSize; x++) {
+                arrayToSend[z * (nodeSize * nodeSize) + y * nodeSize + x] = array[z + shareThickness][y + shareThickness][x + shareThickness];
+            }
+        }
+    }
+}
+
 void NodeSimulationInterfaceGameOfLife::preShareCopy() {
-    const auto& shareBuffers = node.get_share_buffers();
+    const auto &shareBuffers = node.get_share_buffers();
     const auto nodeSize = node.get_node_size();
     const auto shareThickness = node.get_share_thickness();
 
@@ -47,8 +75,8 @@ void NodeSimulationInterfaceGameOfLife::iter() {
     const auto shareThickness = node.get_share_thickness();
     const auto currentArrayIndex = node.get_current_array_idx();
     const auto mainArraySize = node.get_main_array_size();
-    char*** input_array = node.get_main_array_input();
-    char*** output_array = node.get_main_array_output();
+    char ***input_array = node.get_main_array_input();
+    char ***output_array = node.get_main_array_output();
 
     for (int z = shareThickness; z < nodeSize + shareThickness; z++) {
         for (int y = shareThickness; y < nodeSize + shareThickness; y++) {
@@ -86,7 +114,7 @@ void NodeSimulationInterfaceGameOfLife::iter() {
 }
 
 void NodeSimulationInterfaceGameOfLife::postShareCopy() {
-    const auto& shareBuffers = node.get_share_buffers();
+    const auto &shareBuffers = node.get_share_buffers();
     const auto nodeSize = node.get_node_size();
     const auto shareThickness = node.get_share_thickness();
 
@@ -125,8 +153,8 @@ void NodeSimulationInterfaceGameOfLife::postShareCopy() {
 inline void NodeSimulationInterfaceGameOfLife::preShareCopyBuffer(char *output_buffer, int size_x, int size_y, int size_z, int out_x, int out_y, int out_z) {
     const auto nodeSize = node.get_node_size();
     const auto shareThickness = node.get_share_thickness();
-    char*** inputArray = node.get_main_array_input();
-    
+    char ***inputArray = node.get_main_array_input();
+
     if (node.node_in_grid(out_x, out_y, out_z)) {
         for (int z = 0; z < size_z; z++) {
             for (int y = 0; y < size_y; y++) {
@@ -144,8 +172,8 @@ inline void NodeSimulationInterfaceGameOfLife::preShareCopyBuffer(char *output_b
 inline void NodeSimulationInterfaceGameOfLife::postShareCopyBuffer(char *input_buffer, int size_x, int size_y, int size_z, int out_x, int out_y, int out_z) {
     const auto nodeSize = node.get_node_size();
     const auto shareThickness = node.get_share_thickness();
-    char*** inputArray = node.get_main_array_input();
-    
+    char ***inputArray = node.get_main_array_input();
+
     if (node.node_in_grid(out_x, out_y, out_z)) {
         for (int z = 0; z < size_z; z++) {
             for (int y = 0; y < size_y; y++) {

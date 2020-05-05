@@ -8,6 +8,8 @@ class NodeSimulationInterfaceGameOfLife : public NodeSimulationInterface {
 public:
     NodeSimulationInterfaceGameOfLife(Node &node);
 
+    void postReceiveFromMaster(const char *receivedArray) override;
+    void preSendToMaster(char *arrayToSend) override;
     void preShareCopy() override;
     void iter() override;
     void postShareCopy() override;

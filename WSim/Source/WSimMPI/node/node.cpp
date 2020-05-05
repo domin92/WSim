@@ -309,25 +309,11 @@ void Node::share_edges() {
 
 void Node::receive_from_master() {
     MPI_Scatter(MPI_IN_PLACE, 0, MPI_CHAR, send_array, node_volume, MPI_CHAR, 0, MPI_COMM_WORLD);
-
-    for (int z = 0; z < node_size; z++) {
-        for (int y = 0; y < node_size; y++) {
-            for (int x = 0; x < node_size; x++) {
-                array[current_array_idx][z + share_thickness][y + share_thickness][x + share_thickness] = send_array[z * (node_size * node_size) + y * node_size + x];
-            }
-        }
-    }
+    simulationInterface->postReceiveFromMaster(send_array);
 }
 
 void Node::send_to_master() {
-    for (int z = 0; z < node_size; z++) {
-        for (int y = 0; y < node_size; y++) {
-            for (int x = 0; x < node_size; x++) {
-                send_array[z * (node_size * node_size) + y * node_size + x] = array[current_array_idx][z + share_thickness][y + share_thickness][x + share_thickness];
-            }
-        }
-    }
-
+    simulationInterface->preSendToMaster(send_array);
     MPI_Gather(send_array, node_volume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
 }
 
