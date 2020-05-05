@@ -10,15 +10,15 @@ public:
     enum class End { Lower, Higher };
     // clang-format on
 
-    OclCopyHelper(PositionInGrid grid, cl_command_queue &commandQueue, size_t border, cl_mem image, OCL::Vec3 baseSize);
+    OclCopyHelper(PositionInGrid grid, cl_command_queue &commandQueue, size_t border, OCL::Vec3 baseSize);
 
-    void preShareCopySide(void *outputBuffer, Dim dimension, End end);
-    void preShareCopyEdge(void *outputBuffer, Dim dimension1, End end1, Dim dimension2, End end2);
-    void preShareCopyCorner(void *outputBuffer, End endX, End endY, End endZ);
+    void preShareCopySide(cl_mem image, size_t indexInOutputBuffer, void *outputBuffer, Dim dimension, End end);
+    void preShareCopyEdge(cl_mem image, size_t indexInOutputBuffer, void *outputBuffer, Dim dimension1, End end1, Dim dimension2, End end2);
+    void preShareCopyCorner(cl_mem image, size_t indexInOutputBuffer, void *outputBuffer, End endX, End endY, End endZ);
 
-    void postShareCopySide(const void *inputBuffer, Dim dimension, End end);
-    void postShareCopyEdge(const void *inputBuffer, Dim dimension1, End end1, Dim dimension2, End end2);
-    void postShareCopyCorner(const void *inputBuffer, End endX, End endY, End endZ);
+    void postShareCopySide(cl_mem image, size_t indexInOutputBuffer, const void *inputBuffer, Dim dimension, End end);
+    void postShareCopyEdge(cl_mem image, size_t indexInOutputBuffer, const void *inputBuffer, Dim dimension1, End end1, Dim dimension2, End end2);
+    void postShareCopyCorner(cl_mem image, size_t indexInOutputBuffer, const void *inputBuffer, End endX, End endY, End endZ);
 
 private:
     bool shouldNotShare(Dim dimension, End end);
@@ -30,6 +30,5 @@ private:
     const PositionInGrid grid;
     const cl_command_queue &commandQueue;
     const size_t border;
-    const cl_mem image;
     const OCL::Vec3 baseSize;
 };

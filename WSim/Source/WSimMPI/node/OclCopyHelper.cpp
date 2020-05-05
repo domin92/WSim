@@ -2,14 +2,21 @@
 
 #include "Source/WSimSimulation/Utils/Error.h"
 
-OclCopyHelper::OclCopyHelper(PositionInGrid grid, cl_command_queue &commandQueue, size_t border, cl_mem image, OCL::Vec3 baseSize)
+#include <type_traits>
+
+template <typename A>
+constexpr inline A ptrAdd(A ptr, size_t offset) {
+    static_assert(std::is_pointer_v<A>);
+    return reinterpret_cast<A>(reinterpret_cast<uintptr_t>(ptr) + static_cast<uintptr_t>(offset));
+}
+
+OclCopyHelper::OclCopyHelper(PositionInGrid grid, cl_command_queue &commandQueue, size_t border, OCL::Vec3 baseSize)
     : grid(grid),
       commandQueue(commandQueue),
       border(border),
-      image(image),
       baseSize(baseSize) {}
 
-void OclCopyHelper::preShareCopySide(void *outputBuffer, Dim dimension, End end) {
+void OclCopyHelper::preShareCopySide(cl_mem image, size_t indexInOutputBuffer, void *outputBuffer, Dim dimension, End end) {
     if (shouldNotShare(dimension, end)) {
         return;
     }
@@ -23,10 +30,11 @@ void OclCopyHelper::preShareCopySide(void *outputBuffer, Dim dimension, End end)
     selectDimension(size, dimension) = border;
 
     // Perform actual read
-    OCL::enqueueReadImage3D(commandQueue, image, CL_FALSE, offset, size, outputBuffer);
+    const auto readAddress = ptrAdd(outputBuffer, indexInOutputBuffer * size.getRequiredBufferSize(1));
+    OCL::enqueueReadImage3D(commandQueue, image, CL_FALSE, offset, size, readAddress);
 }
 
-void OclCopyHelper::preShareCopyEdge(void *outputBuffer, Dim dimension1, End end1, Dim dimension2, End end2) {
+void OclCopyHelper::preShareCopyEdge(cl_mem image, size_t indexInOutputBuffer, void *outputBuffer, Dim dimension1, End end1, Dim dimension2, End end2) {
     wsimErrorIf(dimension1 == dimension2);
     wsimErrorIf(end1 == end2);
     if (shouldNotShare(dimension1, end1) || shouldNotShare(dimension2, end2)) {
@@ -44,10 +52,11 @@ void OclCopyHelper::preShareCopyEdge(void *outputBuffer, Dim dimension1, End end
     selectDimension(size, dimension2) = border;
 
     // Perform actual read
-    OCL::enqueueReadImage3D(commandQueue, image, CL_FALSE, offset, size, outputBuffer);
+    const auto readAddress = ptrAdd(outputBuffer, indexInOutputBuffer * size.getRequiredBufferSize(1));
+    OCL::enqueueReadImage3D(commandQueue, image, CL_FALSE, offset, size, readAddress);
 }
 
-void OclCopyHelper::preShareCopyCorner(void *outputBuffer, End endX, End endY, End endZ) {
+void OclCopyHelper::preShareCopyCorner(cl_mem image, size_t indexInOutputBuffer, void *outputBuffer, End endX, End endY, End endZ) {
     if (shouldNotShare(Dim::X, endX) || shouldNotShare(Dim::Y, endY) || shouldNotShare(Dim::Z, endZ)) {
         return;
     }
@@ -62,10 +71,11 @@ void OclCopyHelper::preShareCopyCorner(void *outputBuffer, End endX, End endY, E
     OCL::Vec3 size{border, border, border};
 
     // Perform actual read
-    OCL::enqueueReadImage3D(commandQueue, image, CL_FALSE, offset, size, outputBuffer);
+    const auto readAddress = ptrAdd(outputBuffer, indexInOutputBuffer * size.getRequiredBufferSize(1));
+    OCL::enqueueReadImage3D(commandQueue, image, CL_FALSE, offset, size, readAddress);
 }
 
-void OclCopyHelper::postShareCopySide(const void *inputBuffer, Dim dimension, End end) {
+void OclCopyHelper::postShareCopySide(cl_mem image, size_t indexInInputBuffer, const void *inputBuffer, Dim dimension, End end) {
     if (shouldNotShare(dimension, end)) {
         return;
     }
@@ -79,10 +89,11 @@ void OclCopyHelper::postShareCopySide(const void *inputBuffer, Dim dimension, En
     selectDimension(size, dimension) = border;
 
     // Perform actual write
-    OCL::enqueueWriteImage3D(commandQueue, image, CL_FALSE, offset, size, inputBuffer);
+    const auto writeAddress = ptrAdd(inputBuffer, indexInInputBuffer * size.getRequiredBufferSize(1));
+    OCL::enqueueWriteImage3D(commandQueue, image, CL_FALSE, offset, size, writeAddress);
 }
 
-void OclCopyHelper::postShareCopyEdge(const void *inputBuffer, Dim dimension1, End end1, Dim dimension2, End end2) {
+void OclCopyHelper::postShareCopyEdge(cl_mem image, size_t indexInInputBuffer, const void *inputBuffer, Dim dimension1, End end1, Dim dimension2, End end2) {
     wsimErrorIf(dimension1 == dimension2);
     wsimErrorIf(end1 == end2);
     if (shouldNotShare(dimension1, end1) || shouldNotShare(dimension2, end2)) {
@@ -100,10 +111,11 @@ void OclCopyHelper::postShareCopyEdge(const void *inputBuffer, Dim dimension1, E
     selectDimension(size, dimension2) = border;
 
     // Perform actual write
-    OCL::enqueueWriteImage3D(commandQueue, image, CL_FALSE, offset, size, inputBuffer);
+    const auto writeAddress = ptrAdd(inputBuffer, indexInInputBuffer * size.getRequiredBufferSize(1));
+    OCL::enqueueWriteImage3D(commandQueue, image, CL_FALSE, offset, size, writeAddress);
 }
 
-void OclCopyHelper::postShareCopyCorner(const void *inputBuffer, End endX, End endY, End endZ) {
+void OclCopyHelper::postShareCopyCorner(cl_mem image, size_t indexInInputBuffer, const void *inputBuffer, End endX, End endY, End endZ) {
     if (shouldNotShare(Dim::X, endX) || shouldNotShare(Dim::Y, endY) || shouldNotShare(Dim::Z, endZ)) {
         return;
     }
@@ -118,7 +130,8 @@ void OclCopyHelper::postShareCopyCorner(const void *inputBuffer, End endX, End e
     OCL::Vec3 size{border, border, border};
 
     // Perform actual write
-    OCL::enqueueWriteImage3D(commandQueue, image, CL_FALSE, offset, size, inputBuffer);
+    const auto writeAddress = ptrAdd(inputBuffer, indexInInputBuffer * size.getRequiredBufferSize(1));
+    OCL::enqueueWriteImage3D(commandQueue, image, CL_FALSE, offset, size, writeAddress);
 }
 
 bool OclCopyHelper::shouldNotShare(Dim dimension, End end) {
