@@ -12,7 +12,7 @@ Master::Master(int proc_count, int grid_size, int node_size)
       grid_size(grid_size),
       node_size(node_size),
       full_size(node_size * grid_size),
-      node_volume(node_size * node_size * node_size),
+      node_volume(MasterRendererInterfaceVoxel::mainBufferTexelSize * node_size * node_size * node_size),
       main_buffer(new char[(proc_count - 1) * node_volume]),
       mapped_buffer(new char *[proc_count - 1]),
       rendererInterface(new MasterRendererInterfaceVoxel(*this)) {
@@ -25,6 +25,15 @@ Master::~Master() {
     delete[] mapped_buffer;
     delete[] main_buffer;
     MPI_Abort(MPI_COMM_WORLD, 0);
+}
+
+void Master::sendToNodes() {
+    MPI_Scatter(main_buffer - node_volume, node_volume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
+    rendererInterface->sendToNodesExtra();
+}
+
+void Master::receiveFromNodes() {
+    MPI_Gather(MPI_IN_PLACE, 0, MPI_CHAR, main_buffer - node_volume, node_volume, MPI_CHAR, 0, MPI_COMM_WORLD);
 }
 
 void Master::main() {
@@ -55,6 +64,6 @@ void Master::main() {
     }
 
     // Initialize values in nodes and start rendering
-    rendererInterface->sendToNodes();
+    sendToNodes();
     rendererInterface->mainLoop();
 }

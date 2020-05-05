@@ -26,6 +26,10 @@ public:
     ~Master();
     void main();
 
+    // Nodes communication
+    void sendToNodes();
+    void receiveFromNodes();
+
     // Getters
     auto getGridSize() const { return grid_size; }
     auto getNodeSize() const { return node_size; }

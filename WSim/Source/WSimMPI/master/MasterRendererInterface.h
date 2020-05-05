@@ -17,11 +17,11 @@ public:
           renderer(std::move(renderer)) {}
 
     // For MPI
-    virtual void sendToNodes() = 0;
+    virtual void sendToNodesExtra(){};
     void mainLoop() { renderer->mainLoop(); }
 
     // For renderer
-    virtual void stepSimulation(float dt) = 0;
+    virtual void stepSimulation(float dt) { master.receiveFromNodes(); }
 
 protected:
     Master &master;
