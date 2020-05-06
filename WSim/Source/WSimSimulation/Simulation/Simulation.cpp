@@ -44,15 +44,22 @@ void Simulation::stepSimulation(float deltaTime) {
     OCL::enqueueKernel3D(commandQueue, kernelAdvection, simulationSizeWithBorder);
 }
 
-AbstractSimulation::ImageInfo Simulation::getImageInfo2D() {
-    ImageInfo info{};
+size_t Simulation::getSubImagesCount2D() {
+    return 1u;
+}
+
+Simulation::SubImageInfo Simulation::getSubImageInfo2D(size_t subImageIndex) {
+    wsimErrorIf(subImageIndex != 0);
+    SubImageInfo info;
+    info.xOffset = 0;
+    info.yOffset = 0;
     info.width = simulationSize.x;
     info.height = simulationSize.y;
-    info.totalSize = info.width * info.height * 4 * sizeof(float);
     return info;
 }
 
-void Simulation::getImageData2D(void *data) {
+void Simulation::getSubImage2D(size_t subImageIndex, void *data) {
+    wsimErrorIf(subImageIndex != 0);
     OCL::Vec3 offset = borderOffset;
     offset.z = 0;
     OCL::Vec3 size = simulationSize;

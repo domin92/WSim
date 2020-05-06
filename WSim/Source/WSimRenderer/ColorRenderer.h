@@ -2,6 +2,7 @@
 #include "Source/WSimSimulation/Simulation/AbstractSimulation.h"
 
 #include <memory>
+#include <vector>
 
 class ColorRenderer : public Renderer {
 public:
@@ -19,10 +20,12 @@ private:
 
     // General data
     AbstractSimulation &simulation;
+    size_t imageWidth = 0;
+    size_t imageHeight = 0;
 
     // Texture data
-    AbstractSimulation::ImageInfo texture1Info;
-    std::unique_ptr<char[]> texture1Data;
+    std::vector<AbstractSimulation::SubImageInfo> subImagesInfo;
+    std::vector<std::unique_ptr<char[]>> subImagesData;
     GLuint texture1;
 
     // Mouse data

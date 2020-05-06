@@ -16,8 +16,9 @@ class Simulation : public AbstractSimulation {
 public:
     Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid);
     void stepSimulation(float deltaTime) override;
-    ImageInfo getImageInfo2D() override;
-    void getImageData2D(void *data) override;
+    size_t getSubImagesCount2D() override;
+    SubImageInfo getSubImageInfo2D(size_t subImageIndex) override;
+    void getSubImage2D(size_t subImageIndex, void* data) override;
     void applyForce(float positionX, float positionY, float changeX, float changeY, float radius) override;
     void stop() override;
     void reset() override;
