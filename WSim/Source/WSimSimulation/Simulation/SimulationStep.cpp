@@ -1,7 +1,7 @@
 #include "SimulationStep.h"
 
+#include "Source/WSimCommon/Error.h"
 #include "Source/WSimSimulation/Simulation/Simulation.h"
-#include "Source/WSimSimulation/Utils/Error.h"
 
 SimulationStep::SimulationStep(Simulation &simulation, OCL::Vec3 &outputVelocitySize, OCL::Vec3 inputVelocitySize)
     : simulation(simulation),

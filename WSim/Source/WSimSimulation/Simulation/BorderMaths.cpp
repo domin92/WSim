@@ -1,6 +1,6 @@
 #include "BorderMaths.h"
 
-#include "Source/WSimSimulation/Utils/Error.h"
+#include "Source/WSimCommon/Error.h"
 
 OCL::Vec3 increaseBorder(OCL::Vec3 simulationSize, PositionInGrid positionInGrid, int borderWidthChange) {
     const auto borderX = 2 - static_cast<int>(positionInGrid.edgeL) - static_cast<int>(positionInGrid.edgeR);

@@ -2,7 +2,7 @@
 
 #define CL_TARGET_OPENCL_VERSION 120
 
-#include "Source/WSimSimulation/Utils/Error.h"
+#include "Source/WSimCommon/Error.h"
 
 #include <CL/cl.h>
 #include <iostream>

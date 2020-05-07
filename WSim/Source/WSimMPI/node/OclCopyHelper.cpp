@@ -1,6 +1,6 @@
 #include "OclCopyHelper.h"
 
-#include "Source/WSimSimulation/Utils/Error.h"
+#include "Source/WSimCommon/Error.h"
 
 #include <type_traits>
 

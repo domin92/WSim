@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/WSimSimulation/Utils/Error.h"
+#include "Source/WSimCommon/Error.h"
 
 class AbstractSimulation {
 public:
