@@ -1,6 +1,7 @@
 #include "Node.hpp"
 
 #include "Source/WSimMPI/node/NodeSimulationInterfaceGameOfLife.hpp"
+#include "Source/WSimMPI/Utils.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -79,25 +80,10 @@ Node::Node(int rank, int grid_size, int node_size)
     this->rank = rank;
     this->grid_size = grid_size;
     this->node_size = node_size;
-    node_volume = node_size * node_size * node_size;
-
-    // Calculating node position in 3D space - VERY IMPORTANT!
-    int adjusted_rank = rank - 1; // Rank excluding master
-    x_pos_in_grid = (adjusted_rank) % grid_size;
-    y_pos_in_grid = ((adjusted_rank) % (grid_size * grid_size)) / grid_size;
-    z_pos_in_grid = (adjusted_rank) / (grid_size * grid_size);
-    // For grid_size = 2 we have:
-    //
-    // Rank | x | y | z
-    // 1    | 0 | 0 | 0
-    // 2    | 1 | 0 | 0
-    // 3    | 0 | 1 | 0
-    // 4    | 1 | 1 | 0
-    // 5    | 0 | 0 | 1
-    // 6    | 1 | 0 | 1
-    // 7    | 0 | 1 | 1
-    // 8    | 1 | 1 | 1
-    //
+    this->node_volume = node_size * node_size * node_size;
+    this->x_pos_in_grid = convertTo3DRankX(rank, grid_size);
+    this->y_pos_in_grid = convertTo3DRankY(rank, grid_size);
+    this->z_pos_in_grid = convertTo3DRankZ(rank, grid_size);
 
     // Creating two 3D arrays
     main_array_size = node_size + 2 * share_thickness;
