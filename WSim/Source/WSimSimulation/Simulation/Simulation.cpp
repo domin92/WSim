@@ -55,6 +55,7 @@ Simulation::SubImageInfo Simulation::getSubImageInfo2D(size_t subImageIndex) {
     info.yOffset = 0;
     info.width = simulationSize.x;
     info.height = simulationSize.y;
+    info.valid = true;
     return info;
 }
 

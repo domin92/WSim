@@ -16,6 +16,7 @@ public:
         size_t yOffset;
         size_t width;
         size_t height;
+        bool valid;
     };
     virtual size_t getSubImagesCount2D() { wsimError(); }
     virtual SubImageInfo getSubImageInfo2D(size_t subImageIndex) { wsimError(); }

@@ -88,6 +88,9 @@ void ColorRenderer::update(float dt) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     for (auto i = 0u; i < subImagesData.size(); i++) {
         const auto &info = subImagesInfo[i];
+        if (!info.valid) {
+            continue;
+        }
         const auto &data = subImagesData[i];
 
         simulation.getSubImage2D(i, data.get());
