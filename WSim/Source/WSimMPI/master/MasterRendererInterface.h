@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Source/WSimMPI/master/master.hpp"
-#include "Source/WSimRenderer/Renderer.h"
 #include "Source/WSimSimulation/Simulation/AbstractSimulation.h"
 
 #include <memory>
@@ -12,18 +11,15 @@
 // renderer added to the system.
 class MasterRendererInterface : public AbstractSimulation {
 public:
-    MasterRendererInterface(Master &master, std::unique_ptr<Renderer> &&renderer)
-        : master(master),
-          renderer(std::move(renderer)) {}
+    MasterRendererInterface(Master &master) : master(master) {}
 
     // For MPI
     virtual void sendToNodesExtra(){};
-    void mainLoop() { renderer->mainLoop(); }
+    virtual void mainLoop() = 0;
 
     // For renderer
     virtual void stepSimulation(float dt) { master.receiveFromNodes(); }
 
 protected:
     Master &master;
-    std::unique_ptr<Renderer> renderer;
 };
