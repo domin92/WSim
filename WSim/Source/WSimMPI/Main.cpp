@@ -3,6 +3,7 @@
 
 #include "Master/Master.hpp"
 #include "Node/Node.hpp"
+#include "Source/WSimCommon/Logger.h"
 
 #define DEFAULT_GRID_SIZE 60
 
@@ -31,6 +32,8 @@ void main(int argc, char **argv) {
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
+
+    Logger::createFileLogger("log_file", my_rank);
 
     if (my_cbrt(proc_count - 1) == 0) {
         return;
