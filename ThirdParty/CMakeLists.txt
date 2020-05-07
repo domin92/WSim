@@ -10,8 +10,11 @@ set_with_parent_scope(DIR_GLM ${CMAKE_CURRENT_SOURCE_DIR}/glm)
 
 # Add dependencies to the project
 set(gtest_force_shared_crt on)
+set(BUILD_GMOCK off)
 add_subdirectory(${DIR_GTEST})
 add_subdirectory(${DIR_GLAD})
+set(GLFW_BUILD_DOCS off)
+set(GLFW_INSTALL off)
 add_subdirectory(${DIR_GLFW})
 set(BUILD_STATIC_LIBS on)
 add_subdirectory(${DIR_GLM})
