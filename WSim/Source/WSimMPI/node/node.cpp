@@ -206,7 +206,7 @@ Node::~Node() {
     delete[] array[1];
 }
 
-inline bool Node::node_in_grid(int x, int y, int z) {
+bool Node::node_in_grid(int x, int y, int z) {
     // Returns true if neighbour node is withing the grid
     bool x_in_grid = (x_pos_in_grid + x >= 0) & (x_pos_in_grid + x < grid_size);
     bool y_in_grid = (y_pos_in_grid + y >= 0) & (y_pos_in_grid + y < grid_size);
