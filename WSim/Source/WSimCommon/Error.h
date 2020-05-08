@@ -1,8 +1,11 @@
 #pragma once
 
+#include "Source/WSimCommon/Logger.h"
+
 #include <cstdlib>
 
 [[noreturn]] inline void wsimError() {
+    Logger::get() << "wsimError called!\n";
     std::abort();
 }
 

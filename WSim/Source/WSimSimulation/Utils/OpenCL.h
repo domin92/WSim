@@ -3,15 +3,16 @@
 #define CL_TARGET_OPENCL_VERSION 120
 
 #include "Source/WSimCommon/Error.h"
+#include "Source/WSimCommon/Logger.h"
 
 #include <CL/cl.h>
 #include <iostream>
 #include <string>
 
-#define ASSERT_CL_SUCCESS(retVal)                   \
-    if (retVal != CL_SUCCESS) {                     \
-        std::cerr << "retVal = " << retVal << '\n'; \
-        wsimError();                                \
+#define ASSERT_CL_SUCCESS(retVal)                                                                                 \
+    if (retVal != CL_SUCCESS) {                                                                                   \
+        Logger::get() << __FILE__ << ":" << __LINE__ << " (" << __FUNCTION__ << "): retVal = " << retVal << '\n'; \
+        wsimError();                                                                                              \
     }
 
 #define DEFINE_RAII_WRAPPER(name, clType, releaseMethod) \
