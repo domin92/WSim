@@ -2,6 +2,7 @@
 
 #include "Source/WSimMPI/node/NodeSimulationInterfaceGameOfLife.hpp"
 #include "Source/WSimMPI/Utils.h"
+#include "Source/WSimCommon/Logger.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -66,24 +67,25 @@ ShareBuffers::ShareBuffers(int sh_horizontal_size, int sh_vertical_size, int sh_
     sh_edge_BD_out = new char[sh_edge_size];
 }
 
+using UsedSimulationInterface = NodeSimulationInterfaceGameOfLife;
 Node::Node(int rank, int grid_size, int node_size)
-    : share_thickness(1),
-      number_of_main_arrays(2),
-      sh_horizontal_size(node_size* node_size* share_thickness* number_of_main_arrays),
-      sh_vertical_size(node_size* node_size* share_thickness* number_of_main_arrays),
-      sh_depth_size(node_size* node_size* share_thickness* number_of_main_arrays),
-      sh_corner_size(share_thickness* share_thickness* share_thickness* number_of_main_arrays),
-      sh_edge_size(share_thickness* share_thickness* node_size* number_of_main_arrays),
+    : share_thickness(1), // TODO hardcoded
+      number_of_main_arrays(UsedSimulationInterface::mainArraysCount),
+      sh_horizontal_size(node_size* node_size* share_thickness* number_of_main_arrays * UsedSimulationInterface::texelSize),
+      sh_vertical_size(node_size* node_size* share_thickness* number_of_main_arrays * UsedSimulationInterface::texelSize),
+      sh_depth_size(node_size* node_size* share_thickness* number_of_main_arrays * UsedSimulationInterface::texelSize),
+      sh_corner_size(share_thickness* share_thickness* share_thickness* number_of_main_arrays * UsedSimulationInterface::texelSize),
+      sh_edge_size(share_thickness* share_thickness* node_size* number_of_main_arrays * UsedSimulationInterface::texelSize),
       shareBuffers(sh_horizontal_size, sh_vertical_size, sh_depth_size, sh_corner_size, sh_edge_size),
-      simulationInterface(new NodeSimulationInterfaceGameOfLife(*this))
-{
-    this->rank = rank;
-    this->grid_size = grid_size;
-    this->node_size = node_size;
-    this->node_volume = node_size * node_size * node_size;
-    this->x_pos_in_grid = convertTo3DRankX(rank, grid_size);
-    this->y_pos_in_grid = convertTo3DRankY(rank, grid_size);
-    this->z_pos_in_grid = convertTo3DRankZ(rank, grid_size);
+      rank(rank),
+      grid_size(grid_size),
+      node_size(node_size),
+      node_volume(node_size* node_size* node_size * UsedSimulationInterface::texelSize),
+      x_pos_in_grid(convertTo3DRankX(rank, grid_size)),
+      y_pos_in_grid(convertTo3DRankY(rank, grid_size)),
+      z_pos_in_grid(convertTo3DRankZ(rank, grid_size)),
+      simulationInterface(new UsedSimulationInterface(*this)) {
+    Logger::get() << "My 3D coords: " << x_pos_in_grid << ", " << y_pos_in_grid << ", " << z_pos_in_grid << std::endl;
 
     // Creating two 3D arrays
     main_array_size = node_size + 2 * share_thickness;

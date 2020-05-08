@@ -7,6 +7,8 @@ struct ShareBuffers;
 class NodeSimulationInterfaceGameOfLife : public NodeSimulationInterface {
 public:
     NodeSimulationInterfaceGameOfLife(Node &node);
+    constexpr static size_t texelSize = 1;
+    constexpr static size_t mainArraysCount = 1;
 
     void postReceiveFromMaster(const char *receivedArray) override;
     void preSendToMaster(char *arrayToSend) override;
