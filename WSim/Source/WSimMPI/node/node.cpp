@@ -1,6 +1,6 @@
 #include "Node.hpp"
 
-#include "Source/WSimMPI/node/NodeSimulationInterfaceGameOfLife.hpp"
+#include "Source/WSimMPI/node/NodeSimulationInterfaceWater.hpp"
 #include "Source/WSimMPI/Utils.h"
 #include "Source/WSimCommon/Logger.h"
 
@@ -67,9 +67,9 @@ ShareBuffers::ShareBuffers(int sh_horizontal_size, int sh_vertical_size, int sh_
     sh_edge_BD_out = new char[sh_edge_size];
 }
 
-using UsedSimulationInterface = NodeSimulationInterfaceGameOfLife;
+using UsedSimulationInterface = NodeSimulationInterfaceWater;
 Node::Node(int rank, int grid_size, int node_size)
-    : share_thickness(1), // TODO hardcoded
+    : share_thickness(15), // TODO hardcoded
       number_of_main_arrays(UsedSimulationInterface::mainArraysCount),
       sh_horizontal_size(node_size* node_size* share_thickness* number_of_main_arrays * UsedSimulationInterface::texelSize),
       sh_vertical_size(node_size* node_size* share_thickness* number_of_main_arrays * UsedSimulationInterface::texelSize),

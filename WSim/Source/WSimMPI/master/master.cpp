@@ -1,6 +1,7 @@
 ﻿#include "Master.hpp"
 
 #include "Source/WSimMPI/master/MasterRendererInterfaceVoxel.h"
+#include "Source/WSimMPI/master/MasterRendererInterfaceWater.hpp"
 
 #include <cstdlib>
 #include <fstream>
@@ -12,10 +13,10 @@ Master::Master(int proc_count, int grid_size, int node_size)
       grid_size(grid_size),
       node_size(node_size),
       full_size(node_size * grid_size),
-      node_volume(MasterRendererInterfaceVoxel::mainBufferTexelSize * node_size * node_size * node_size),
+      node_volume(MasterRendererInterfaceWater2D::mainBufferTexelSize * node_size * node_size * node_size),
       main_buffer(new char[(proc_count - 1) * node_volume]),
       mapped_buffer(new char *[proc_count - 1]),
-      rendererInterface(new MasterRendererInterfaceVoxel(*this)) {
+      rendererInterface(new MasterRendererInterfaceWater2D(*this)) {
     for (int i = 0; i < proc_count - 1; i++) {
         mapped_buffer[i] = main_buffer + i * node_volume;
     }

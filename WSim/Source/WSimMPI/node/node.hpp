@@ -128,6 +128,11 @@ public:
 	auto get_main_array_size() const { return main_array_size; }
 	char*** get_main_array_input() const { return array[current_array_idx]; }
 	char*** get_main_array_output() const { return array[current_array_idx ^ 1]; }
+	auto get_x_pos_in_grid() const { return x_pos_in_grid; }
+	auto get_y_pos_in_grid() const { return y_pos_in_grid; }
+	auto get_z_pos_in_grid() const { return z_pos_in_grid; }
+	auto get_grid_size() const { return grid_size; }
+	auto get_rank() const { return rank; }
 };
 
 #endif
