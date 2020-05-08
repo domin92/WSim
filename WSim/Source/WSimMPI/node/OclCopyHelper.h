@@ -24,6 +24,7 @@ private:
     bool shouldNotShare(Dim dimension, End end);
     void computePreShareCopyOffsetComponent(OCL::Vec3 &offset, Dim dimension, End end);
     void computePostShareCopyOffsetComponent(OCL::Vec3 &offset, Dim dimension, End end);
+    bool isLowerBorderPresent(Dim dimension);
     static size_t &selectDimension(OCL::Vec3 &vector, Dim dimension);
     static const size_t &selectDimension(const OCL::Vec3 &vector, Dim dimension);
 
