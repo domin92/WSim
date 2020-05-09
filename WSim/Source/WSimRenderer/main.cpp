@@ -4,6 +4,9 @@
 #include <fstream>
 #include <iostream>
 #include "stb_image.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 // clang-format on
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
@@ -166,11 +169,12 @@ int rendererMain() {
     waters[1][0] = 0.2;
     waters[1][1] = 0;
 
-    waters[2][0] = 0.4;
-    waters[2][1] = 0;
+    waters[2][0] = 0.2;
+    waters[2][1] = 0.2;
 
     waters[3][0] = 0;
     waters[3][1] = 0.2;
+
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
@@ -183,15 +187,38 @@ int rendererMain() {
         float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
         int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
         int vertexCurrPosition = glGetUniformLocation(shaderProgram, "currPosition");
+        unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+
+
 
         for (int i = 0; i < 4; i++) {
+            glm::mat4 trans = glm::mat4(1.0f);
+            //trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+            trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
             glUseProgram(shaderProgram);
             glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
             glUniform3f(vertexCurrPosition, waters[i][0], waters[i][1], 0.0f);
+            glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture);
 
+
+
+            glBindVertexArray(VAO);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+            glm::mat4 trans2 = glm::mat4(1.0f);
+            trans2 = glm::translate(trans2, glm::vec3(0.5f, -0.5f, 0.0f));
+            trans2 = glm::rotate(trans2, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+            glUseProgram(shaderProgram);
+            glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+            glUniform3f(vertexCurrPosition, waters[i][0], waters[i][1], 0.0f);
+            glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans2));
+            
             glBindVertexArray(VAO);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
