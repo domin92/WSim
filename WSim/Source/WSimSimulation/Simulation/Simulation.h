@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Source/WSimCommon/EdgeHelpers.h"
 #include "Source/WSimSimulation/Simulation/AbstractSimulation.h"
 #include "Source/WSimSimulation/Simulation/BorderMaths.h"
 #include "Source/WSimSimulation/Simulation/SimulationStep.h"
@@ -18,10 +19,12 @@ public:
     void stepSimulation(float deltaTime) override;
     size_t getSubImagesCount2D() override;
     SubImageInfo getSubImageInfo2D(size_t subImageIndex) override;
-    void getSubImage2D(size_t subImageIndex, void* data) override;
+    void getSubImage2D(size_t subImageIndex, void *data) override;
     void applyForce(float positionX, float positionY, float changeX, float changeY, float radius) override;
     void stop() override;
     void reset() override;
+    void addObstacleWall(Dim dimension, End end);
+    void addObstacleAllWalls();
 
     auto getBorderOffset() const { return borderOffset; }
     auto getSimulationSize() const { return simulationSize; }
@@ -32,6 +35,7 @@ public:
     auto &getPositionInGrid() { return positionInGrid; }
     auto &getColor() { return color; }
     auto &getVelocity() { return velocity; }
+    auto &getObstacles() { return obstacles; }
     auto &getKernelManager() { return kernels; }
 
 protected:
@@ -53,6 +57,7 @@ protected:
     // Images
     Image3DPair velocity; // extended
     Image3DPair color;    // extended
+    OCL::Mem obstacles;
 
     // Kernels
     KernelManager kernels;

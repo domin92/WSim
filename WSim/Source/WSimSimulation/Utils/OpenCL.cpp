@@ -231,10 +231,15 @@ void enqueueWriteImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool bl
     ASSERT_CL_SUCCESS(retVal);
 }
 
+void enqueueFillImage3D(cl_command_queue queue, cl_mem image, const void *pattern, Vec3 offset, Vec3 region) {
+    cl_int retVal = clEnqueueFillImage(queue, image, pattern, offset.ptr, region.ptr, 0, nullptr, nullptr);
+    ASSERT_CL_SUCCESS(retVal);
+}
+
 void enqueueZeroImage3D(cl_command_queue queue, cl_mem image, Vec3 imageSize) {
     Vec3 regionOrigin{};
     float pixel[4] = {0, 0, 0, 0};
-    cl_int retVal = clEnqueueFillImage(queue, image, pixel, regionOrigin.ptr, imageSize.ptr, 0, nullptr, nullptr);
+    enqueueFillImage3D(queue, image, pixel, regionOrigin, imageSize);
 }
 
 void finish(cl_command_queue commandQueue) {

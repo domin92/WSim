@@ -13,6 +13,7 @@ Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simul
       commandQueue(OCL::createCommandQueue(context, device)),
       velocity(context, simulationSizeWithBorder, vectorFieldFormat),
       color(context, simulationSizeWithBorder, vectorFieldFormat),
+      obstacles(OCL::createReadWriteImage3D(context, simulationSize, vectorFieldFormat)),
       kernels(device, context),
       kernelFillVelocity(kernels["fill.cl"]["fillVelocity"]),
       kernelFillColor(kernels["fill.cl"]["fillColor"]),
@@ -24,6 +25,7 @@ Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simul
     simulationSteps.emplace_back(new SimulationStepVorticityConfinement(*this, currentSimulationSize));
     simulationSteps.emplace_back(new SimulationStepAdvection(*this, currentSimulationSize));
 
+    OCL::enqueueZeroImage3D(commandQueue, obstacles, simulationSize);
     reset();
 }
 
@@ -37,10 +39,11 @@ void Simulation::stepSimulation(float deltaTime) {
     auto kernelAdvection = kernels["advection.cl"]["advection3f"];
     OCL::setKernelArgMem(kernelAdvection, 0, color.getSource());             // inField
     OCL::setKernelArgMem(kernelAdvection, 1, velocity.getSource());          // inVelocity
-    OCL::setKernelArgVec(kernelAdvection, 2, 0.f, 0.f, 0.f);                 // inVelocityOffset
-    OCL::setKernelArgFlt(kernelAdvection, 3, deltaTime);                     // inDeltaTime
-    OCL::setKernelArgFlt(kernelAdvection, 4, 1.f);                           // inDissipation
-    OCL::setKernelArgMem(kernelAdvection, 5, color.getDestinationAndSwap()); // outField
+    OCL::setKernelArgMem(kernelAdvection, 2, obstacles);                     // inObstacles TODO
+    OCL::setKernelArgVec(kernelAdvection, 3, 0.f, 0.f, 0.f);                 // inVelocityOffset
+    OCL::setKernelArgFlt(kernelAdvection, 4, deltaTime);                     // inDeltaTime
+    OCL::setKernelArgFlt(kernelAdvection, 5, 1.f);                           // inDissipation
+    OCL::setKernelArgMem(kernelAdvection, 6, color.getDestinationAndSwap()); // outField
     OCL::enqueueKernel3D(commandQueue, kernelAdvection, simulationSizeWithBorder);
 }
 
@@ -100,5 +103,35 @@ void Simulation::reset() {
 
     for (auto it = simulationSteps.rbegin(); it != simulationSteps.rend(); it++) {
         (*it)->stop();
+    }
+}
+
+void Simulation::addObstacleWall(Dim dimension, End end) {
+    OCL::Vec3 offset = {0, 0, 0};
+    if (end == End::Higher) {
+        selectDimension(offset, dimension) += (selectDimension(simulationSize, dimension) - 1);
+    }
+
+    OCL::Vec3 size = simulationSize;
+    selectDimension(size, dimension) = 1;
+
+    float value[4] = { 0,0,0,0 };
+    value[static_cast<int>(dimension)] = (end == End::Higher) ? 1 : 1;
+
+    OCL::enqueueFillImage3D(commandQueue, obstacles, value, offset, size);
+
+    auto b = std::make_unique<char[]>(simulationSize.getRequiredBufferSize(16));
+    OCL::enqueueReadImage3D(commandQueue, obstacles, CL_BLOCKING, simulationSize, b.get());
+    int a = 0;
+}
+
+void Simulation::addObstacleAllWalls() {
+    addObstacleWall(Dim::X, End::Lower);
+    addObstacleWall(Dim::X, End::Higher);
+    addObstacleWall(Dim::Y, End::Lower);
+    addObstacleWall(Dim::Y, End::Higher);
+    if (simulationSize.z >= 3) {
+        addObstacleWall(Dim::Z, End::Lower);
+        addObstacleWall(Dim::Z, End::Higher);
     }
 }

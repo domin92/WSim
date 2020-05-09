@@ -21,16 +21,18 @@ SimulationStepAdvection::SimulationStepAdvection(Simulation &simulation, OCL::Ve
 
 void SimulationStepAdvection::run(float deltaTime) {
     auto &velocity = simulation.getVelocity();
+    auto &obstacles = simulation.getObstacles();
     auto &commandQueue = simulation.getCommandQueue();
 
     auto gws = outputVelocitySize;
     auto velocityOffset = calculateBorderOffset(simulation.getSimulationSizeWithBorder(), gws, simulation.getPositionInGrid());
     OCL::setKernelArgMem(kernelAdvection, 0, velocity.getSource());                                 // inField
     OCL::setKernelArgMem(kernelAdvection, 1, velocity.getSource());                                 // inVelocity
-    OCL::setKernelArgVec(kernelAdvection, 2, velocityOffset.x, velocityOffset.y, velocityOffset.z); // inVelocityOffset
-    OCL::setKernelArgFlt(kernelAdvection, 3, deltaTime);                                            // inDeltaTime
-    OCL::setKernelArgFlt(kernelAdvection, 4, 1.f);                                                  // inDissipation
-    OCL::setKernelArgMem(kernelAdvection, 5, velocity.getDestinationAndSwap());                     // outField
+    OCL::setKernelArgMem(kernelAdvection, 2, obstacles);                                            // inObstacles
+    OCL::setKernelArgVec(kernelAdvection, 3, velocityOffset.x, velocityOffset.y, velocityOffset.z); // inVelocityOffset
+    OCL::setKernelArgFlt(kernelAdvection, 4, deltaTime);                                            // inDeltaTime
+    OCL::setKernelArgFlt(kernelAdvection, 5, 1.f);                                                  // inDissipation
+    OCL::setKernelArgMem(kernelAdvection, 6, velocity.getDestinationAndSwap());                     // outField
     OCL::enqueueKernel3D(commandQueue, kernelAdvection, outputVelocitySize);
 }
 

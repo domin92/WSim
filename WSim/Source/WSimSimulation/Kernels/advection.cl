@@ -1,9 +1,11 @@
 __kernel void advection3f(__read_only image3d_t inField,
                           __read_only image3d_t inVelocity,
+                          __read_only image3d_t inObstacles,
                           int4 inVelocityOffset,
                           float inDeltaTime,
                           float inDissipation,
                           __write_only image3d_t outField) {
+
     // Get current positions
     const int4 threadPosition = (int4)((int)get_global_id(0), (int)get_global_id(1), (int)get_global_id(2), 0);
     const int4 velocityPosition = threadPosition + inVelocityOffset;
@@ -17,6 +19,13 @@ __kernel void advection3f(__read_only image3d_t inField,
     // Bilinear sample input buffer and apply dissipation
     const sampler_t linearSampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_LINEAR;
     float4 value = read_imagef(inField, linearSampler, samplePosition) * inDissipation;
+
+    // Zero velocity on obstacles
+    const float4 obstacleNormal = read_imagef(inObstacles, nearestSampler, threadPosition);
+    if (obstacleNormal.x != 0 || obstacleNormal.y != 0 || obstacleNormal.z != 0) {
+        const float4 velocityComponentNormalToObstacle = obstacleNormal * dot(value, obstacleNormal);
+        value -= velocityComponentNormalToObstacle;
+    }
 
     // Write to output
     write_imagef(outField, velocityPosition, value);

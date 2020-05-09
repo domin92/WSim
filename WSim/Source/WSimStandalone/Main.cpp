@@ -44,12 +44,13 @@ int main(int argc, char **argv) {
     std::cout << "Using clDeviceIndex=" << clDeviceIndex << '\n';
 
     // Create simulation
-    const OCL::Vec3 imageSize{100, 100, 1};
+    const OCL::Vec3 imageSize{200, 200, 1};
     const size_t borderWidth = 13;
     const OCL::Vec3 gridId{0, 0, 0};
     const OCL::Vec3 gridSize{1, 1, 1};
     const PositionInGrid positionInGrid{gridId, gridSize};
     Simulation simulation{clPlatformIndex, clDeviceIndex, imageSize, borderWidth, positionInGrid};
+    simulation.addObstacleAllWalls();
 
     // Create renderer
     ColorRenderer renderer{simulation};
