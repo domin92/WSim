@@ -30,6 +30,7 @@ macro(get_sources VARIABLE)
 endmacro()
 
 # Target names
+set_with_parent_scope(TARGET_WSIM_COMMON_LIB WsimCommon)
 set_with_parent_scope(TARGET_WSIM_SIMULATION_LIB WSimSimulation)
 set_with_parent_scope(TARGET_WSIM_RENDERER_LIB WSimRenderer)
 set_with_parent_scope(TARGET_WSIM_STANDALONE WSimStandalone)
