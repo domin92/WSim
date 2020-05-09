@@ -36,14 +36,13 @@ void Simulation::stepSimulation(float deltaTime) {
     }
 
     // Advect Color - including the border
-    auto kernelAdvection = kernels["advection.cl"]["advection3f"];
+    auto kernelAdvection = kernels["advection.cl"]["advect"];
     OCL::setKernelArgMem(kernelAdvection, 0, color.getSource());             // inField
     OCL::setKernelArgMem(kernelAdvection, 1, velocity.getSource());          // inVelocity
-    OCL::setKernelArgMem(kernelAdvection, 2, obstacles);                     // inObstacles TODO
-    OCL::setKernelArgVec(kernelAdvection, 3, 0.f, 0.f, 0.f);                 // inVelocityOffset
-    OCL::setKernelArgFlt(kernelAdvection, 4, deltaTime);                     // inDeltaTime
-    OCL::setKernelArgFlt(kernelAdvection, 5, 1.f);                           // inDissipation
-    OCL::setKernelArgMem(kernelAdvection, 6, color.getDestinationAndSwap()); // outField
+    OCL::setKernelArgVec(kernelAdvection, 2, 0.f, 0.f, 0.f);                 // inVelocityOffset
+    OCL::setKernelArgFlt(kernelAdvection, 3, deltaTime);                     // inDeltaTime
+    OCL::setKernelArgFlt(kernelAdvection, 4, 1.f);                           // inDissipation
+    OCL::setKernelArgMem(kernelAdvection, 5, color.getDestinationAndSwap()); // outField
     OCL::enqueueKernel3D(commandQueue, kernelAdvection, simulationSizeWithBorder);
 }
 
