@@ -1,16 +1,21 @@
 #pragma once
 
+#include "Source/WSimRenderer/FpsCounter.h"
 #include "Source/WSimRenderer/OpenGL.h"
 
 #include <cassert>
 #include <chrono>
+#include <functional>
 #include <iomanip>
 #include <iostream>
 
 class Renderer {
 public:
+    using FpsCallback = std::function<void(unsigned int)>;
+
     Renderer(int oglProfile, int width, int height);
     virtual ~Renderer();
+    void setFpsCallback(FpsCallback fpsCallback);
     void mainLoop();
 
 protected:
@@ -26,4 +31,8 @@ protected:
     GLFWwindow *window{};
     using Clock = std::chrono::steady_clock;
     Clock::time_point lastFrameTime;
+
+    // Fps measuring
+    FpsCallback fpsCallback = {};
+    std::unique_ptr<DefaultFpsCounter> fpsCounter = {};
 };

@@ -33,6 +33,11 @@ Renderer::~Renderer() {
     glfwTerminate();
 }
 
+void Renderer::setFpsCallback(FpsCallback fpsCallback) {
+    this->fpsCallback = fpsCallback;
+    this->fpsCounter = std::make_unique<DefaultFpsCounter>();
+}
+
 void Renderer::mainLoop() {
 
     while (!glfwWindowShouldClose(window)) {
@@ -45,6 +50,12 @@ void Renderer::mainLoop() {
         }
         const auto deltaTimeFloat = deltaTime.count() / 1000000.f;
         lastFrameTime = frameTime;
+
+        // Fps callback
+        if (fpsCallback) {
+            fpsCounter->push(static_cast<unsigned int>(deltaTime.count()));
+            fpsCallback(fpsCounter->getFps());
+        }
 
         // Clear window
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
