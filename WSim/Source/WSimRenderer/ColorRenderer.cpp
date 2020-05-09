@@ -1,5 +1,7 @@
 #include "ColorRenderer.h"
 
+#include <algorithm>
+
 constexpr static int initialWidth = 600;
 constexpr static int initialHeight = 600;
 
@@ -15,8 +17,8 @@ ColorRenderer::ColorRenderer(AbstractSimulation &simulation)
         this->subImagesInfo.push_back(info);
         this->subImagesData.push_back(std::make_unique<char[]>(size));
 
-        this->imageWidth += info.width;
-        this->imageHeight += info.height;
+        this->imageWidth = std::max(this->imageWidth, info.xOffset + info.width);
+        this->imageHeight = std::max(this->imageHeight, info.yOffset + info.height);
     }
 
     glGenTextures(1, &texture1);

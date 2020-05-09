@@ -15,7 +15,7 @@ void NodeSimulationInterfaceWater::postReceiveFromMaster(const char *receivedArr
     const auto offset = simulation.getBorderOffset();
     const auto size = simulation.getSimulationSize();
     OCL::enqueueZeroImage3D(commandQueue, simulation.getVelocity().getSource(), size); // TODO should be received from master?
-    OCL::enqueueWriteImage3D(commandQueue, image, CL_TRUE, offset, size, receivedArray);
+    // OCL::enqueueWriteImage3D(commandQueue, image, CL_TRUE, offset, size, receivedArray); TODO: master does not generate data
 }
 
 void NodeSimulationInterfaceWater::preSendToMaster(char *arrayToSend) {

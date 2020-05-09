@@ -28,8 +28,8 @@ MasterRendererInterfaceWater2D::SubImageInfo MasterRendererInterfaceWater2D::get
         info.valid = false;
     } else {
         info.valid = true;
-        info.xOffset = convertTo3DRankX(nodeRank, master.getGridSize());
-        info.yOffset = convertTo3DRankY(nodeRank, master.getGridSize());
+        info.xOffset = convertTo3DRankX(nodeRank, master.getGridSize()) * master.getNodeSize();
+        info.yOffset = convertTo3DRankY(nodeRank, master.getGridSize()) * master.getNodeSize();
         info.width = master.getNodeSize();
         info.height = master.getNodeSize();
     }
