@@ -5,14 +5,14 @@
 constexpr static int initialWidth = 600;
 constexpr static int initialHeight = 600;
 
-ColorRenderer::ColorRenderer(AbstractSimulation &simulation)
+ColorRenderer::ColorRenderer(ColorRendererCallbacks &callbacks)
     : Renderer(GLFW_OPENGL_COMPAT_PROFILE, initialWidth, initialHeight),
-      simulation(simulation) {
-    const auto subImagesCount = simulation.getSubImagesCount2D();
+      callbacks(callbacks) {
+    const auto subImagesCount = callbacks.getSubImagesCount2D();
     this->subImagesInfo.reserve(subImagesCount);
     this->subImagesData.reserve(subImagesCount);
     for (auto i = 0u; i < subImagesCount; i++) {
-        const auto info = simulation.getSubImageInfo2D(i);
+        const auto info = callbacks.getSubImageInfo2D(i);
         const auto size = info.width * info.height * 4 * sizeof(float); // TODO
         this->subImagesInfo.push_back(info);
         this->subImagesData.push_back(std::make_unique<char[]>(size));
@@ -40,10 +40,10 @@ void ColorRenderer::processInput(int button, int action, int mods) {
         }
         break;
     case GLFW_MOUSE_BUTTON_RIGHT:
-        simulation.stop();
+        callbacks.stop();
         break;
     case GLFW_MOUSE_BUTTON_MIDDLE:
-        simulation.reset();
+        callbacks.reset();
         break;
     }
 }
@@ -67,14 +67,13 @@ void ColorRenderer::processMouseMove(double screenX, double screenY) {
 
     // Apply force at given point
     const float radius = static_cast<float>(imageWidth) / 10.f;
-    simulation.applyForce(x, y, deltaX, deltaY, radius);
+    callbacks.applyForce(x, y, deltaX, deltaY, radius);
 }
 
 void ColorRenderer::update(float dt) {
 
-    simulation.stepSimulation(dt);
+    callbacks.stepSimulation(dt);
     glBindTexture(GL_TEXTURE_2D, texture1);
-
 
     static bool initialized = false;
     if (!initialized) {
@@ -85,7 +84,6 @@ void ColorRenderer::update(float dt) {
         initialized = true;
     }
 
-
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     for (auto i = 0u; i < subImagesData.size(); i++) {
@@ -95,7 +93,7 @@ void ColorRenderer::update(float dt) {
         }
         const auto &data = subImagesData[i];
 
-        simulation.getSubImage2D(i, data.get());
+        callbacks.getSubImage2D(i, data.get());
         ASSERT_GL_NO_ERROR();
         glTexSubImage2D(GL_TEXTURE_2D, 0, info.xOffset, info.yOffset, info.width, info.height, GL_RGBA, GL_FLOAT, data.get());
         ASSERT_GL_NO_ERROR();

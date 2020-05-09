@@ -3,9 +3,9 @@
 #include <fstream>
 #include <iterator>
 
-VoxelRenderer::VoxelRenderer(AbstractSimulation &simulation, int nodeSizeInVoxels, int gridSizeInNodes, int screenSize, char **voxelBuffers)
+VoxelRenderer::VoxelRenderer(VoxelRendererCallbacks &callbacks, int nodeSizeInVoxels, int gridSizeInNodes, int screenSize, char **voxelBuffers)
     : Renderer(GLFW_OPENGL_CORE_PROFILE, screenSize, screenSize),
-      simulation(simulation),
+      callbacks(callbacks),
       nodeSizeInVoxels(nodeSizeInVoxels),
       gridSizeInNodes(gridSizeInNodes),
       screenSize(screenSize),
@@ -106,7 +106,7 @@ void VoxelRenderer::processInput(int button, int action, int mods) {
 }
 
 void VoxelRenderer::update(float dt) {
-    simulation.stepSimulation(dt);
+    callbacks.stepSimulation(dt);
 }
 
 void VoxelRenderer::render() {

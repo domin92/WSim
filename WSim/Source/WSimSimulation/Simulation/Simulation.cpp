@@ -46,30 +46,6 @@ void Simulation::stepSimulation(float deltaTime) {
     OCL::enqueueKernel3D(commandQueue, kernelAdvection, simulationSizeWithBorder);
 }
 
-size_t Simulation::getSubImagesCount2D() {
-    return 1u;
-}
-
-Simulation::SubImageInfo Simulation::getSubImageInfo2D(size_t subImageIndex) {
-    wsimErrorIf(subImageIndex != 0);
-    SubImageInfo info;
-    info.xOffset = 0;
-    info.yOffset = 0;
-    info.width = simulationSize.x;
-    info.height = simulationSize.y;
-    info.valid = true;
-    return info;
-}
-
-void Simulation::getSubImage2D(size_t subImageIndex, void *data) {
-    wsimErrorIf(subImageIndex != 0);
-    OCL::Vec3 offset = borderOffset;
-    offset.z = 0;
-    OCL::Vec3 size = simulationSize;
-    size.z = 1;
-    OCL::enqueueReadImage3D(commandQueue, color.getSource(), CL_TRUE, offset, size, data);
-}
-
 void Simulation::applyForce(float positionX, float positionY, float changeX, float changeY, float radius) {
     const float coefficient = 0.01f; // arbitrarily set
     changeX *= simulationSize.x * coefficient;

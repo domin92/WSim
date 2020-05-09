@@ -7,9 +7,13 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
+struct VoxelRendererCallbacks {
+    virtual void stepSimulation(float deltaTime) = 0;
+};
+
 class VoxelRenderer : public Renderer {
 public:
-    VoxelRenderer(AbstractSimulation &simulation, int nodeSizeInVoxels, int gridSizeInNodes, int screenSize, char **voxelBuffers);
+    VoxelRenderer(VoxelRendererCallbacks &callbacks, int nodeSizeInVoxels, int gridSizeInNodes, int screenSize, char **voxelBuffers);
     ~VoxelRenderer() override;
 
 protected:
@@ -22,7 +26,7 @@ protected:
     void update(float dt) override;
     void render() override;
 
-    AbstractSimulation &simulation;
+    VoxelRendererCallbacks& callbacks;
     const int nodeSizeInVoxels;
     const int gridSizeInNodes;
     const int screenSize;
