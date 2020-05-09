@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Source/WSimRenderer/Renderer.h"
-#include "Source/WSimSimulation/Simulation/AbstractSimulation.h"
 
 #include <memory>
 #include <vector>

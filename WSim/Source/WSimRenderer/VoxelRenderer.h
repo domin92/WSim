@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Source/WSimRenderer/Renderer.h"
-#include "Source/WSimSimulation/Simulation/AbstractSimulation.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
@@ -26,11 +25,11 @@ protected:
     void update(float dt) override;
     void render() override;
 
-    VoxelRendererCallbacks& callbacks;
+    VoxelRendererCallbacks &callbacks;
     const int nodeSizeInVoxels;
     const int gridSizeInNodes;
     const int screenSize;
-    char**const voxelBuffers;
+    char **const voxelBuffers;
     const float voxelSize;
     const glm::mat4 mvp;
 

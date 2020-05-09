@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Source/WSimCommon/EdgeHelpers.h"
-#include "Source/WSimSimulation/Simulation/AbstractSimulation.h"
 #include "Source/WSimSimulation/Simulation/BorderMaths.h"
 #include "Source/WSimSimulation/Simulation/SimulationStep.h"
 #include "Source/WSimSimulation/Utils/ImagePair.h"
@@ -13,13 +12,13 @@
 
 const static cl_image_format vectorFieldFormat = {CL_RGBA, CL_FLOAT};
 const static cl_image_format scalarFieldFormat = {CL_R, CL_FLOAT};
-class Simulation : public AbstractSimulation {
+class Simulation {
 public:
     Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid);
-    void stepSimulation(float deltaTime) override;
-    void applyForce(float positionX, float positionY, float changeX, float changeY, float radius) override;
-    void stop() override;
-    void reset() override;
+    void stepSimulation(float deltaTime);
+    void applyForce(float positionX, float positionY, float changeX, float changeY, float radius);
+    void stop();
+    void reset();
     void addObstacleWall(Dim dimension, End end);
     void addObstacleAllWalls();
 
