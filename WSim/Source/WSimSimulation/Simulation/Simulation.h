@@ -2,7 +2,7 @@
 
 #include "Source/WSimCommon/EdgeHelpers.h"
 #include "Source/WSimSimulation/Simulation/BorderMaths.h"
-#include "Source/WSimSimulation/Simulation/SimulationStep.h"
+#include "Source/WSimSimulation/Simulation/Step/SimulationStep.h"
 #include "Source/WSimSimulation/Utils/ImagePair.h"
 #include "Source/WSimSimulation/Utils/KernelManager.h"
 #include "Source/WSimSimulation/Utils/OpenCL.h"

@@ -1,6 +1,8 @@
 #include "Simulation.h"
 
-#include "Source/WSimSimulation/Simulation/SimulationStep.h"
+#include "Source/WSimSimulation/Simulation/Step/SimulationStepAdvection.h"
+#include "Source/WSimSimulation/Simulation/Step/SimulationStepVorticityConfinement.h"
+#include "Source/WSimSimulation/Simulation/Step/SimulationStepVorticityPressure.h"
 
 Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize)
     : Simulation(platformIndex, deviceIndex, simulationSize, 0, PositionInGrid{OCL::Vec3{0, 0, 0}, OCL::Vec3{1, 1, 1}}) {}
