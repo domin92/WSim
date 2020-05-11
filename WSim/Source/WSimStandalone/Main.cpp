@@ -1,4 +1,5 @@
 #include "Source/WSimRenderer/ColorRenderer.h"
+#include "Source/WSimRenderer/FpsCounter.h"
 #include "Source/WSimSimulation/Simulation/Simulation.h"
 
 struct FpsCallback {
@@ -62,11 +63,16 @@ private:
 };
 
 int main(int argc, char **argv) {
+    enum class Mode {
+        Graphical,
+        Text,
+    };
+
     // Parse arguments
     size_t clPlatformIndex = 0u;
     size_t clDeviceIndex = 0u;
+    Mode mode = Mode::Graphical;
     int argIndex = 1;
-    bool useFpsCounter = true;
     while (argIndex < argc) {
         const bool hasNextArg = (argIndex + 1 < argc);
         const std::string currArg = argv[argIndex];
@@ -82,13 +88,26 @@ int main(int argc, char **argv) {
             argIndex += 2;
             continue;
         }
-        if (currArg == "-f" || currArg == "--noFpsCounter") {
-            useFpsCounter = false;
+        if (hasNextArg && (currArg == "-m" || currArg == "--mode")) {
+            if (nextArg == "graphical") {
+                mode = Mode::Graphical;
+            } else if (nextArg == "text") {
+                mode = Mode::Text;
+            } else {
+                std::cout << "Unknown mode: " << nextArg << '\n';
+                return 1;
+            }
+            argIndex += 2;
+            continue;
         }
         argIndex++;
     }
-    std::cout << "Using clPlatformIndex=" << clPlatformIndex << '\n';
-    std::cout << "Using clDeviceIndex=" << clDeviceIndex << '\n';
+
+    // Print arguments
+    std::cout << "Used parameters:\n";
+    std::cout << "\tclPlatformIndex=" << clPlatformIndex << '\n';
+    std::cout << "\tclDeviceIndex=" << clDeviceIndex << '\n';
+    std::cout << "\tmode=" << ((mode == Mode::Graphical) ? "graphical" : "text") << '\n';
 
     // Create simulation
     const OCL::Vec3 imageSize{200, 200, 1};
@@ -99,14 +118,27 @@ int main(int argc, char **argv) {
     Simulation simulation{clPlatformIndex, clDeviceIndex, imageSize, borderWidth, positionInGrid};
     simulation.addObstacleAllWalls();
 
-    // Create renderer
-    ColorRendererCallbacksImpl rendererCallbacks{simulation};
-    ColorRenderer renderer{rendererCallbacks};
     FpsCallback fpsCallback;
-    if (useFpsCounter) {
-        renderer.setFpsCallback(fpsCallback);
-    }
 
-    // Main loop
-    renderer.mainLoop();
+    if (mode == Mode::Graphical) {
+        ColorRendererCallbacksImpl rendererCallbacks{simulation};
+        ColorRenderer renderer{rendererCallbacks};
+        renderer.setFpsCallback(fpsCallback);
+        renderer.mainLoop();
+    } else {
+        DefaultFpsCounter fpsCounter;
+        using Clock = std::chrono::steady_clock;
+        auto lastFrameTime = Clock::now();
+        while (true) {
+            const auto currentFrameTime = Clock::now();
+            const auto deltaTimeMicroseconds = std::chrono::duration_cast<std::chrono::microseconds>(currentFrameTime - lastFrameTime);
+            const auto deltaTimeSeconds = deltaTimeMicroseconds.count() / 1e6f;
+            fpsCounter.push(deltaTimeMicroseconds.count());
+            fpsCallback(fpsCounter.getFps());
+            lastFrameTime = currentFrameTime;
+
+            simulation.stepSimulation(deltaTimeSeconds);
+            OCL::finish(simulation.getCommandQueue());
+        }
+    }
 }

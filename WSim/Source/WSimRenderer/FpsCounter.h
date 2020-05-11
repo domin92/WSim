@@ -27,7 +27,7 @@ private:
     unsigned int buffer[bufferSize] = {};                   // ring buffer contains frame durations of subsequent frames
     unsigned int currentFrameIndex = 0u;                    // absolute frame index
     unsigned int currentFrameWrappedIndex = bufferSize - 1; // value of currentFrameIndex % bufferSize cached for performance
-    unsigned int currentFrameTimesSum = 0u;                 // sum of all elements of buffer cached for performance
+    unsigned int currentFrameTimesSum = 1u;                 // sum of all elements of buffer cached for performance (starts with 1 to avoid division by 0)
 };
 
 using DefaultFpsCounter = FpsCounter<50>;
