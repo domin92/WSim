@@ -76,10 +76,11 @@ void ColorRenderer::update(float deltaTimeSeconds) {
     glBindTexture(GL_TEXTURE_2D, texture1);
 
     static bool initialized = false;
-    if (!initialized) {
+    if (!initialized) { // TODO move to constructor
         auto a = std::make_unique<char[]>(imageWidth * imageHeight * 4 * 4);
         ASSERT_GL_NO_ERROR();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_FLOAT, a.get());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(imageWidth), static_cast<GLsizei>(imageHeight),
+                     0, GL_RGBA, GL_FLOAT, a.get());
         ASSERT_GL_NO_ERROR();
         initialized = true;
     }
@@ -95,7 +96,12 @@ void ColorRenderer::update(float deltaTimeSeconds) {
 
         callbacks.getSubImage2D(i, data.get());
         ASSERT_GL_NO_ERROR();
-        glTexSubImage2D(GL_TEXTURE_2D, 0, info.xOffset, info.yOffset, info.width, info.height, GL_RGBA, GL_FLOAT, data.get());
+
+        const auto xOffset = static_cast<GLint>(info.xOffset);
+        const auto yOffset = static_cast<GLint>(info.yOffset);
+        const auto width = static_cast<GLsizei>(info.width);
+        const auto height = static_cast<GLsizei>(info.height);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, xOffset, yOffset, width, height, GL_RGBA, GL_FLOAT, data.get());
         ASSERT_GL_NO_ERROR();
     }
 

@@ -94,7 +94,7 @@ void Simulation::addObstacleWall(Dim dimension, End end) {
     selectDimension(size, dimension) = 1;
 
     float value[4] = {0, 0, 0, 0};
-    value[static_cast<int>(dimension)] = (end == End::Higher) ? 1 : 1;
+    value[static_cast<int>(dimension)] = (end == End::Higher) ? 1.f : 1.f; // TODO
 
     OCL::enqueueFillImage3D(commandQueue, obstacles, value, offset, size);
 

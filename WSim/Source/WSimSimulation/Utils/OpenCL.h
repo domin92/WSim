@@ -15,28 +15,28 @@
         wsimError();                                                                                              \
     }
 
-#define DEFINE_RAII_WRAPPER(name, clType, releaseMethod) \
-    class name {                                         \
-    protected:                                           \
-        clType value;                                    \
-                                                         \
-    public:                                              \
-        name() = default;                                \
-        name(clType value) : value(value) {}             \
-        name(const name &) = delete;                     \
-        name &operator=(const name &) = delete;          \
-        name(name &&other) { *this = std::move(other); } \
-        name &operator=(name &&other) {                  \
-            this->value = other.value;                   \
-            other.value = 0;                             \
-            return *this;                                \
-        }                                                \
-        ~name() {                                        \
-            if (value != 0) {                            \
-                ASSERT_CL_SUCCESS(releaseMethod(value)); \
-            }                                            \
-        }                                                \
-        operator clType() const { return value; }        \
+#define DEFINE_RAII_WRAPPER(name, clType, releaseMethod)          \
+    class name {                                                  \
+    protected:                                                    \
+        clType value;                                             \
+                                                                  \
+    public:                                                       \
+        name() = default;                                         \
+        name(clType value) : value(value) {}                      \
+        name(const name &) = delete;                              \
+        name &operator=(const name &) = delete;                   \
+        name(name &&other) noexcept { *this = std::move(other); } \
+        name &operator=(name &&other) noexcept {                  \
+            this->value = other.value;                            \
+            other.value = 0;                                      \
+            return *this;                                         \
+        }                                                         \
+        ~name() {                                                 \
+            if (value != 0) {                                     \
+                ASSERT_CL_SUCCESS(releaseMethod(value));          \
+            }                                                     \
+        }                                                         \
+        operator clType() const { return value; }                 \
     };
 
 namespace OCL {

@@ -48,6 +48,6 @@ private:
 
     // Mouse data
     bool clicked = false;
-    float lastMouseX;
-    float lastMouseY;
+    float lastMouseX = 0;
+    float lastMouseY = 0;
 };
