@@ -64,6 +64,7 @@ void Simulation::applyForce(float positionX, float positionY, float changeX, flo
 
 void Simulation::stop() {
     OCL::enqueueZeroImage3D(commandQueue, velocity.getSource(), simulationSizeWithBorder);
+    OCL::enqueueZeroImage3D(commandQueue, velocity.getDestination(), simulationSizeWithBorder);
     for (auto it = simulationSteps.rbegin(); it != simulationSteps.rend(); it++) {
         (*it)->stop();
     }

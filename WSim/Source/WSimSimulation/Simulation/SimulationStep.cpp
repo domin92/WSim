@@ -129,4 +129,5 @@ void SimulationStepPressure::run(float deltaTimeSeconds) {
 void SimulationStepPressure::stop() {
     OCL::enqueueZeroImage3D(simulation.getCommandQueue(), divergence, divergenceSize);
     OCL::enqueueZeroImage3D(simulation.getCommandQueue(), pressure.getDestination(), divergenceSize);
+    OCL::enqueueZeroImage3D(simulation.getCommandQueue(), pressure.getSource(), divergenceSize);
 }
