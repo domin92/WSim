@@ -1,4 +1,5 @@
 # Define tests executable
+set(TARGET_WSIM_TESTS WSimTests)
 get_sources(SOURCE_FILES)
 add_executable(${TARGET_WSIM_TESTS} ${SOURCE_FILES})
 add_dependencies(${TARGET_WSIM_TESTS} ${TARGET_WSIM_SIMULATION_LIB})

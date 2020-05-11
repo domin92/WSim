@@ -1,5 +1,7 @@
+find_package(MPI)
 if (MPI_FOUND)
     # Define WSimMPI - an MPI executable conducting the simulation
+    set(TARGET_WSIM_MPI WSimMPI)
     get_sources(SOURCE_FILES)
     add_executable(${TARGET_WSIM_MPI} ${SOURCE_FILES})
     add_dependencies(${TARGET_WSIM_MPI} ${TARGET_WSIM_SIMULATION_LIB} ${TARGET_WSIM_RENDERER_LIB})

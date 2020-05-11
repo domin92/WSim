@@ -1,4 +1,5 @@
 # Define WSimStandalone - a water simulation done locally, using only one computer (no MPI involved).
+set(TARGET_WSIM_STANDALONE WSimStandalone)
 get_sources(SOURCE_FILES)
 add_executable(${TARGET_WSIM_STANDALONE} ${SOURCE_FILES})
 add_dependencies(${TARGET_WSIM_STANDALONE} ${TARGET_WSIM_SIMULATION_LIB})

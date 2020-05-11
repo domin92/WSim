@@ -1,7 +1,6 @@
 # Find dependencies
 find_package(OpenCL REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(MPI) # If MPI isn't found, WSimMPI target won't be created
 # Threads::Threads is used by some dependent libraries (such as gtest, glfw),
 # but find_package made by them are done in different directories, and
 # Threads::Threads variable is not visible here, hence the manual call.
@@ -29,14 +28,10 @@ macro(get_sources VARIABLE)
     source_group (TREE ${SOURCE_DIR} FILES ${${VARIABLE}})
 endmacro()
 
-# Target names
+# Library target names
 set_with_parent_scope(TARGET_WSIM_COMMON_LIB WsimCommon)
 set_with_parent_scope(TARGET_WSIM_SIMULATION_LIB WSimSimulation)
 set_with_parent_scope(TARGET_WSIM_RENDERER_LIB WSimRenderer)
-set_with_parent_scope(TARGET_WSIM_STANDALONE WSimStandalone)
-set_with_parent_scope(TARGET_WSIM_RENDERER_EXE WSimRendererExe)
-set_with_parent_scope(TARGET_WSIM_MPI WSimMPI)
-set_with_parent_scope(TARGET_WSIM_TESTS WSimTests)
 
 # Add source and tests
 add_subdirectory(Source)

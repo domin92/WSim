@@ -1,4 +1,5 @@
 # Define WSimRendererExe - a temporary target for testing WSimRenderer
+set(TARGET_WSIM_RENDERER_EXE WSimRendererExe)
 get_sources(SOURCE_FILES)
 add_executable(${TARGET_WSIM_RENDERER_EXE} ${SOURCE_FILES})
 add_dependencies(${TARGET_WSIM_RENDERER_EXE} ${TARGET_WSIM_RENDERER_LIB})
