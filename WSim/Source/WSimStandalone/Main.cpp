@@ -71,6 +71,7 @@ int main(int argc, char **argv) {
     // Parse arguments
     size_t clPlatformIndex = 0u;
     size_t clDeviceIndex = 0u;
+    size_t simulationSize = 200u;
     Mode mode = Mode::Graphical;
     int argIndex = 1;
     while (argIndex < argc) {
@@ -85,6 +86,15 @@ int main(int argc, char **argv) {
         }
         if (hasNextArg && (currArg == "-d" || currArg == "--device")) {
             clDeviceIndex = std::atoi(nextArg.c_str());
+            argIndex += 2;
+            continue;
+        }
+        if (hasNextArg && (currArg == "-s" || currArg == "--size")) {
+            simulationSize = std::atoi(nextArg.c_str());
+            if (simulationSize == 0) {
+                std::cout << "Incorrect simulation size\n";
+                return 1;
+            }
             argIndex += 2;
             continue;
         }
@@ -107,10 +117,11 @@ int main(int argc, char **argv) {
     std::cout << "Used parameters:\n";
     std::cout << "\tclPlatformIndex=" << clPlatformIndex << '\n';
     std::cout << "\tclDeviceIndex=" << clDeviceIndex << '\n';
+    std::cout << "\tsimulationSize=" << simulationSize << '\n';
     std::cout << "\tmode=" << ((mode == Mode::Graphical) ? "graphical" : "text") << '\n';
 
     // Create simulation
-    const OCL::Vec3 imageSize{200, 200, 1};
+    const OCL::Vec3 imageSize{simulationSize, simulationSize, 1};
     Simulation simulation{clPlatformIndex, clDeviceIndex, imageSize};
     simulation.addObstacleAllWalls();
 
