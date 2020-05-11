@@ -2,6 +2,9 @@
 
 #include "Source/WSimSimulation/Simulation/SimulationStep.h"
 
+Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize)
+    : Simulation(platformIndex, deviceIndex, simulationSize, 0, PositionInGrid{OCL::Vec3{0, 0, 0}, OCL::Vec3{1, 1, 1}}) {}
+
 Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid)
     : positionInGrid(positionInGrid),
       simulationSize(simulationSize),
@@ -90,7 +93,7 @@ void Simulation::addObstacleWall(Dim dimension, End end) {
     OCL::Vec3 size = simulationSize;
     selectDimension(size, dimension) = 1;
 
-    float value[4] = { 0,0,0,0 };
+    float value[4] = {0, 0, 0, 0};
     value[static_cast<int>(dimension)] = (end == End::Higher) ? 1 : 1;
 
     OCL::enqueueFillImage3D(commandQueue, obstacles, value, offset, size);

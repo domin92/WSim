@@ -111,11 +111,7 @@ int main(int argc, char **argv) {
 
     // Create simulation
     const OCL::Vec3 imageSize{200, 200, 1};
-    const size_t borderWidth = 13;
-    const OCL::Vec3 gridId{0, 0, 0};
-    const OCL::Vec3 gridSize{1, 1, 1};
-    const PositionInGrid positionInGrid{gridId, gridSize};
-    Simulation simulation{clPlatformIndex, clDeviceIndex, imageSize, borderWidth, positionInGrid};
+    Simulation simulation{clPlatformIndex, clDeviceIndex, imageSize};
     simulation.addObstacleAllWalls();
 
     FpsCallback fpsCallback;
