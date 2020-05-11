@@ -8,7 +8,7 @@ struct AdvectionKernelTest : KernelTest {
     }
     cl_kernel kernelAdvection;
 
-    void performTest(OCL::Vec3 imageSize, float deltaTime, const float *inputData, const float *expectedOutputData) {
+    void performTest(Vec3 imageSize, float deltaTime, const float *inputData, const float *expectedOutputData) {
         auto velocitySrc = OCL::createReadWriteImage3D(context, imageSize, vectorFieldFormat);
         auto velocityDst = OCL::createReadWriteImage3D(context, imageSize, vectorFieldFormat);
         OCL::enqueueWriteImage3D(queue, velocitySrc, CL_FALSE, imageSize, inputData);
@@ -28,7 +28,7 @@ struct AdvectionKernelTest : KernelTest {
 };
 
 TEST_F(AdvectionKernelTest, velocityAdvectionSimple) {
-    const OCL::Vec3 testImageSize{4, 4, 1};
+    const Vec3 testImageSize{4, 4, 1};
     const float inputData[] = {
         -2, 0, 0, 0, /**/ +1, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1, 0, 0, 0,
         +2, 0, 0, 0, /**/ +2, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 3, 0, 0, 0,
@@ -43,7 +43,7 @@ TEST_F(AdvectionKernelTest, velocityAdvectionSimple) {
 }
 
 TEST_F(AdvectionKernelTest, velocityAdvectionBilinearInterpolation) {
-    const OCL::Vec3 testImageSize{4, 4, 1};
+    const Vec3 testImageSize{4, 4, 1};
     const float inputData[] = {
         -2, 0, 0, 0, /**/ +1, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1, 0, 0, 0,
         +2, 0, 0, 0, /**/ +2, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 3, 0, 0, 0,

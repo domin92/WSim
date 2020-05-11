@@ -2,7 +2,7 @@
 
 #include "Source/WSimSimulation/Simulation/Simulation.h"
 
-SimulationStepPressure::SimulationStepPressure(Simulation &simulation, size_t jacobiIterations, OCL::Vec3 &outputVelocitySize)
+SimulationStepPressure::SimulationStepPressure(Simulation &simulation, size_t jacobiIterations, Vec3 &outputVelocitySize)
     : SimulationStep(simulation, outputVelocitySize, increaseBorder(outputVelocitySize, simulation.getPositionInGrid(), static_cast<int>(jacobiIterations + 1))),
       jacobiIterations(jacobiIterations),
       divergenceSize(decreaseBorder(inputVelocitySize, simulation.getPositionInGrid(), 1, simulation.getSimulationSize())),

@@ -3,7 +3,7 @@
 #include "Source/WSimSimulation/Utils/OpenCL.h"
 
 struct Image3DPair {
-    explicit Image3DPair(cl_context context, OCL::Vec3 size, const cl_image_format &format) {
+    explicit Image3DPair(cl_context context, Vec3 size, const cl_image_format &format) {
         images[0] = OCL::createReadWriteImage3D(context, size, format);
         images[1] = OCL::createReadWriteImage3D(context, size, format);
     }

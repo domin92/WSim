@@ -2,7 +2,7 @@
 
 #include "Source/WSimCommon/Error.h"
 
-SimulationStep::SimulationStep(Simulation &simulation, OCL::Vec3 &outputVelocitySize, OCL::Vec3 inputVelocitySize)
+SimulationStep::SimulationStep(Simulation &simulation, Vec3 &outputVelocitySize, Vec3 inputVelocitySize)
     : simulation(simulation),
       outputVelocitySize(outputVelocitySize),
       inputVelocitySize(inputVelocitySize) {

@@ -110,12 +110,12 @@ void NodeSimulationInterfaceWater::postShareCopy() {
 }
 
 PositionInGrid NodeSimulationInterfaceWater::createPositionInGrid(Node &node) {
-    const OCL::Vec3 position = {
+    const Vec3 position = {
         static_cast<size_t>(node.get_x_pos_in_grid()),
         static_cast<size_t>(node.get_y_pos_in_grid()),
         static_cast<size_t>(node.get_z_pos_in_grid()),
     };
-    const OCL::Vec3 size = {
+    const Vec3 size = {
         static_cast<size_t>(node.get_grid_size()),
         static_cast<size_t>(node.get_grid_size()),
         static_cast<size_t>(node.get_grid_size()),
@@ -123,8 +123,8 @@ PositionInGrid NodeSimulationInterfaceWater::createPositionInGrid(Node &node) {
     return PositionInGrid{position, size};
 }
 
-OCL::Vec3 NodeSimulationInterfaceWater::getNodeSize(Node &node) {
-    return OCL::Vec3{
+Vec3 NodeSimulationInterfaceWater::getNodeSize(Node &node) {
+    return Vec3{
         static_cast<size_t>(node.get_node_size()),
         static_cast<size_t>(node.get_node_size()),
         static_cast<size_t>(node.get_node_size()),

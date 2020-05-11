@@ -12,13 +12,13 @@
 //    so again border is decreased by 1.
 class SimulationStepPressure : public SimulationStep {
 public:
-    SimulationStepPressure(Simulation &simulation, size_t jacobiIterations, OCL::Vec3 &outputVelocitySize);
+    SimulationStepPressure(Simulation &simulation, size_t jacobiIterations, Vec3 &outputVelocitySize);
     void run(float deltaTimeSeconds) override;
     void stop() override;
 
 private:
     const size_t jacobiIterations;
-    const OCL::Vec3 divergenceSize; // also the size of pressure field. It is inputSize-1, because divergence is a differential operator
+    const Vec3 divergenceSize; // also the size of pressure field. It is inputSize-1, because divergence is a differential operator
 
     OCL::Kernel kernelDivergence;
     OCL::Kernel kernelPressureJacobi;

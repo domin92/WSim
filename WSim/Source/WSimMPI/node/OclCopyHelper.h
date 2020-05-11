@@ -6,7 +6,7 @@
 
 class OclCopyHelper {
 public:
-    OclCopyHelper(PositionInGrid grid, cl_command_queue &commandQueue, size_t border, OCL::Vec3 baseSize);
+    OclCopyHelper(PositionInGrid grid, cl_command_queue &commandQueue, size_t border, Vec3 baseSize);
 
     void preShareCopySide(cl_mem image, size_t indexInOutputBuffer, void *outputBuffer, Dim dimension, End end);
     void preShareCopyEdge(cl_mem image, size_t indexInOutputBuffer, void *outputBuffer, Dim dimension1, End end1, Dim dimension2, End end2);
@@ -18,12 +18,12 @@ public:
 
 private:
     bool shouldNotShare(Dim dimension, End end);
-    void computePreShareCopyOffsetComponent(OCL::Vec3 &offset, Dim dimension, End end);
-    void computePostShareCopyOffsetComponent(OCL::Vec3 &offset, Dim dimension, End end);
+    void computePreShareCopyOffsetComponent(Vec3 &offset, Dim dimension, End end);
+    void computePostShareCopyOffsetComponent(Vec3 &offset, Dim dimension, End end);
     bool isLowerBorderPresent(Dim dimension);
 
     const PositionInGrid grid;
     const cl_command_queue &commandQueue;
     const size_t border;
-    const OCL::Vec3 baseSize;
+    const Vec3 baseSize;
 };

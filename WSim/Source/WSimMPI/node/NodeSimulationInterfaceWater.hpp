@@ -20,7 +20,7 @@ public:
 
 private:
     static PositionInGrid createPositionInGrid(Node &node);
-    static OCL::Vec3 getNodeSize(Node &node);
+    static Vec3 getNodeSize(Node &node);
 
     PositionInGrid positionInGrid;
     Simulation simulation;

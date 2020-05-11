@@ -35,9 +35,9 @@ public:
 
     void getSubImage2D(size_t subImageIndex, void *data) override {
         wsimErrorIf(subImageIndex != 0);
-        OCL::Vec3 offset = simulation.getBorderOffset();
+        Vec3 offset = simulation.getBorderOffset();
         offset.z = 0;
-        OCL::Vec3 size = simulation.getSimulationSize();
+        Vec3 size = simulation.getSimulationSize();
         size.z = 1;
         OCL::enqueueReadImage3D(simulation.getCommandQueue(), simulation.getColor().getSource(), CL_BLOCKING, offset, size, data);
     }
@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
     std::cout << "\tmode=" << ((mode == Mode::Graphical) ? "graphical" : "text") << '\n';
 
     // Create simulation
-    const OCL::Vec3 imageSize{simulationSize, simulationSize, 1};
+    const Vec3 imageSize{simulationSize, simulationSize, 1};
     Simulation simulation{clPlatformIndex, clDeviceIndex, imageSize};
     simulation.addObstacleAllWalls();
 

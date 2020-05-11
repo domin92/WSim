@@ -10,7 +10,7 @@ struct DivergenceKernelTest : KernelTest {
     }
     cl_kernel kernelDivergence;
 
-    void performTest(OCL::Vec3 velocityOffset, OCL::Vec3 simulationSize, OCL::Vec3 simulationSizeWithBorders, const float *inputData, const float *expectedOutputData) {
+    void performTest(Vec3 velocityOffset, Vec3 simulationSize, Vec3 simulationSizeWithBorders, const float *inputData, const float *expectedOutputData) {
         auto velocitySrc = OCL::createReadWriteImage3D(context, simulationSizeWithBorders, vectorFieldFormat);
         auto divergence = OCL::createReadWriteImage3D(context, simulationSize, scalarFieldFormat);
         OCL::enqueueWriteImage3D(queue, velocitySrc, CL_FALSE, simulationSizeWithBorders, inputData);
@@ -27,8 +27,8 @@ struct DivergenceKernelTest : KernelTest {
 };
 
 TEST_F(DivergenceKernelTest, divergenceX) {
-    const OCL::Vec3 velocityOffset{};
-    const OCL::Vec3 imageSize{4, 4, 1};
+    const Vec3 velocityOffset{};
+    const Vec3 imageSize{4, 4, 1};
     const float inputData[] = {
         -2, 0, 0, 0, /**/ +1, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1, 0, 0, 0,
         +2, 0, 0, 0, /**/ +2, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 3, 0, 0, 0,
@@ -43,8 +43,8 @@ TEST_F(DivergenceKernelTest, divergenceX) {
 }
 
 TEST_F(DivergenceKernelTest, divergenceY) {
-    const OCL::Vec3 velocityOffset{};
-    const OCL::Vec3 imageSize{4, 4, 1};
+    const Vec3 velocityOffset{};
+    const Vec3 imageSize{4, 4, 1};
     const float inputData[] = {
         0, -2, 0, 0, /**/ 0, +1, 0, 0, /**/ 0, 0, 0, 0, /**/ 0, 1, 0, 0,
         0, +2, 0, 0, /**/ 0, +2, 0, 0, /**/ 0, 0, 0, 0, /**/ 0, 3, 0, 0,
@@ -59,8 +59,8 @@ TEST_F(DivergenceKernelTest, divergenceY) {
 }
 
 TEST_F(DivergenceKernelTest, divergenceXY) {
-    const OCL::Vec3 velocityOffset{};
-    const OCL::Vec3 imageSize{4, 4, 1};
+    const Vec3 velocityOffset{};
+    const Vec3 imageSize{4, 4, 1};
     const float inputData[] = {
         -2, -2, 0, 0, /**/ +1, +1, 0, 0, /**/ 0, 0, 0, 0, /**/ 1, 1, 0, 0,
         +2, +2, 0, 0, /**/ +2, +2, 0, 0, /**/ 0, 0, 0, 0, /**/ 3, 3, 0, 0,
@@ -75,8 +75,8 @@ TEST_F(DivergenceKernelTest, divergenceXY) {
 }
 
 TEST_F(DivergenceKernelTest, divergenceLaminarFlow) {
-    const OCL::Vec3 velocityOffset{};
-    const OCL::Vec3 imageSize{4, 4, 3};
+    const Vec3 velocityOffset{};
+    const Vec3 imageSize{4, 4, 3};
     const float inputData[] = {
         +6, 6, 6, 0, /**/ +6, 6, 6, 0, /**/ +6, 6, 6, 0, /**/ +6, 6, 6, 0,
         +6, 6, 6, 0, /**/ +6, 6, 6, 0, /**/ +6, 6, 6, 0, /**/ +6, 6, 6, 0,
@@ -111,9 +111,9 @@ TEST_F(DivergenceKernelTest, divergenceLaminarFlow) {
 }
 
 TEST_F(DivergenceKernelTest, divergenceXWithOffset) {
-    const OCL::Vec3 velocityOffset{1, 1, 0};
-    const OCL::Vec3 simluationSize{3, 3, 1};
-    const OCL::Vec3 simluationSizeWithBorders{4, 4, 1};
+    const Vec3 velocityOffset{1, 1, 0};
+    const Vec3 simluationSize{3, 3, 1};
+    const Vec3 simluationSizeWithBorders{4, 4, 1};
     const float inputData[] = {
         -2, 0, 0, 0, /**/ +1, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 1, 0, 0, 0,
         +2, 0, 0, 0, /**/ +2, 0, 0, 0, /**/ 0, 0, 0, 0, /**/ 3, 0, 0, 0,

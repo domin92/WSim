@@ -3,8 +3,8 @@
 #include <gtest/gtest.h>
 
 TEST(PositionInGridTest, oneNodeInGrid) {
-    OCL::Vec3 id{0, 0, 0};
-    OCL::Vec3 size{1, 1, 1};
+    Vec3 id{0, 0, 0};
+    Vec3 size{1, 1, 1};
     PositionInGrid grid{id, size};
     EXPECT_TRUE(grid.edgeL);
     EXPECT_TRUE(grid.edgeR);
@@ -15,8 +15,8 @@ TEST(PositionInGridTest, oneNodeInGrid) {
 }
 
 TEST(PositionInGridTest, nodeInCenter) {
-    OCL::Vec3 id{1, 1, 1};
-    OCL::Vec3 size{3, 3, 3};
+    Vec3 id{1, 1, 1};
+    Vec3 size{3, 3, 3};
     PositionInGrid grid{id, size};
     EXPECT_FALSE(grid.edgeL);
     EXPECT_FALSE(grid.edgeR);
@@ -27,8 +27,8 @@ TEST(PositionInGridTest, nodeInCenter) {
 }
 
 TEST(PositionInGridTest, leftEdge) {
-    OCL::Vec3 id{0, 1, 1};
-    OCL::Vec3 size{3, 3, 3};
+    Vec3 id{0, 1, 1};
+    Vec3 size{3, 3, 3};
     PositionInGrid grid{id, size};
     EXPECT_TRUE(grid.edgeL);
     EXPECT_FALSE(grid.edgeR);
@@ -39,8 +39,8 @@ TEST(PositionInGridTest, leftEdge) {
 }
 
 TEST(PositionInGridTest, downEdge) {
-    OCL::Vec3 id{1, 0, 1};
-    OCL::Vec3 size{3, 3, 3};
+    Vec3 id{1, 0, 1};
+    Vec3 size{3, 3, 3};
     PositionInGrid grid{id, size};
     EXPECT_FALSE(grid.edgeL);
     EXPECT_FALSE(grid.edgeR);
@@ -51,8 +51,8 @@ TEST(PositionInGridTest, downEdge) {
 }
 
 TEST(PositionInGridTest, frontEdge) {
-    OCL::Vec3 id{1, 1, 0};
-    OCL::Vec3 size{3, 3, 3};
+    Vec3 id{1, 1, 0};
+    Vec3 size{3, 3, 3};
     PositionInGrid grid{id, size};
     EXPECT_FALSE(grid.edgeL);
     EXPECT_FALSE(grid.edgeR);
@@ -63,8 +63,8 @@ TEST(PositionInGridTest, frontEdge) {
 }
 
 TEST(PositionInGridTest, leftUpCorner) {
-    OCL::Vec3 id{0, 0, 1};
-    OCL::Vec3 size{3, 3, 3};
+    Vec3 id{0, 0, 1};
+    Vec3 size{3, 3, 3};
     PositionInGrid grid{id, size};
     EXPECT_TRUE(grid.edgeL);
     EXPECT_FALSE(grid.edgeR);
@@ -75,8 +75,8 @@ TEST(PositionInGridTest, leftUpCorner) {
 }
 
 TEST(PositionInGridTest, leftUpFrontCorner) {
-    OCL::Vec3 id{0, 0, 0};
-    OCL::Vec3 size{3, 3, 3};
+    Vec3 id{0, 0, 0};
+    Vec3 size{3, 3, 3};
     PositionInGrid grid{id, size};
     EXPECT_TRUE(grid.edgeL);
     EXPECT_FALSE(grid.edgeR);
@@ -87,8 +87,8 @@ TEST(PositionInGridTest, leftUpFrontCorner) {
 }
 
 TEST(PositionInGridTest, rightDownBackCorner) {
-    OCL::Vec3 id{2, 2, 2};
-    OCL::Vec3 size{3, 3, 3};
+    Vec3 id{2, 2, 2};
+    Vec3 size{3, 3, 3};
     PositionInGrid grid{id, size};
     EXPECT_FALSE(grid.edgeL);
     EXPECT_TRUE(grid.edgeR);
@@ -100,14 +100,14 @@ TEST(PositionInGridTest, rightDownBackCorner) {
 
 TEST(BorderIncreaseDecreaseTest, givenAllBordersPresentWhenIncreasingAndDecreasingBorderThenAllDimensionsAreChangedTwice) {
     PositionInGrid grid{};
-    const OCL::Vec3 size1{5, 5, 5};
+    const Vec3 size1{5, 5, 5};
 
-    const OCL::Vec3 size2 = increaseBorder(size1, grid, 5);
+    const Vec3 size2 = increaseBorder(size1, grid, 5);
     EXPECT_EQ(15, size2.x);
     EXPECT_EQ(15, size2.y);
     EXPECT_EQ(15, size2.z);
 
-    const OCL::Vec3 size3 = decreaseBorder(size2, grid, 3, size1);
+    const Vec3 size3 = decreaseBorder(size2, grid, 3, size1);
     EXPECT_EQ(9, size3.x);
     EXPECT_EQ(9, size3.y);
     EXPECT_EQ(9, size3.z);
@@ -116,14 +116,14 @@ TEST(BorderIncreaseDecreaseTest, givenAllBordersPresentWhenIncreasingAndDecreasi
 TEST(BorderIncreaseDecreaseTest, givenNoBordersPresentWhenIncreasingAndDecreasingBorderThenAllDimensionsAreNotChanged) {
     PositionInGrid grid{};
     grid.edgeL = grid.edgeR = grid.edgeU = grid.edgeD = grid.edgeF = grid.edgeB = true;
-    const OCL::Vec3 size1{5, 5, 5};
+    const Vec3 size1{5, 5, 5};
 
-    const OCL::Vec3 size2 = increaseBorder(size1, grid, 5);
+    const Vec3 size2 = increaseBorder(size1, grid, 5);
     EXPECT_EQ(5, size2.x);
     EXPECT_EQ(5, size2.y);
     EXPECT_EQ(5, size2.z);
 
-    const OCL::Vec3 size3 = decreaseBorder(size2, grid, 3, size1);
+    const Vec3 size3 = decreaseBorder(size2, grid, 3, size1);
     EXPECT_EQ(5, size3.x);
     EXPECT_EQ(5, size3.y);
     EXPECT_EQ(5, size3.z);
@@ -131,8 +131,8 @@ TEST(BorderIncreaseDecreaseTest, givenNoBordersPresentWhenIncreasingAndDecreasin
 
 TEST(BorderIncreaseDecreaseTest, givenOneEdgeWhenIncreasingAndDecreasingBorderThenItsDimensionIsChangedOnlyOnce) {
     PositionInGrid grid{};
-    const OCL::Vec3 size1{5, 5, 5};
-    OCL::Vec3 size2, size3;
+    const Vec3 size1{5, 5, 5};
+    Vec3 size2, size3;
 
     // Left
     grid = {};
@@ -212,8 +212,8 @@ TEST(BorderIncreaseDecreaseTest, givenLeftDownFrontCornerWhenIncreasingAndDecrea
     grid.edgeL = true;
     grid.edgeD = true;
     grid.edgeF = true;
-    const OCL::Vec3 size1{5, 5, 5};
-    OCL::Vec3 size2, size3;
+    const Vec3 size1{5, 5, 5};
+    Vec3 size2, size3;
 
     size2 = increaseBorder(size1, grid, 5);
     EXPECT_EQ(10, size2.x);
@@ -230,8 +230,8 @@ TEST(BorderIncreaseDecreaseTest, givenRightUpBackCornerWhenIncreasingAndDecreasi
     grid.edgeR = true;
     grid.edgeU = true;
     grid.edgeB = true;
-    const OCL::Vec3 size1{5, 5, 5};
-    OCL::Vec3 size2, size3;
+    const Vec3 size1{5, 5, 5};
+    Vec3 size2, size3;
 
     size2 = increaseBorder(size1, grid, 5);
     EXPECT_EQ(10, size2.x);
@@ -245,9 +245,9 @@ TEST(BorderIncreaseDecreaseTest, givenRightUpBackCornerWhenIncreasingAndDecreasi
 
 TEST(CalculateBorderOffsetTest, givenAllBordersPresentWhenCalculatingBorderOffsetThenApplyOffsetInAllDimensions) {
     PositionInGrid grid{};
-    const OCL::Vec3 totalSize{20, 20, 20};
-    const OCL::Vec3 usedSize{10, 10, 10};
-    OCL::Vec3 offset;
+    const Vec3 totalSize{20, 20, 20};
+    const Vec3 usedSize{10, 10, 10};
+    Vec3 offset;
 
     offset = calculateBorderOffset(totalSize, usedSize, grid);
     EXPECT_EQ(5, offset.x);
@@ -260,9 +260,9 @@ TEST(CalculateBorderOffsetTest, givenNoBordersPresentWhenCalculatingBorderOffset
     // Nevertheless, the function should work, ignoring overallocated size
     PositionInGrid grid{};
     grid.edgeL = grid.edgeR = grid.edgeU = grid.edgeD = grid.edgeF = grid.edgeB = true;
-    const OCL::Vec3 totalSize{20, 20, 20};
-    const OCL::Vec3 usedSize{10, 10, 10};
-    OCL::Vec3 offset;
+    const Vec3 totalSize{20, 20, 20};
+    const Vec3 usedSize{10, 10, 10};
+    Vec3 offset;
 
     offset = calculateBorderOffset(totalSize, usedSize, grid);
     EXPECT_EQ(0, offset.x);
@@ -272,8 +272,8 @@ TEST(CalculateBorderOffsetTest, givenNoBordersPresentWhenCalculatingBorderOffset
 
 TEST(CalculateBorderOffsetTest, givenLowerEdgeWhenCalculatingBorderOffsetThenItsDimensionIsZero) {
     PositionInGrid grid{};
-    const OCL::Vec3 usedSize{10, 10, 10};
-    OCL::Vec3 offset, totalSize;
+    const Vec3 usedSize{10, 10, 10};
+    Vec3 offset, totalSize;
 
     grid = {};
     grid.edgeL = true;
@@ -302,8 +302,8 @@ TEST(CalculateBorderOffsetTest, givenLowerEdgeWhenCalculatingBorderOffsetThenIts
 
 TEST(CalculateBorderOffsetTest, givenHigherEdgeWhenCalculatingBorderOffsetThenItsDimensionIsCorrect) {
     PositionInGrid grid{};
-    const OCL::Vec3 usedSize{10, 10, 10};
-    OCL::Vec3 offset, totalSize;
+    const Vec3 usedSize{10, 10, 10};
+    Vec3 offset, totalSize;
 
     grid = {};
     grid.edgeR = true;
@@ -332,8 +332,8 @@ TEST(CalculateBorderOffsetTest, givenHigherEdgeWhenCalculatingBorderOffsetThenIt
 
 TEST(CalculateBorderOffsetTest, givenBothEdgesInSomeDimensionWhenCalculatingBorderOffsetThenItsOffsetIsZero) {
     PositionInGrid grid{};
-    const OCL::Vec3 usedSize{10, 10, 10};
-    OCL::Vec3 offset, totalSize;
+    const Vec3 usedSize{10, 10, 10};
+    Vec3 offset, totalSize;
 
     grid = {};
     grid.edgeL = true;
@@ -366,19 +366,19 @@ TEST(CalculateBorderOffsetTest, givenBothEdgesInSomeDimensionWhenCalculatingBord
 TEST(BorderMathsTest, givenLeftAndDownEdgesThenExampleScenarioIsCorrectlyProcessed) {
     PositionInGrid grid{};
     grid.edgeL = grid.edgeD = true;
-    const OCL::Vec3 baseSize = {10, 10, 10};
+    const Vec3 baseSize = {10, 10, 10};
 
-    OCL::Vec3 allocatedSize = increaseBorder(baseSize, grid, 5);
+    Vec3 allocatedSize = increaseBorder(baseSize, grid, 5);
     EXPECT_EQ(15, allocatedSize.x);
     EXPECT_EQ(15, allocatedSize.y);
     EXPECT_EQ(20, allocatedSize.z);
 
-    OCL::Vec3 simulationSize = decreaseBorder(allocatedSize, grid, 1, baseSize);
+    Vec3 simulationSize = decreaseBorder(allocatedSize, grid, 1, baseSize);
     EXPECT_EQ(14, simulationSize.x);
     EXPECT_EQ(14, simulationSize.y);
     EXPECT_EQ(18, simulationSize.z);
 
-    OCL::Vec3 offset = calculateBorderOffset(allocatedSize, simulationSize, grid);
+    Vec3 offset = calculateBorderOffset(allocatedSize, simulationSize, grid);
     EXPECT_EQ(0, offset.x);
     EXPECT_EQ(1, offset.y);
     EXPECT_EQ(1, offset.z);
@@ -387,19 +387,19 @@ TEST(BorderMathsTest, givenLeftAndDownEdgesThenExampleScenarioIsCorrectlyProcess
 TEST(BorderMathsTest, givenLeftUpFrontCornerThenExampleScenarioIsCorrectlyProcessed) {
     PositionInGrid grid{};
     grid.edgeL = grid.edgeU = grid.edgeF = true;
-    const OCL::Vec3 baseSize = { 10, 10, 10 };
+    const Vec3 baseSize = { 10, 10, 10 };
 
-    OCL::Vec3 allocatedSize = increaseBorder(baseSize, grid, 5);
+    Vec3 allocatedSize = increaseBorder(baseSize, grid, 5);
     EXPECT_EQ(15, allocatedSize.x);
     EXPECT_EQ(15, allocatedSize.y);
     EXPECT_EQ(15, allocatedSize.z);
 
-    OCL::Vec3 simulationSize = decreaseBorder(allocatedSize, grid, 1, baseSize);
+    Vec3 simulationSize = decreaseBorder(allocatedSize, grid, 1, baseSize);
     EXPECT_EQ(14, simulationSize.x);
     EXPECT_EQ(14, simulationSize.y);
     EXPECT_EQ(14, simulationSize.z);
 
-    OCL::Vec3 offset = calculateBorderOffset(allocatedSize, simulationSize, grid);
+    Vec3 offset = calculateBorderOffset(allocatedSize, simulationSize, grid);
     EXPECT_EQ(0, offset.x);
     EXPECT_EQ(0, offset.y);
     EXPECT_EQ(0, offset.z);
@@ -408,19 +408,19 @@ TEST(BorderMathsTest, givenLeftUpFrontCornerThenExampleScenarioIsCorrectlyProces
 TEST(BorderMathsTest, givenRightDownBackCornerThenExampleScenarioIsCorrectlyProcessed) {
     PositionInGrid grid{};
     grid.edgeR = grid.edgeD = grid.edgeB = true;
-    const OCL::Vec3 baseSize = { 10, 10, 10 };
+    const Vec3 baseSize = { 10, 10, 10 };
 
-    OCL::Vec3 allocatedSize = increaseBorder(baseSize, grid, 5);
+    Vec3 allocatedSize = increaseBorder(baseSize, grid, 5);
     EXPECT_EQ(15, allocatedSize.x);
     EXPECT_EQ(15, allocatedSize.y);
     EXPECT_EQ(15, allocatedSize.z);
 
-    OCL::Vec3 simulationSize = decreaseBorder(allocatedSize, grid, 1, baseSize);
+    Vec3 simulationSize = decreaseBorder(allocatedSize, grid, 1, baseSize);
     EXPECT_EQ(14, simulationSize.x);
     EXPECT_EQ(14, simulationSize.y);
     EXPECT_EQ(14, simulationSize.z);
 
-    OCL::Vec3 offset = calculateBorderOffset(allocatedSize, simulationSize, grid);
+    Vec3 offset = calculateBorderOffset(allocatedSize, simulationSize, grid);
     EXPECT_EQ(1, offset.x);
     EXPECT_EQ(1, offset.y);
     EXPECT_EQ(1, offset.z);

@@ -15,8 +15,8 @@ const static cl_image_format vectorFieldFormat = {CL_RGBA, CL_FLOAT};
 const static cl_image_format scalarFieldFormat = {CL_R, CL_FLOAT};
 class Simulation {
 public:
-    Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize);
-    Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid);
+    Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize);
+    Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid);
 
     void stepSimulation(float deltaTimeSeconds);
     template <typename Rep, typename Period>
@@ -45,9 +45,9 @@ public:
 protected:
     // Sizes
     const PositionInGrid positionInGrid;
-    const OCL::Vec3 simulationSize;           // size for which simulation kernels are launched
-    const OCL::Vec3 simulationSizeWithBorder; // simulationSize increased by additional border space
-    const OCL::Vec3 borderOffset;             // offset to be applied to extended images
+    const Vec3 simulationSize;           // size for which simulation kernels are launched
+    const Vec3 simulationSizeWithBorder; // simulationSize increased by additional border space
+    const Vec3 borderOffset;             // offset to be applied to extended images
 
     // Basic OCL objects
     cl_platform_id platform;

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Source/WSimSimulation/Utils/OpenCL.h"
+#include "Source/WSimCommon/Vec3.h"
 
 struct PositionInGrid {
     PositionInGrid() {}
-    PositionInGrid(OCL::Vec3 positionInGrid, OCL::Vec3 gridSize) {
+    PositionInGrid(Vec3 positionInGrid, Vec3 gridSize) {
         isBorder(positionInGrid.x, gridSize.x, edgeL, edgeR);
         isBorder(positionInGrid.y, gridSize.y, edgeU, edgeD);
         isBorder(positionInGrid.z, gridSize.z, edgeF, edgeB);
@@ -26,6 +26,6 @@ struct PositionInGrid {
     bool edgeB = false; // back
 };
 
-OCL::Vec3 increaseBorder(OCL::Vec3 simulationSize, PositionInGrid positionInGrid, int borderWidthChange);
-OCL::Vec3 decreaseBorder(OCL::Vec3 simulationSize, PositionInGrid positionInGrid, int borderWidthChange, OCL::Vec3 baseSimulationSize);
-OCL::Vec3 calculateBorderOffset(OCL::Vec3 totalSize, OCL::Vec3 usedSize, PositionInGrid positionInGrid);
+Vec3 increaseBorder(Vec3 simulationSize, PositionInGrid positionInGrid, int borderWidthChange);
+Vec3 decreaseBorder(Vec3 simulationSize, PositionInGrid positionInGrid, int borderWidthChange, Vec3 baseSimulationSize);
+Vec3 calculateBorderOffset(Vec3 totalSize, Vec3 usedSize, PositionInGrid positionInGrid);

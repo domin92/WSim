@@ -2,7 +2,7 @@
 
 #include "Source/WSimSimulation/Simulation/Simulation.h"
 
-SimulationStepVorticityConfinement::SimulationStepVorticityConfinement(Simulation &simulation, OCL::Vec3 &outputVelocitySize)
+SimulationStepVorticityConfinement::SimulationStepVorticityConfinement(Simulation &simulation, Vec3 &outputVelocitySize)
     : SimulationStep(simulation, outputVelocitySize, increaseBorder(outputVelocitySize, simulation.getPositionInGrid(), 2)),
       vorticitySize(decreaseBorder(inputVelocitySize, simulation.getPositionInGrid(), 1, simulation.getSimulationSize())),
       kernelCalculateVorticity(simulation.getKernelManager()["vorticityConfinement.cl"]["calculateVorticity"]),

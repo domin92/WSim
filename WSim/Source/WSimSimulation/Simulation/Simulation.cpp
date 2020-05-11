@@ -4,10 +4,10 @@
 #include "Source/WSimSimulation/Simulation/Step/SimulationStepVorticityConfinement.h"
 #include "Source/WSimSimulation/Simulation/Step/SimulationStepVorticityPressure.h"
 
-Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize)
-    : Simulation(platformIndex, deviceIndex, simulationSize, 0, PositionInGrid{OCL::Vec3{0, 0, 0}, OCL::Vec3{1, 1, 1}}) {}
+Simulation::Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize)
+    : Simulation(platformIndex, deviceIndex, simulationSize, 0, PositionInGrid{Vec3{0, 0, 0}, Vec3{1, 1, 1}}) {}
 
-Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid)
+Simulation::Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid)
     : positionInGrid(positionInGrid),
       simulationSize(simulationSize),
       simulationSizeWithBorder(increaseBorder(simulationSize, positionInGrid, static_cast<int>(borderWidth))),
@@ -25,7 +25,7 @@ Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simul
       kernelAddVelocity(kernels["addVelocity.cl"]["addVelocity"]) {
 
     // Create SimulationSteps in reverse order
-    OCL::Vec3 currentSimulationSize = simulationSize;
+    Vec3 currentSimulationSize = simulationSize;
     simulationSteps.emplace_back(new SimulationStepPressure(*this, 5, currentSimulationSize));
     simulationSteps.emplace_back(new SimulationStepVorticityConfinement(*this, currentSimulationSize));
     simulationSteps.emplace_back(new SimulationStepAdvection(*this, currentSimulationSize));
@@ -88,12 +88,12 @@ void Simulation::reset() {
 }
 
 void Simulation::addObstacleWall(Dim dimension, End end) {
-    OCL::Vec3 offset = {0, 0, 0};
+    Vec3 offset = {0, 0, 0};
     if (end == End::Higher) {
         selectDimension(offset, dimension) += (selectDimension(simulationSize, dimension) - 1);
     }
 
-    OCL::Vec3 size = simulationSize;
+    Vec3 size = simulationSize;
     selectDimension(size, dimension) = 1;
 
     float value[4] = {0, 0, 0, 0};

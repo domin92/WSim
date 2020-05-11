@@ -2,7 +2,7 @@
 
 #include "Source/WSimSimulation/Simulation/Simulation.h"
 
-SimulationStepAdvection::SimulationStepAdvection(Simulation &simulation, OCL::Vec3 &outputVelocitySize)
+SimulationStepAdvection::SimulationStepAdvection(Simulation &simulation, Vec3 &outputVelocitySize)
     : SimulationStep(simulation, outputVelocitySize, simulation.getSimulationSizeWithBorder()),
       kernelAdvection(simulation.getKernelManager()["advection.cl"]["advectVelocity"]) {}
 

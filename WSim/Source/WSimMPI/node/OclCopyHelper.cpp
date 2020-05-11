@@ -10,7 +10,7 @@ constexpr inline A ptrAdd(A ptr, size_t offset) {
     return reinterpret_cast<A>(reinterpret_cast<uintptr_t>(ptr) + static_cast<uintptr_t>(offset));
 }
 
-OclCopyHelper::OclCopyHelper(PositionInGrid grid, cl_command_queue &commandQueue, size_t border, OCL::Vec3 baseSize)
+OclCopyHelper::OclCopyHelper(PositionInGrid grid, cl_command_queue &commandQueue, size_t border, Vec3 baseSize)
     : grid(grid),
       commandQueue(commandQueue),
       border(border),
@@ -22,11 +22,11 @@ void OclCopyHelper::preShareCopySide(cl_mem image, size_t indexInOutputBuffer, v
     }
 
     // Compute 3D offset
-    OCL::Vec3 offset{border, border, border};
+    Vec3 offset{border, border, border};
     computePreShareCopyOffsetComponent(offset, dimension, end);
 
     // Compute 3D size
-    OCL::Vec3 size = baseSize;
+    Vec3 size = baseSize;
     selectDimension(size, dimension) = border;
 
     // Perform actual read
@@ -41,12 +41,12 @@ void OclCopyHelper::preShareCopyEdge(cl_mem image, size_t indexInOutputBuffer, v
     }
 
     // Compute 3D offset
-    OCL::Vec3 offset{border, border, border};
+    Vec3 offset{border, border, border};
     computePreShareCopyOffsetComponent(offset, dimension1, end1);
     computePreShareCopyOffsetComponent(offset, dimension2, end2);
 
     // Compute 3D size
-    OCL::Vec3 size = baseSize;
+    Vec3 size = baseSize;
     selectDimension(size, dimension1) = border;
     selectDimension(size, dimension2) = border;
 
@@ -61,13 +61,13 @@ void OclCopyHelper::preShareCopyCorner(cl_mem image, size_t indexInOutputBuffer,
     }
 
     // Compute 3D offset
-    OCL::Vec3 offset{};
+    Vec3 offset{};
     computePreShareCopyOffsetComponent(offset, Dim::X, endX);
     computePreShareCopyOffsetComponent(offset, Dim::Y, endY);
     computePreShareCopyOffsetComponent(offset, Dim::Z, endZ);
 
     // Compute 3D size
-    OCL::Vec3 size{border, border, border};
+    Vec3 size{border, border, border};
 
     // Perform actual read
     const auto readAddress = ptrAdd(outputBuffer, indexInOutputBuffer * size.getRequiredBufferSize(4 * sizeof(float)));
@@ -80,11 +80,11 @@ void OclCopyHelper::postShareCopySide(cl_mem image, size_t indexInInputBuffer, c
     }
 
     // Compute 3D offset
-    OCL::Vec3 offset{border, border, border};
+    Vec3 offset{border, border, border};
     computePostShareCopyOffsetComponent(offset, dimension, end);
 
     // Compute 3D size
-    OCL::Vec3 size = baseSize;
+    Vec3 size = baseSize;
     selectDimension(size, dimension) = border;
 
     // Perform actual write
@@ -99,12 +99,12 @@ void OclCopyHelper::postShareCopyEdge(cl_mem image, size_t indexInInputBuffer, c
     }
 
     // Compute 3D offset
-    OCL::Vec3 offset{border, border, border};
+    Vec3 offset{border, border, border};
     computePostShareCopyOffsetComponent(offset, dimension1, end1);
     computePostShareCopyOffsetComponent(offset, dimension2, end2);
 
     // Compute 3D size
-    OCL::Vec3 size = baseSize;
+    Vec3 size = baseSize;
     selectDimension(size, dimension1) = border;
     selectDimension(size, dimension2) = border;
 
@@ -119,13 +119,13 @@ void OclCopyHelper::postShareCopyCorner(cl_mem image, size_t indexInInputBuffer,
     }
 
     // Compute 3D offset
-    OCL::Vec3 offset{};
+    Vec3 offset{};
     computePostShareCopyOffsetComponent(offset, Dim::X, endX);
     computePostShareCopyOffsetComponent(offset, Dim::Y, endY);
     computePostShareCopyOffsetComponent(offset, Dim::Z, endZ);
 
     // Compute 3D size
-    OCL::Vec3 size{border, border, border};
+    Vec3 size{border, border, border};
 
     // Perform actual write
     const auto writeAddress = ptrAdd(inputBuffer, indexInInputBuffer * size.getRequiredBufferSize(4 * sizeof(float)));
@@ -160,7 +160,7 @@ bool OclCopyHelper::shouldNotShare(Dim dimension, End end) {
     }
 }
 
-void OclCopyHelper::computePreShareCopyOffsetComponent(OCL::Vec3 &offset, Dim dimension, End end) {
+void OclCopyHelper::computePreShareCopyOffsetComponent(Vec3 &offset, Dim dimension, End end) {
     size_t &output = selectDimension(offset, dimension);
     if (end == End::Lower) {
         output = border;
@@ -173,7 +173,7 @@ void OclCopyHelper::computePreShareCopyOffsetComponent(OCL::Vec3 &offset, Dim di
     }
 }
 
-void OclCopyHelper::computePostShareCopyOffsetComponent(OCL::Vec3 &offset, Dim dimension, End end) {
+void OclCopyHelper::computePostShareCopyOffsetComponent(Vec3 &offset, Dim dimension, End end) {
     size_t &output = selectDimension(offset, dimension);
     if (end == End::Lower) {
         output = 0;

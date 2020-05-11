@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/WSimSimulation/Utils/OpenCL.h"
+#include "Source/WSimCommon/Vec3.h"
 
 class Simulation;
 
@@ -11,12 +11,12 @@ class Simulation;
 // overcompute), simulation steps are created in reverse order.
 class SimulationStep {
 public:
-    SimulationStep(Simulation &simulation, OCL::Vec3 &outputVelocitySize, OCL::Vec3 inputVelocitySize);
+    SimulationStep(Simulation &simulation, Vec3 &outputVelocitySize, Vec3 inputVelocitySize);
     virtual void run(float deltaTimeSeconds) = 0;
     virtual void stop() = 0;
 
 protected:
     Simulation &simulation;
-    const OCL::Vec3 outputVelocitySize;
-    const OCL::Vec3 inputVelocitySize;
+    const Vec3 outputVelocitySize;
+    const Vec3 inputVelocitySize;
 };

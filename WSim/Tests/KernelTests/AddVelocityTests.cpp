@@ -8,8 +8,8 @@ struct AddVelocityTest : KernelTest {
     }
     cl_kernel kernelAddVelocity;
 
-    void performTest(OCL::Vec3 imageSize, const float center[], const float velocityChange[], float radius,
-                     const float *inputData, const float *expectedOutputData, const OCL::Vec3 *verifiedImageSize = nullptr) {
+    void performTest(Vec3 imageSize, const float center[], const float velocityChange[], float radius,
+                     const float *inputData, const float *expectedOutputData, const Vec3 *verifiedImageSize = nullptr) {
         auto velocitySrc = OCL::createReadWriteImage3D(context, imageSize, vectorFieldFormat);
         auto velocityDst = OCL::createReadWriteImage3D(context, imageSize, vectorFieldFormat);
         OCL::enqueueWriteImage3D(queue, velocitySrc, CL_FALSE, imageSize, inputData);
@@ -32,7 +32,7 @@ struct AddVelocityTest : KernelTest {
 };
 
 TEST_F(AddVelocityTest, givenCenterAtOriginWhenAddingVelocityThenGiveCorrectResults) {
-    const OCL::Vec3 testImageSize{4, 4, 1};
+    const Vec3 testImageSize{4, 4, 1};
     const float center[] = {0, 0, 0};
     const float velocityChange[] = {3, -8, 0};
     const float radius = 1;
@@ -50,7 +50,7 @@ TEST_F(AddVelocityTest, givenCenterAtOriginWhenAddingVelocityThenGiveCorrectResu
 }
 
 TEST_F(AddVelocityTest, givenSomeValuesPresentInVelocityWhenAddingVelocityThenCalculatedChangeIsSummedWithPreviousValues) {
-    const OCL::Vec3 testImageSize{4, 4, 1};
+    const Vec3 testImageSize{4, 4, 1};
     const float center[] = {0, 0, 0};
     const float velocityChange[] = {3, -8, 0};
     const float radius = 1;
@@ -68,7 +68,7 @@ TEST_F(AddVelocityTest, givenSomeValuesPresentInVelocityWhenAddingVelocityThenCa
 }
 
 TEST_F(AddVelocityTest, givenSelectedRadiusWhenAddingVelocityThenGiveCorrectResults) {
-    const OCL::Vec3 testImageSize{4, 4, 1};
+    const Vec3 testImageSize{4, 4, 1};
     const float center[] = {0, 0, 0};
     const float velocityChange[] = {3, -8, 0};
     const float radius = 5;
@@ -86,7 +86,7 @@ TEST_F(AddVelocityTest, givenSelectedRadiusWhenAddingVelocityThenGiveCorrectResu
 }
 
 TEST_F(AddVelocityTest, givenNonZeroCenterWhenAddingVelocityThenGiveCorrectResults) {
-    const OCL::Vec3 testImageSize{4, 4, 1};
+    const Vec3 testImageSize{4, 4, 1};
     const float center[] = {2.5f, 3.2f, 0};
     const float velocityChange[] = {3, -8, 0};
     const float radius = 1;
@@ -104,8 +104,8 @@ TEST_F(AddVelocityTest, givenNonZeroCenterWhenAddingVelocityThenGiveCorrectResul
 }
 
 TEST_F(AddVelocityTest, given3DVelocityWhenAddingVelocityThenZerothPlaneIsTheSameAsIfItWas2D) {
-    const OCL::Vec3 testImageSize{4, 4, 3};
-    const OCL::Vec3 verifiedImageSize{4, 4, 1};
+    const Vec3 testImageSize{4, 4, 3};
+    const Vec3 verifiedImageSize{4, 4, 1};
     const float center[] = {2.5f, 3.2f, 0};
     const float velocityChange[] = {3, -8, 0};
     const float radius = 1;
