@@ -43,17 +43,18 @@ void Renderer::mainLoop() {
     while (!glfwWindowShouldClose(window)) {
         // Handle time
         const auto frameTime = Clock::now();
-        const auto deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(frameTime - lastFrameTime);
-        if (std::chrono::milliseconds(16) > deltaTime) {
-            auto lackingDeltaTime = std::chrono::milliseconds(16) - deltaTime;
+        const auto deltaTime = frameTime - lastFrameTime;
+        constexpr static auto minimumFrameLength = std::chrono::milliseconds(16);
+        if (minimumFrameLength > deltaTime) {
+            auto lackingDeltaTime = minimumFrameLength - deltaTime;
             std::this_thread::sleep_for(lackingDeltaTime);
         }
-        const auto deltaTimeFloat = deltaTime.count() / 1000000.f;
         lastFrameTime = frameTime;
+        const auto deltaTimeFloat = std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime).count();
 
         // Fps callback
         if (fpsCallback) {
-            fpsCounter->push(static_cast<unsigned int>(deltaTime.count()));
+            fpsCounter->push(deltaTime);
             fpsCallback(fpsCounter->getFps());
         }
 

@@ -32,10 +32,10 @@ Simulation::Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simul
     reset();
 }
 
-void Simulation::stepSimulation(float deltaTime) {
+void Simulation::stepSimulation(float deltaTimeSeconds) {
     // Run SimulationSteps. They were created in reverse order, so we iterate in that order as well
     for (auto it = simulationSteps.rbegin(); it != simulationSteps.rend(); it++) {
-        (*it)->run(deltaTime);
+        (*it)->run(deltaTimeSeconds);
     }
 
     // Advect Color - including the border
@@ -43,7 +43,7 @@ void Simulation::stepSimulation(float deltaTime) {
     OCL::setKernelArgMem(kernelAdvection, 0, color.getSource());             // inField
     OCL::setKernelArgMem(kernelAdvection, 1, velocity.getSource());          // inVelocity
     OCL::setKernelArgVec(kernelAdvection, 2, 0.f, 0.f, 0.f);                 // inVelocityOffset
-    OCL::setKernelArgFlt(kernelAdvection, 3, deltaTime);                     // inDeltaTime
+    OCL::setKernelArgFlt(kernelAdvection, 3, deltaTimeSeconds);              // inDeltaTime
     OCL::setKernelArgFlt(kernelAdvection, 4, 1.f);                           // inDissipation
     OCL::setKernelArgMem(kernelAdvection, 5, color.getDestinationAndSwap()); // outField
     OCL::enqueueKernel3D(commandQueue, kernelAdvection, simulationSizeWithBorder);

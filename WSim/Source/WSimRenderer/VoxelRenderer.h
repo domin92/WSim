@@ -7,7 +7,7 @@
 #include <glm/vec3.hpp>
 
 struct VoxelRendererCallbacks {
-    virtual void stepSimulation(float deltaTime) = 0;
+    virtual void stepSimulation(float deltaTimeSeconds) = 0;
 };
 
 class VoxelRenderer : public Renderer {
@@ -22,7 +22,7 @@ protected:
 
     void processInput(int button, int action, int mods) override;
     void processMouseMove(double x, double y) override {}
-    void update(float dt) override;
+    void update(float deltaTimeSeconds) override;
     void render() override;
 
     VoxelRendererCallbacks &callbacks;

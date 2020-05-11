@@ -25,11 +25,11 @@ protected:
 
     virtual void processInput(int button, int action, int mods) = 0;
     virtual void processMouseMove(double x, double y) = 0;
-    virtual void update(float dt) = 0;
+    virtual void update(float deltaTimeSeconds) = 0;
     virtual void render() = 0;
 
-    GLFWwindow *window{};
     using Clock = std::chrono::steady_clock;
+    GLFWwindow *window{};
     Clock::time_point lastFrameTime;
 
     // Fps measuring

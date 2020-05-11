@@ -59,6 +59,6 @@ void MasterRendererInterfaceWater2D::ColorRendererCallbacksImpl::reset() {
     wsimError();
 }
 
-void MasterRendererInterfaceWater2D::ColorRendererCallbacksImpl::stepSimulation(float deltaTime) {
+void MasterRendererInterfaceWater2D::ColorRendererCallbacksImpl::stepSimulation(float deltaTimeSeconds) {
     master.receiveFromNodes();
 }

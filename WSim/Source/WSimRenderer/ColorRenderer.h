@@ -19,7 +19,7 @@ struct ColorRendererCallbacks {
     virtual void applyForce(float positionX, float positionY, float changeX, float changeY, float radius) = 0;
     virtual void stop() = 0;
     virtual void reset() = 0;
-    virtual void stepSimulation(float deltaTime) = 0;
+    virtual void stepSimulation(float deltaTimeSeconds) = 0;
 };
 
 class ColorRenderer : public Renderer {
@@ -29,7 +29,7 @@ public:
 protected:
     void processInput(int button, int action, int mods) override;
     void processMouseMove(double x, double y) override;
-    void update(float dt) override;
+    void update(float deltaTimeSeconds) override;
     void render() override;
 
 private:

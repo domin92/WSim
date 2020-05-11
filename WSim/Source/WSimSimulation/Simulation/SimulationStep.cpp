@@ -19,7 +19,7 @@ SimulationStepAdvection::SimulationStepAdvection(Simulation &simulation, OCL::Ve
     : SimulationStep(simulation, outputVelocitySize, simulation.getSimulationSizeWithBorder()),
       kernelAdvection(simulation.getKernelManager()["advection.cl"]["advectVelocity"]) {}
 
-void SimulationStepAdvection::run(float deltaTime) {
+void SimulationStepAdvection::run(float deltaTimeSeconds) {
     auto &velocity = simulation.getVelocity();
     auto &obstacles = simulation.getObstacles();
     auto &commandQueue = simulation.getCommandQueue();
@@ -29,7 +29,7 @@ void SimulationStepAdvection::run(float deltaTime) {
     OCL::setKernelArgMem(kernelAdvection, 0, velocity.getSource());                                 // inVelocity
     OCL::setKernelArgMem(kernelAdvection, 1, obstacles);                                            // inObstacles
     OCL::setKernelArgVec(kernelAdvection, 2, velocityOffset.x, velocityOffset.y, velocityOffset.z); // inVelocityOffset
-    OCL::setKernelArgFlt(kernelAdvection, 3, deltaTime);                                            // inDeltaTime
+    OCL::setKernelArgFlt(kernelAdvection, 3, deltaTimeSeconds);                                     // inDeltaTime
     OCL::setKernelArgFlt(kernelAdvection, 4, 1.f);                                                  // inDissipation
     OCL::setKernelArgMem(kernelAdvection, 5, velocity.getDestinationAndSwap());                     // outField
     OCL::enqueueKernel3D(commandQueue, kernelAdvection, outputVelocitySize);
@@ -44,7 +44,7 @@ SimulationStepVorticityConfinement::SimulationStepVorticityConfinement(Simulatio
       kernelApplyVorticityConfinement(simulation.getKernelManager()["vorticityConfinement.cl"]["applyVorticityConfinement"]),
       vorticity(OCL::createReadWriteImage3D(simulation.getContext(), vorticitySize, vectorFieldFormat)) {}
 
-void SimulationStepVorticityConfinement::run(float deltaTime) {
+void SimulationStepVorticityConfinement::run(float deltaTimeSeconds) {
     auto &velocity = simulation.getVelocity();
     auto &commandQueue = simulation.getCommandQueue();
 
@@ -85,7 +85,7 @@ SimulationStepPressure::SimulationStepPressure(Simulation &simulation, size_t ja
       divergence(OCL::createReadWriteImage3D(simulation.getContext(), divergenceSize, scalarFieldFormat)),
       pressure(simulation.getContext(), divergenceSize, scalarFieldFormat) {}
 
-void SimulationStepPressure::run(float deltaTime) {
+void SimulationStepPressure::run(float deltaTimeSeconds) {
     auto &velocity = simulation.getVelocity();
     auto &commandQueue = simulation.getCommandQueue();
 

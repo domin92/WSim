@@ -7,6 +7,7 @@
 #include "Source/WSimSimulation/Utils/KernelManager.h"
 #include "Source/WSimSimulation/Utils/OpenCL.h"
 
+#include <chrono>
 #include <memory>
 #include <vector>
 
@@ -16,7 +17,13 @@ class Simulation {
 public:
     Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize);
     Simulation(size_t platformIndex, size_t deviceIndex, OCL::Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid);
-    void stepSimulation(float deltaTime);
+
+    void stepSimulation(float deltaTimeSeconds);
+    template <typename Rep, typename Period>
+    void stepSimulation(std::chrono::duration<Rep, Period> deltaTime) {
+        stepSimulation(std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime).count());
+    }
+
     void applyForce(float positionX, float positionY, float changeX, float changeY, float radius);
     void stop();
     void reset();

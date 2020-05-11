@@ -23,7 +23,7 @@ public:
         void applyForce(float positionX, float positionY, float changeX, float changeY, float radius) override;
         void stop() override;
         void reset() override;
-        void stepSimulation(float deltaTime) override;
+        void stepSimulation(float deltaTimeSeconds) override;
 
     private:
         Master &master;

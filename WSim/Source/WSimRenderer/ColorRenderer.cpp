@@ -70,9 +70,9 @@ void ColorRenderer::processMouseMove(double screenX, double screenY) {
     callbacks.applyForce(x, y, deltaX, deltaY, radius);
 }
 
-void ColorRenderer::update(float dt) {
+void ColorRenderer::update(float deltaTimeSeconds) {
 
-    callbacks.stepSimulation(dt);
+    callbacks.stepSimulation(deltaTimeSeconds);
     glBindTexture(GL_TEXTURE_2D, texture1);
 
     static bool initialized = false;

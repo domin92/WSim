@@ -20,6 +20,6 @@ std::unique_ptr<Renderer> MasterRendererInterfaceVoxel::createRenderer(Master &m
 
 MasterRendererInterfaceVoxel::VoxelRendererCallbacksImpl::VoxelRendererCallbacksImpl(Master &master) : master(master) {}
 
-void MasterRendererInterfaceVoxel::VoxelRendererCallbacksImpl::stepSimulation(float deltaTime) {
+void MasterRendererInterfaceVoxel::VoxelRendererCallbacksImpl::stepSimulation(float deltaTimeSeconds) {
     master.receiveFromNodes();
 }

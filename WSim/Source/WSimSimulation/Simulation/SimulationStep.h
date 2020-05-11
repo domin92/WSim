@@ -13,7 +13,7 @@ class Simulation;
 class SimulationStep {
 public:
     SimulationStep(Simulation &simulation, OCL::Vec3 &outputVelocitySize, OCL::Vec3 inputVelocitySize);
-    virtual void run(float deltaTime) = 0;
+    virtual void run(float deltaTimeSeconds) = 0;
     virtual void stop() = 0;
 
 protected:
@@ -29,7 +29,7 @@ protected:
 class SimulationStepAdvection : public SimulationStep {
 public:
     SimulationStepAdvection(Simulation &simulation, OCL::Vec3 &outputVelocitySize);
-    void run(float deltaTime) override;
+    void run(float deltaTimeSeconds) override;
     void stop() override;
 
 private:
@@ -44,7 +44,7 @@ private:
 class SimulationStepVorticityConfinement : public SimulationStep {
 public:
     SimulationStepVorticityConfinement(Simulation &simulation, OCL::Vec3 &outputVelocitySize);
-    void run(float deltaTime) override;
+    void run(float deltaTimeSeconds) override;
     void stop() override;
 
 private:
@@ -65,7 +65,7 @@ private:
 class SimulationStepPressure : public SimulationStep {
 public:
     SimulationStepPressure(Simulation &simulation, size_t jacobiIterations, OCL::Vec3 &outputVelocitySize);
-    void run(float deltaTime) override;
+    void run(float deltaTimeSeconds) override;
     void stop() override;
 
 private:

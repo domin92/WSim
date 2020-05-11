@@ -1,15 +1,19 @@
 #pragma once
 
+#include <chrono>
+
 template <unsigned int bufferSize>
 class FpsCounter {
 public:
-    void push(unsigned int deltaTimeMicroseconds) {
+    template <typename Rep, typename Period>
+    void push(std::chrono::duration<Rep, Period> deltaTime) {
         currentFrameWrappedIndex = (currentFrameWrappedIndex == bufferSize - 1) ? 0 : currentFrameWrappedIndex + 1;
         if (currentFrameIndex >= bufferSize) {
             // If a ring buffer wrapped at least once, we have to subtract the element being overwritten from sum
             currentFrameTimesSum -= buffer[currentFrameWrappedIndex];
         }
 
+        const auto deltaTimeMicroseconds = static_cast<int>(std::chrono::duration_cast<std::chrono::microseconds>(deltaTime).count());
         buffer[currentFrameWrappedIndex] = deltaTimeMicroseconds;
         currentFrameIndex++;
         currentFrameTimesSum += deltaTimeMicroseconds;

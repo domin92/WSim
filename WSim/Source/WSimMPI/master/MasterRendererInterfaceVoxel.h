@@ -17,7 +17,7 @@ public:
     class VoxelRendererCallbacksImpl : public VoxelRendererCallbacks {
     public:
         VoxelRendererCallbacksImpl(Master &master);
-        void stepSimulation(float deltaTime) override;
+        void stepSimulation(float deltaTimeSeconds) override;
 
     private:
         Master &master;

@@ -6,10 +6,10 @@ struct FpsCallback {
     using Clock = std::chrono::steady_clock;
     Clock::time_point lastPrintTime = {};
 
-    void operator()(unsigned int deltaTime) {
+    void operator()(unsigned int fps) {
         const Clock::time_point now = Clock::now();
         if (now - lastPrintTime > std::chrono::milliseconds(700)) {
-            std::cout << "FPS: " << deltaTime << '\n';
+            std::cout << "FPS: " << fps << '\n';
             lastPrintTime = now;
         }
     }
@@ -54,8 +54,8 @@ public:
         simulation.reset();
     }
 
-    void stepSimulation(float deltaTime) override {
-        simulation.stepSimulation(deltaTime);
+    void stepSimulation(float deltaTimeSeconds) override {
+        simulation.stepSimulation(deltaTimeSeconds);
     }
 
 private:
@@ -127,13 +127,12 @@ int main(int argc, char **argv) {
         auto lastFrameTime = Clock::now();
         while (true) {
             const auto currentFrameTime = Clock::now();
-            const auto deltaTimeMicroseconds = std::chrono::duration_cast<std::chrono::microseconds>(currentFrameTime - lastFrameTime);
-            const auto deltaTimeSeconds = deltaTimeMicroseconds.count() / 1e6f;
-            fpsCounter.push(deltaTimeMicroseconds.count());
+            const auto deltaTime = currentFrameTime - lastFrameTime;
+            fpsCounter.push(deltaTime);
             fpsCallback(fpsCounter.getFps());
             lastFrameTime = currentFrameTime;
 
-            simulation.stepSimulation(deltaTimeSeconds);
+            simulation.stepSimulation(deltaTime);
             OCL::finish(simulation.getCommandQueue());
         }
     }

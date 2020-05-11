@@ -105,8 +105,8 @@ void VoxelRenderer::processInput(int button, int action, int mods) {
     }
 }
 
-void VoxelRenderer::update(float dt) {
-    callbacks.stepSimulation(dt);
+void VoxelRenderer::update(float deltaTimeSeconds) {
+    callbacks.stepSimulation(deltaTimeSeconds);
 }
 
 void VoxelRenderer::render() {
