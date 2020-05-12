@@ -9,13 +9,13 @@
     std::abort();
 }
 
-[[noreturn]] inline void wsimErrorIf(bool condition) {
+inline void wsimErrorIf(bool condition) {
     if (condition) {
         wsimError();
     }
 }
 
-[[noreturn]] inline void wsimErrorUnless(bool condition) {
+inline void wsimErrorUnless(bool condition) {
     if (!condition) {
         wsimError();
     }
