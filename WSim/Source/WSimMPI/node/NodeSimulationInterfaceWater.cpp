@@ -7,6 +7,11 @@ NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node)
       positionInGrid(createPositionInGrid(node)),
       simulation(0, 0, getNodeSize(node), node.get_share_thickness(), positionInGrid),
       copier(positionInGrid, (cl_command_queue &)simulation.getCommandQueue(), (size_t)node.get_share_thickness(), simulation.getSimulationSize()) {
+
+    // For testing
+    if (node.get_rank() == 1) {
+        simulation.applyForce(node.get_node_size() / 2, node.get_node_size() / 2, 50, 50, 10);
+    }
 }
 
 void NodeSimulationInterfaceWater::postReceiveFromMaster(const char *receivedArray) {

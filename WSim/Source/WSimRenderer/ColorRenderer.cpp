@@ -114,13 +114,13 @@ void ColorRenderer::render() {
     glBindTexture(GL_TEXTURE_2D, texture1);
     glBegin(GL_QUADS);
 
-    glTexCoord2i(0, 0);
-    glVertex2i(100, 100);
     glTexCoord2i(0, 1);
+    glVertex2i(100, 100);
+    glTexCoord2i(0, 0);
     glVertex2i(100, 500);
-    glTexCoord2i(1, 1);
-    glVertex2i(500, 500);
     glTexCoord2i(1, 0);
+    glVertex2i(500, 500);
+    glTexCoord2i(1, 1);
     glVertex2i(500, 100);
 
     glEnd();
