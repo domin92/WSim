@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
 
 struct Vec3 {
     Vec3() = default;
@@ -17,3 +18,7 @@ struct Vec3 {
     bool operator==(const Vec3 &o) const { return x == o.x && y == o.y && z == o.z; }
     bool operator<=(const Vec3 &o) const { return x <= o.x && y <= o.y && z <= o.z; }
 };
+
+inline std::ostream &operator<<(std::ostream &out, Vec3 vec) {
+    return out << "[" << vec.x << ", " << vec.y << ", " << vec.z << "]";
+}
