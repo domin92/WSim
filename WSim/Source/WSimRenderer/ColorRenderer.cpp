@@ -143,7 +143,6 @@ float ColorRenderer::transformCoordsFromAbsoluteSpaceToSimulationSpaceX(double x
 float ColorRenderer::transformCoordsFromAbsoluteSpaceToSimulationSpaceY(double y) {
     // To texture space
     y -= 100;
-    y = 400 - y;
 
     // To simulation space
     const auto simulationHeight = static_cast<float>(imageHeight);
