@@ -7,9 +7,8 @@ float4 advectValue(__read_only image3d_t inField,
 
     // Calculate sample position
     const sampler_t nearestSampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_NONE | CLK_FILTER_NEAREST;
-    float4 samplePosition = convert_float4(velocityPosition); // TODO: shouldn't 0.5f offset be here?
-    samplePosition -= inDeltaTime * read_imagef(inVelocity, nearestSampler, threadPosition);
-    samplePosition += 0.5f;
+    float4 samplePosition = convert_float4(velocityPosition) + 0.5f;
+    samplePosition -= inDeltaTime * read_imagef(inVelocity, nearestSampler, samplePosition);
 
     // Bilinear sample input buffer and apply dissipation
     const sampler_t linearSampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_LINEAR;
