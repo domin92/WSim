@@ -25,6 +25,7 @@ public:
     }
 
     void applyForce(float positionX, float positionY, float changeX, float changeY, float radius);
+    void applyForce(FloatVec3 position, FloatVec3 change, float radius);
     void stop();
     void reset();
     void addObstacleWall(Dim dimension, End end);

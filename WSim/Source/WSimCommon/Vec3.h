@@ -19,6 +19,12 @@ struct Vec3 {
     bool operator<=(const Vec3 &o) const { return x <= o.x && y <= o.y && z <= o.z; }
 };
 
+struct FloatVec3 {
+    FloatVec3() = default;
+    FloatVec3(float x, float y, float z) : x(x), y(y), z(z) {}
+    float x, y, z;
+};
+
 inline std::ostream &operator<<(std::ostream &out, Vec3 vec) {
     return out << "[" << vec.x << ", " << vec.y << ", " << vec.z << "]";
 }
