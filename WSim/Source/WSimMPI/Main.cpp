@@ -2,6 +2,7 @@
 #include "Node/Node.hpp"
 #include "Source/WSimCommon/ArgumentParser.h"
 #include "Source/WSimCommon/Logger.h"
+#include "Source/WSimMPI/Utils.h"
 
 #include <cstdlib>
 #include <mpi.h>
@@ -44,8 +45,9 @@ void main(int argc, char **argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
 
     if (blockProcessWithRank == my_rank) {
-        std::cout << "Process " << my_rank << " blocked at initialization. Attach debugger\n";
-        while (1); // for debugging purposes
+        std::cerr << "Process " << my_rank << " blocked at initialization. Attach debugger to " << getProcessId() << "\n";
+        while (1)
+            ; // for debugging purposes
     }
 
     Logger::createFileLogger("log_file", my_rank);

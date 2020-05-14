@@ -27,3 +27,17 @@ inline int convertTo3DRankZ(int linearRank, int gridSize) {
     const int adjusted_rank = linearRank - 1; // Rank excluding master
     return (adjusted_rank) / (gridSize * gridSize);
 }
+
+#ifdef _WIN32
+#include <Windows.h>
+inline int getProcessId() {
+    return GetCurrentProcessId();
+}
+
+#else
+#include <sys/types.h>
+#include <unistd.h>
+inline int getProcessId() {
+    return getpid();
+}
+#endif
