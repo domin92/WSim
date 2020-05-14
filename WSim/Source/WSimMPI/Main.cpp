@@ -31,6 +31,7 @@ void main(int argc, char **argv) {
     // Parse arguments
     ArgumentParser argumentParser{argc, argv};
     int full_size = argumentParser.getArgumentValue<int>({"-s", "--simulationSize"}, DEFAULT_GRID_SIZE); // Size of the edge of the simulation cube
+    int blockProcessWithRank = argumentParser.getArgumentValue<int>({"-b", "--block"}, -1);              // -1 means do not block
 
     // Verify arguments
     if (full_size <= 0) {
@@ -41,6 +42,11 @@ void main(int argc, char **argv) {
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
+
+    if (blockProcessWithRank == my_rank) {
+        std::cout << "Process " << my_rank << " blocked at initialization. Attach debugger\n";
+        while (1); // for debugging purposes
+    }
 
     Logger::createFileLogger("log_file", my_rank);
 
