@@ -20,7 +20,7 @@ private:
     bool shouldNotShare(Dim dimension, End end);
     void computePreShareCopyOffsetComponent(Vec3 &offset, Dim dimension, End end);
     void computePostShareCopyOffsetComponent(Vec3 &offset, Dim dimension, End end);
-    bool isLowerBorderPresent(Dim dimension);
+    void decreaseOffsetIfNodeIsLowerEdge(Vec3& offset);
 
     const PositionInGrid grid;
     const cl_command_queue &commandQueue;

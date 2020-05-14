@@ -24,6 +24,7 @@ void OclCopyHelper::preShareCopySide(cl_mem image, size_t indexInOutputBuffer, v
     // Compute 3D offset
     Vec3 offset{border, border, border};
     computePreShareCopyOffsetComponent(offset, dimension, end);
+    decreaseOffsetIfNodeIsLowerEdge(offset);
 
     // Compute 3D size
     Vec3 size = baseSize;
@@ -44,6 +45,7 @@ void OclCopyHelper::preShareCopyEdge(cl_mem image, size_t indexInOutputBuffer, v
     Vec3 offset{border, border, border};
     computePreShareCopyOffsetComponent(offset, dimension1, end1);
     computePreShareCopyOffsetComponent(offset, dimension2, end2);
+    decreaseOffsetIfNodeIsLowerEdge(offset);
 
     // Compute 3D size
     Vec3 size = baseSize;
@@ -65,6 +67,7 @@ void OclCopyHelper::preShareCopyCorner(cl_mem image, size_t indexInOutputBuffer,
     computePreShareCopyOffsetComponent(offset, Dim::X, endX);
     computePreShareCopyOffsetComponent(offset, Dim::Y, endY);
     computePreShareCopyOffsetComponent(offset, Dim::Z, endZ);
+    decreaseOffsetIfNodeIsLowerEdge(offset);
 
     // Compute 3D size
     Vec3 size{border, border, border};
@@ -82,6 +85,7 @@ void OclCopyHelper::postShareCopySide(cl_mem image, size_t indexInInputBuffer, c
     // Compute 3D offset
     Vec3 offset{border, border, border};
     computePostShareCopyOffsetComponent(offset, dimension, end);
+    decreaseOffsetIfNodeIsLowerEdge(offset);
 
     // Compute 3D size
     Vec3 size = baseSize;
@@ -102,6 +106,7 @@ void OclCopyHelper::postShareCopyEdge(cl_mem image, size_t indexInInputBuffer, c
     Vec3 offset{border, border, border};
     computePostShareCopyOffsetComponent(offset, dimension1, end1);
     computePostShareCopyOffsetComponent(offset, dimension2, end2);
+    decreaseOffsetIfNodeIsLowerEdge(offset);
 
     // Compute 3D size
     Vec3 size = baseSize;
@@ -123,6 +128,7 @@ void OclCopyHelper::postShareCopyCorner(cl_mem image, size_t indexInInputBuffer,
     computePostShareCopyOffsetComponent(offset, Dim::X, endX);
     computePostShareCopyOffsetComponent(offset, Dim::Y, endY);
     computePostShareCopyOffsetComponent(offset, Dim::Z, endZ);
+    decreaseOffsetIfNodeIsLowerEdge(offset);
 
     // Compute 3D size
     Vec3 size{border, border, border};
@@ -167,10 +173,6 @@ void OclCopyHelper::computePreShareCopyOffsetComponent(Vec3 &offset, Dim dimensi
     } else {
         output = selectDimension(baseSize, dimension);
     }
-
-    if (!isLowerBorderPresent(dimension)) {
-        output -= border;
-    }
 }
 
 void OclCopyHelper::computePostShareCopyOffsetComponent(Vec3 &offset, Dim dimension, End end) {
@@ -180,22 +182,19 @@ void OclCopyHelper::computePostShareCopyOffsetComponent(Vec3 &offset, Dim dimens
     } else {
         output = selectDimension(baseSize, dimension) + border;
     }
-
-    if (!isLowerBorderPresent(dimension)) {
-        wsimErrorIf(output == 0);
-        output -= border;
-    }
 }
 
-bool OclCopyHelper::isLowerBorderPresent(Dim dimension) { // TODO: unify with should not share
-    switch (dimension) {
-    case Dim::X:
-        return !grid.edgeL;
-    case Dim::Y:
-        return !grid.edgeU;
-    case Dim::Z:
-        return !grid.edgeF;
-    default:
-        wsimError();
+void OclCopyHelper::decreaseOffsetIfNodeIsLowerEdge(Vec3 &offset) {
+    if (grid.edgeL) {
+        wsimErrorIf(offset.x == 0);
+        offset.x -= border;
+    }
+    if (grid.edgeU) {
+        wsimErrorIf(offset.y == 0);
+        offset.y -= border;
+    }
+    if (grid.edgeF) {
+        wsimErrorIf(offset.z == 0);
+        offset.z -= border;
     }
 }
