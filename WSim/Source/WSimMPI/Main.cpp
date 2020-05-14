@@ -1,9 +1,10 @@
-#include <mpi.h>
-#include <cstdlib>
-
 #include "Master/Master.hpp"
 #include "Node/Node.hpp"
+#include "Source/WSimCommon/ArgumentParser.h"
 #include "Source/WSimCommon/Logger.h"
+
+#include <cstdlib>
+#include <mpi.h>
 
 #define DEFAULT_GRID_SIZE 60
 
@@ -27,6 +28,14 @@ int my_cbrt(int a) {
 }
 
 void main(int argc, char **argv) {
+    // Parse arguments
+    ArgumentParser argumentParser{argc, argv};
+    int full_size = argumentParser.getArgumentValue<int>({"-s", "--simulationSize"}, DEFAULT_GRID_SIZE); // Size of the edge of the simulation cube
+
+    // Verify arguments
+    if (full_size <= 0) {
+        return;
+    }
 
     int my_rank, proc_count;
     MPI_Init(&argc, &argv);
@@ -38,16 +47,6 @@ void main(int argc, char **argv) {
     if (my_cbrt(proc_count - 1) == 0) {
         return;
     }
-
-    int full_size = DEFAULT_GRID_SIZE; // Size of the edge of the simulation cube
-
-    if (argc > 1) {
-        full_size = atoi(argv[1]);
-        if (full_size <= 0) {
-            return;
-        }
-    }
-
     int grid_size = my_cbrt(proc_count - 1);
     int node_size = full_size / grid_size;
 

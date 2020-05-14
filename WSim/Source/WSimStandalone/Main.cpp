@@ -1,3 +1,4 @@
+#include "Source/WSimCommon/ArgumentParser.h"
 #include "Source/WSimRenderer/ColorRenderer.h"
 #include "Source/WSimRenderer/FpsCounter.h"
 #include "Source/WSimSimulation/Simulation/Simulation.h"
@@ -63,54 +64,24 @@ private:
 };
 
 int main(int argc, char **argv) {
-    enum class Mode {
-        Graphical,
-        Text,
-    };
-
     // Parse arguments
-    size_t clPlatformIndex = 0u;
-    size_t clDeviceIndex = 0u;
-    size_t simulationSize = 200u;
-    Mode mode = Mode::Graphical;
-    int argIndex = 1;
-    while (argIndex < argc) {
-        const bool hasNextArg = (argIndex + 1 < argc);
-        const std::string currArg = argv[argIndex];
-        const std::string nextArg = hasNextArg ? argv[argIndex + 1] : "";
+    ArgumentParser argumentParser{argc, argv};
+    const auto clPlatformIndex = argumentParser.getArgumentValue<size_t>({"-p", "--platform"}, 0u);
+    const auto clDeviceIndex = argumentParser.getArgumentValue<size_t>({"-d", "--device"}, 0u);
+    const auto simulationSize = argumentParser.getArgumentValue<size_t>({"-s", "--size"}, 200);
+    const auto modeString = argumentParser.getArgumentValue<std::string>({"-m", "--mode"}, "graphical");
 
-        if (hasNextArg && (currArg == "-p" || currArg == "--platform")) {
-            clPlatformIndex = std::atoi(nextArg.c_str());
-            argIndex += 2;
-            continue;
-        }
-        if (hasNextArg && (currArg == "-d" || currArg == "--device")) {
-            clDeviceIndex = std::atoi(nextArg.c_str());
-            argIndex += 2;
-            continue;
-        }
-        if (hasNextArg && (currArg == "-s" || currArg == "--size")) {
-            simulationSize = std::atoi(nextArg.c_str());
-            if (simulationSize == 0) {
-                std::cout << "Incorrect simulation size\n";
-                return 1;
-            }
-            argIndex += 2;
-            continue;
-        }
-        if (hasNextArg && (currArg == "-m" || currArg == "--mode")) {
-            if (nextArg == "graphical") {
-                mode = Mode::Graphical;
-            } else if (nextArg == "text") {
-                mode = Mode::Text;
-            } else {
-                std::cout << "Unknown mode: " << nextArg << '\n';
-                return 1;
-            }
-            argIndex += 2;
-            continue;
-        }
-        argIndex++;
+    // Get mode
+    enum class Mode { Graphical,
+                      Text };
+    Mode mode;
+    if (modeString == "graphical") {
+        mode = Mode::Graphical;
+    } else if (modeString == "text") {
+        mode = Mode::Text;
+    } else {
+        std::cout << "Unknown mode: " << modeString << '\n';
+        return 1;
     }
 
     // Print arguments
