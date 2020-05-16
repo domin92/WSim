@@ -21,8 +21,7 @@ Simulation::Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulation
       color(context, simulationSizeWithBorder, vectorFieldFormat),
       obstacles(OCL::createReadWriteImage3D(context, simulationSize, vectorFieldFormat)),
       kernels(device, context),
-      kernelFillVelocity(kernels["fill.cl"]["fillVelocity"]),
-      kernelFillColor(kernels["fill.cl"]["fillColor"]),
+      kernelInitializeColor(kernels["initialize.cl"]["initializeColor"]),
       kernelAddVelocity(kernels["addVelocity.cl"]["addVelocity"]) {
 
     // Create SimulationSteps in reverse order
@@ -32,6 +31,7 @@ Simulation::Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulation
     //simulationSteps.emplace_back(new SimulationStepVorticityConfinement(*this, currentSimulationSize)); // Doesn't work in 3D
     simulationSteps.emplace_back(new SimulationStepAdvection(*this, currentSimulationSize));
 
+    // Initialize all textures
     OCL::enqueueZeroImage3D(commandQueue, obstacles, simulationSize);
     reset();
 }
@@ -71,18 +71,11 @@ void Simulation::stop() {
 }
 
 void Simulation::reset() {
-    OCL::setKernelArgFlt(kernelFillVelocity, 0, static_cast<float>(simulationSize.x)); // inImageSize
-    OCL::setKernelArgMem(kernelFillVelocity, 1, velocity.getDestinationAndSwap());     // outVelocity
-    OCL::enqueueKernel3D(commandQueue, kernelFillVelocity, simulationSizeWithBorder);
-
-    OCL::setKernelArgVec(kernelFillColor, 0, simulationSize.x, simulationSize.y, simulationSize.z); // inImageSize
-    OCL::setKernelArgVec(kernelFillColor, 1, borderOffset.x, borderOffset.y, borderOffset.z);       // inOffset
-    OCL::setKernelArgMem(kernelFillColor, 2, color.getDestinationAndSwap());                        // outColor
-    OCL::enqueueKernel3D(commandQueue, kernelFillColor, simulationSizeWithBorder);
-
-    for (auto it = simulationSteps.rbegin(); it != simulationSteps.rend(); it++) {
-        (*it)->stop();
-    }
+    stop();
+    OCL::setKernelArgVec(kernelInitializeColor, 0, simulationSize.x, simulationSize.y, simulationSize.z); // inImageSize
+    OCL::setKernelArgVec(kernelInitializeColor, 1, borderOffset.x, borderOffset.y, borderOffset.z);       // inOffset
+    OCL::setKernelArgMem(kernelInitializeColor, 2, color.getDestinationAndSwap());                        // outColor
+    OCL::enqueueKernel3D(commandQueue, kernelInitializeColor, simulationSizeWithBorder);
 }
 
 void Simulation::addObstacleWall(Dim dimension, End end) {

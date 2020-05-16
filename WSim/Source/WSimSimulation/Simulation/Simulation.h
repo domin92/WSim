@@ -66,7 +66,6 @@ protected:
 
     // Kernels
     KernelManager kernels;
-    OCL::Kernel kernelFillVelocity;
-    OCL::Kernel kernelFillColor;
+    OCL::Kernel kernelInitializeColor;
     OCL::Kernel kernelAddVelocity;
 };
