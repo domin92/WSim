@@ -11,6 +11,7 @@ class Simulation;
 // overcompute), simulation steps are created in reverse order.
 class SimulationStep {
 public:
+    SimulationStep(Simulation& simulation, const Vec3& outputVelocitySize, Vec3 inputVelocitySize);
     SimulationStep(Simulation &simulation, Vec3 &outputVelocitySize, Vec3 inputVelocitySize);
     virtual void run(float deltaTimeSeconds) = 0;
     virtual void stop() = 0;

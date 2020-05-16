@@ -1,6 +1,7 @@
 #include "Simulation.h"
 
 #include "Source/WSimSimulation/Simulation/Step/SimulationStepAdvection.h"
+#include "Source/WSimSimulation/Simulation/Step/SimulationStepColorAdvection.h"
 #include "Source/WSimSimulation/Simulation/Step/SimulationStepVorticityConfinement.h"
 #include "Source/WSimSimulation/Simulation/Step/SimulationStepVorticityPressure.h"
 
@@ -26,6 +27,7 @@ Simulation::Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulation
 
     // Create SimulationSteps in reverse order
     Vec3 currentSimulationSize = simulationSize;
+    simulationSteps.emplace_back(new SimulationStepColorAdvection(*this));
     simulationSteps.emplace_back(new SimulationStepPressure(*this, 5, currentSimulationSize));
     //simulationSteps.emplace_back(new SimulationStepVorticityConfinement(*this, currentSimulationSize)); // Doesn't work in 3D
     simulationSteps.emplace_back(new SimulationStepAdvection(*this, currentSimulationSize));
@@ -39,16 +41,6 @@ void Simulation::stepSimulation(float deltaTimeSeconds) {
     for (auto it = simulationSteps.rbegin(); it != simulationSteps.rend(); it++) {
         (*it)->run(deltaTimeSeconds);
     }
-
-    // Advect Color - including the border
-    auto kernelAdvection = kernels["advection.cl"]["advect"];
-    OCL::setKernelArgMem(kernelAdvection, 0, color.getSource());             // inField
-    OCL::setKernelArgMem(kernelAdvection, 1, velocity.getSource());          // inVelocity
-    OCL::setKernelArgVec(kernelAdvection, 2, 0.f, 0.f, 0.f);                 // inVelocityOffset
-    OCL::setKernelArgFlt(kernelAdvection, 3, deltaTimeSeconds);              // inDeltaTime
-    OCL::setKernelArgFlt(kernelAdvection, 4, 1.f);                           // inDissipation
-    OCL::setKernelArgMem(kernelAdvection, 5, color.getDestinationAndSwap()); // outField
-    OCL::enqueueKernel3D(commandQueue, kernelAdvection, simulationSizeWithBorder);
 }
 
 void Simulation::applyForce(float positionX, float positionY, float changeX, float changeY, float radius) {
