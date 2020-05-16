@@ -9,9 +9,12 @@ NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node)
       copier(positionInGrid, (cl_command_queue &)simulation.getCommandQueue(), (size_t)node.get_share_thickness(), simulation.getSimulationSize()) {
 
     // For testing
-    if (node.get_rank() == 1) {
-        simulation.applyForce(node.get_node_size() / 2, node.get_node_size() / 2, 50, 50, 10);
-    }
+    const auto nodeSize = node.get_node_size();
+    const auto centerX = nodeSize / 2.f - node.get_x_pos_in_grid() * nodeSize;
+    const auto centerY = nodeSize / 2.f - node.get_y_pos_in_grid() * nodeSize;
+    const auto centerZ = -1.f * node.get_z_pos_in_grid() * nodeSize;
+    Logger::get() << centerX << ", " << centerY << ", " << centerZ << std::endl;
+    simulation.applyForce(FloatVec3{centerX, centerY, centerZ}, FloatVec3{50, 50, 0}, 10);
 }
 
 void NodeSimulationInterfaceWater::postReceiveFromMaster(const char *receivedArray) {
