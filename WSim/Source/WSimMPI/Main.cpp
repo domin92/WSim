@@ -33,6 +33,7 @@ void main(int argc, char **argv) {
     ArgumentParser argumentParser{argc, argv};
     int full_size = argumentParser.getArgumentValue<int>({"-s", "--simulationSize"}, DEFAULT_GRID_SIZE); // Size of the edge of the simulation cube
     int blockProcessWithRank = argumentParser.getArgumentValue<int>({"-b", "--block"}, -1);              // -1 means do not block
+    bool printPid = argumentParser.getArgumentValue<bool>({"-p", "--printPids"}, -1);
 
     // Verify arguments
     if (full_size <= 0) {
@@ -44,6 +45,16 @@ void main(int argc, char **argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
 
+    if (printPid) {
+        int myPid = getProcessId();
+        auto pids = std::make_unique<int[]>(proc_count);
+        MPI_Gather(&myPid, 1, MPI_INT, pids.get(), 1, MPI_INT, 0, MPI_COMM_WORLD);
+        if (my_rank == 0) {
+            for (int i = 0; i < proc_count; i++) {
+                std::cerr << "Process " << i << " pid = " << pids[i] << '\n';
+            }
+        }
+    }
     if (blockProcessWithRank == my_rank) {
         std::cerr << "Process " << my_rank << " blocked at initialization. Attach debugger to " << getProcessId() << "\n";
         while (1)
