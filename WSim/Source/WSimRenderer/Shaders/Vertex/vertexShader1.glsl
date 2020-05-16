@@ -11,6 +11,8 @@ out vec3 ourColor;
 out vec2 TexCoord;
 
 void main() {
+
+
     gl_Position = projection * view * model * vec4(aPos.x, aPos.y, aPos.z, 1.0f);
     TexCoord = vec2(aTexCoord.x, 1.0 - aTexCoord.y);
 }
