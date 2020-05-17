@@ -9,14 +9,20 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 // clang-format on
 
-#define WINDOW_WIDTH 800
-#define WINDOWHEIGHT 600
+#define WINDOW_WIDTH 640
+#define WINDOWHEIGHT 480
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+glm::vec3 defaultEye = glm::vec3(0.5, 0.5, 1.5);
+glm::vec3 center = glm::vec3(0.5, 0.5, 0.5);
+glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
+
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
@@ -47,24 +53,20 @@ std::string loadShader(std::string path) {
     return content;
 }
 
-void loadVolume(uint8_t* dataBuffer) {
-    std::string path = "..\\..\\..\\..\\..\\WSim\\Source\\WSimRenderer\\Textures\\neghip_64x64x64_uint8.raw";
-    //std::ifstream ifs(path);
+void loadVolume(uint8_t *dataBuffer, uint8_t *colorBuffer) {
+    std::string pathVolume = "..\\..\\..\\..\\..\\WSim\\Source\\WSimRenderer\\Textures\\neghip_64x64x64_uint8.raw";
+    std::string pathColors = "..\\..\\..\\..\\..\\WSim\\Source\\WSimRenderer\\Textures\\samsel-linear-green.png";
 
-    //// Allocate, for example, 47 ints
-    //std::vector<char> content((std::istreambuf_iterator<char>(ifs)),
-    //                             (std::istreambuf_iterator<char>())); // 64 x 64 x 64
-
-    //int i = 0;
-    //for (char x : content) {
-    //    target[i] = (uint8_t)x;
-    //    ++i;
-    //}
-    std::ifstream file(path, std::ios::binary | std::ios::ate);
+    std::ifstream file(pathVolume, std::ios::binary | std::ios::ate);
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
-
     if (file.read(reinterpret_cast<char *>(dataBuffer), size)) {
+    }
+
+    std::ifstream file2(pathColors, std::ios::binary | std::ios::ate);
+    std::streamsize size2 = file2.tellg();
+    file2.seekg(0, std::ios::beg);
+    if (file2.read(reinterpret_cast<char *>(colorBuffer), size2)) {
     }
 }
 
@@ -138,7 +140,7 @@ int rendererMain() {
     //------------------------------------------------------------------------------
     // VAO - Vertax Array Object
 
-     float vertices[] = {
+    float vertices[] = {
         -0.5f, -0.5f, -0.5f,
         0.5f, -0.5f, -0.5f,
         0.5f, 0.5f, -0.5f,
@@ -196,6 +198,45 @@ int rendererMain() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
     glEnableVertexAttribArray(0);
 
+    const int XDIM = 64, YDIM = 64, ZDIM = 64;
+    const int size = XDIM * YDIM * ZDIM;
+    int volDims[] = {XDIM, YDIM, ZDIM};
+
+    uint8_t dataBuffer[size];
+    uint8_t colorMapBuffer[274];
+
+    loadVolume(dataBuffer, colorMapBuffer);
+    for (int i = 0; i < size; i++) {
+
+        dataBuffer[i] = 2;
+    }
+    unsigned int textureVolume, textureColorMap;
+
+    //volume
+    glGenTextures(1, &textureVolume);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_3D, textureVolume);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RED, XDIM, YDIM, ZDIM, 0, GL_RED, GL_UNSIGNED_BYTE, dataBuffer);
+    glGenerateMipmap(GL_TEXTURE_3D);
+
+    //colormap
+    glGenTextures(1, &textureColorMap);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_1D, textureColorMap);
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 180, 0, GL_RGB, GL_UNSIGNED_BYTE, colorMapBuffer);
+    glGenerateMipmap(GL_TEXTURE_1D);
+
+    //glDisable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
     // vs
     int viewLoc = glGetUniformLocation(shaderProgram, "view");
     int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
@@ -204,39 +245,20 @@ int rendererMain() {
 
     // fs
     int volumeLoc = glGetUniformLocation(shaderProgram, "volume");
+    int colormapLoc = glGetUniformLocation(shaderProgram, "colormap");
     int volumeDimsLoc = glGetUniformLocation(shaderProgram, "volume_dims");
     int dtScaleLoc = glGetUniformLocation(shaderProgram, "dt_scale");
 
-    const int XDIM = 64, YDIM = 64, ZDIM = 64;
-    const int size = XDIM * YDIM * ZDIM;
-    int volDims[] = {XDIM, YDIM, ZDIM}; 
+    int longestAxis = std::max(volDims[0], std::max(volDims[1], volDims[2]));
+    
 
-    uint8_t dataBuffer[size];
-    loadVolume(dataBuffer);
-    for (int i = 0; i < size; i++) {
-        dataBuffer[i] = 2;
-    }
-    unsigned int texture;
-    glGenTextures(1, &texture);  
-    glBindTexture(GL_TEXTURE_3D, texture);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    //vs
+    glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    glm::mat4 projection = glm::perspective(60.0f * 3.14f / 180.0f, 640.0f / 480.0f, 0.1f, 100.0f);
 
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_RED, XDIM, YDIM, ZDIM, 0, GL_RED, GL_UNSIGNED_BYTE, dataBuffer);
-    glGenerateMipmap(GL_TEXTURE_3D);
-
-glDisable(GL_CULL_FACE);
-
-    //glEnable(GL_CULL_FACE);
-    //glCullFace(GL_FRONT);
-    //glEnable(GL_BLEND);
-    //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
-    //glm::vec3 volScale = glm::vec3( volDims[0] / longestAxis, volDims[1] / longestAxis, volDims[2] / longestAxis );
-    float volScale[] = {1.0f, 1.0f, 1.0f};
+    //ps
+    glm::vec3 volScale = glm::vec3(volDims[0] / longestAxis, volDims[1] / longestAxis, volDims[2] / longestAxis);
+    float dt_scale = 1.0f; //sampling rate
 
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -248,25 +270,27 @@ glDisable(GL_CULL_FACE);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        glm::mat4 projection;
-        projection = glm::perspective(60.0f * 3.14f / 180.0f, 800.0f / 600.0f, 0.1f, 100.0f);
-        //projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-
-        glUseProgram(shaderProgram);
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
         // vs
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
         glUniform3fv(eyePosLoc, 1, glm::value_ptr(cameraPos));
-        glUniform3fv(volumeScaleLoc, 1, glm::value_ptr(cameraPos)); // todo wyliczyc scale
-        
+        glUniform3fv(volumeScaleLoc, 3, glm::value_ptr(volScale));
+
         // ps
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_3D, textureVolume);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_1D, textureColorMap);
         glUniform1i(volumeLoc, 0);
+        glUniform1i(colormapLoc, 1);
         glUniform3iv(volumeDimsLoc, 3, volDims);
-        glUniform3fv(dtScaleLoc, 3, volScale);
+        glUniform1f(dtScaleLoc, dt_scale);
 
 
+        //drawing
+        glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 39);
 
