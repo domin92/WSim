@@ -2,14 +2,15 @@
 #line 24
 precision highp int;
 precision highp float;
-uniform highp sampler3D volume;
-uniform highp sampler2D colormap;
+
+uniform sampler3D volume;
 uniform ivec3 volume_dims;
 uniform float dt_scale;
 
 in vec3 vray_dir;
 flat in vec3 transformed_eye;
 out vec4 color;
+
 
 vec2 intersect_box(vec3 orig, vec3 dir) {
     const vec3 box_min = vec3(0);
@@ -44,29 +45,15 @@ float linear_to_srgb(float x) {
 }
 
 void main(void) {
-    vec3 ray_dir = normalize(vray_dir);
-    vec2 t_hit = intersect_box(transformed_eye, ray_dir);
-    if (t_hit.x > t_hit.y) {
-        discard;
-    }
-    t_hit.x = max(t_hit.x, 0.0);
-    vec3 dt_vec = 1.0 / (vec3(volume_dims) * abs(ray_dir));
-    float dt = dt_scale * min(dt_vec.x, min(dt_vec.y, dt_vec.z));
     float offset = wang_hash(int(gl_FragCoord.x + 640.0 * gl_FragCoord.y));
-    vec3 p = transformed_eye + (t_hit.x + offset * dt) * ray_dir;
-    for (float t = t_hit.x; t < t_hit.y; t += dt) {
-        float val = texture(volume, p).r;
-        vec4 val_color = vec4(0.3f, 0.4f, 0.5f, val);
-        // Opacity correction
-        val_color.a = 1.0 - pow(1.0 - val_color.a, dt_scale);
-        color.rgb += (1.0 - color.a) * val_color.a * val_color.rgb;
-        color.a += (1.0 - color.a) * val_color.a;
-        if (color.a >= 0.95) {
-            break;
-        }
-        p += ray_dir * dt;
+    float val = 1.2f;
+
+    val = texture(volume, vec3(gl_FragCoord.x, gl_FragCoord.y, 1.0f)).r;
+    color = vec4(0.2f, 0.2f, 0.2f, 0.0f);
+    val = val * 100;
+    if (val > 0.2f) {
+        color = vec4(0.0f, 0.8f, 0.0f, 1.0f);
     }
-    color.r = linear_to_srgb(color.r);
-    color.g = linear_to_srgb(color.g);
-    color.b = linear_to_srgb(color.b);
+    //vec4 val_color = vec4(texture(colormap, vec2(val, 0.5)).rgb, val);
+    //color = texture(volume, vec3(0.5f, 0.5f, 0.5f));
 }

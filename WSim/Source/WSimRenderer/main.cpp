@@ -47,7 +47,7 @@ std::string loadShader(std::string path) {
     return content;
 }
 
-void loadVolume(uint8_t *target) {
+void loadVolume(uint8_t* dataBuffer) {
     std::string path = "..\\..\\..\\..\\..\\WSim\\Source\\WSimRenderer\\Textures\\neghip_64x64x64_uint8.raw";
     //std::ifstream ifs(path);
 
@@ -64,15 +64,8 @@ void loadVolume(uint8_t *target) {
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
 
-    std::vector<char> buffer(size);
-    if (file.read(buffer.data(), size)) {
+    if (file.read(reinterpret_cast<char *>(dataBuffer), size)) {
     }
-    int i = 0;
-    for (char x : buffer) {
-        target[i] = (uint8_t) buffer[i]; 
-    }
-
-    return;
 }
 
 int rendererMain() {
@@ -188,7 +181,7 @@ int rendererMain() {
         -0.5f, 0.5f, 0.5f,
         -0.5f, 0.5f, -0.5f};
 
-    //glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
 
     unsigned int VAO, VBO;
     glGenVertexArrays(1, &VAO);
@@ -203,34 +196,47 @@ int rendererMain() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
     glEnableVertexAttribArray(0);
 
+    // vs
     int viewLoc = glGetUniformLocation(shaderProgram, "view");
     int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
     int eyePosLoc = glGetUniformLocation(shaderProgram, "eye_pos");
     int volumeScaleLoc = glGetUniformLocation(shaderProgram, "volume_scale");
 
+    // fs
+    int volumeLoc = glGetUniformLocation(shaderProgram, "volume");
+    int volumeDimsLoc = glGetUniformLocation(shaderProgram, "volume_dims");
+    int dtScaleLoc = glGetUniformLocation(shaderProgram, "dt_scale");
 
-    uint8_t dataBuffer[262144]; //64 x 64 x 64
-    loadVolume(dataBuffer);
-
-    int XDIM = 64, YDIM = 64, ZDIM = 64;
-
+    const int XDIM = 64, YDIM = 64, ZDIM = 64;
     const int size = XDIM * YDIM * ZDIM;
+    int volDims[] = {XDIM, YDIM, ZDIM}; 
+
+    uint8_t dataBuffer[size];
+    loadVolume(dataBuffer);
+    for (int i = 0; i < size; i++) {
+        dataBuffer[i] = 2;
+    }
     unsigned int texture;
     glGenTextures(1, &texture);  
-    glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
     glBindTexture(GL_TEXTURE_3D, texture);
-
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_INTENSITY, XDIM, YDIM, ZDIM, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, dataBuffer);
 
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RED, XDIM, YDIM, ZDIM, 0, GL_RED, GL_UNSIGNED_BYTE, dataBuffer);
+    glGenerateMipmap(GL_TEXTURE_3D);
 
+glDisable(GL_CULL_FACE);
+
+    //glEnable(GL_CULL_FACE);
+    //glCullFace(GL_FRONT);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     //glm::vec3 volScale = glm::vec3( volDims[0] / longestAxis, volDims[1] / longestAxis, volDims[2] / longestAxis );
-    glm::vec3 volScale = glm::vec3(1.0f, 1.0f, 1.0f);
+    float volScale[] = {1.0f, 1.0f, 1.0f};
 
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -243,17 +249,23 @@ int rendererMain() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-
         glm::mat4 projection;
         projection = glm::perspective(60.0f * 3.14f / 180.0f, 800.0f / 600.0f, 0.1f, 100.0f);
         //projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
         glUseProgram(shaderProgram);
 
+        // vs
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
         glUniform3fv(eyePosLoc, 1, glm::value_ptr(cameraPos));
         glUniform3fv(volumeScaleLoc, 1, glm::value_ptr(cameraPos)); // todo wyliczyc scale
+        
+        // ps
+        glUniform1i(volumeLoc, 0);
+        glUniform3iv(volumeDimsLoc, 3, volDims);
+        glUniform3fv(dtScaleLoc, 3, volScale);
+
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 39);

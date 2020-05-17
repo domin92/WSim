@@ -17,7 +17,7 @@ void main() {
 
     // Translate the cube to center it at the origin.
     vec3 volume_translation = vec3(0.5) - volume_scale * 0.5;
-    gl_Position = projection * view * vec4(aPos * volume_scale + volume_translation, 1);
+    gl_Position = projection * view * vec4(aPos, 1);
 
     // Compute eye position and ray directions in the unit cube space
     transformed_eye = (eye_pos - volume_translation) / volume_scale;
