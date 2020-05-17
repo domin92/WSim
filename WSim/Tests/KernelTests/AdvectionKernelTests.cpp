@@ -4,16 +4,20 @@
 struct AdvectionKernelTest : KernelTest {
     void SetUp() override {
         KernelTest::SetUp();
-        kernelAdvection = createKernelFromFile("advection.cl", "advection3f");
+        kernelAdvection = createKernelFromFile("advection.cl", "advectVelocity");
     }
     cl_kernel kernelAdvection;
 
     void performTest(Vec3 imageSize, float deltaTime, const float *inputData, const float *expectedOutputData) {
+        auto obstacles = OCL::createReadWriteImage3D(context, imageSize, scalarFieldFormat);
+        OCL::enqueueZeroImage3D(queue, obstacles, imageSize);
+
         auto velocitySrc = OCL::createReadWriteImage3D(context, imageSize, vectorFieldFormat);
         auto velocityDst = OCL::createReadWriteImage3D(context, imageSize, vectorFieldFormat);
         OCL::enqueueWriteImage3D(queue, velocitySrc, CL_FALSE, imageSize, inputData);
-        OCL::setKernelArgMem(kernelAdvection, 0, velocitySrc);   // inField
-        OCL::setKernelArgMem(kernelAdvection, 1, velocitySrc);   // inVelocity
+
+        OCL::setKernelArgMem(kernelAdvection, 0, velocitySrc);   // inVelocity
+        OCL::setKernelArgMem(kernelAdvection, 1, obstacles);     // inObstacles
         OCL::setKernelArgVec(kernelAdvection, 2, 0.f, 0.f, 0.f); // inVelocityOffset
         OCL::setKernelArgFlt(kernelAdvection, 3, deltaTime);     // inDeltaTime
         OCL::setKernelArgFlt(kernelAdvection, 4, 1.f);           // inDissipation

@@ -14,10 +14,11 @@ struct AddVelocityTest : KernelTest {
         auto velocityDst = OCL::createReadWriteImage3D(context, imageSize, vectorFieldFormat);
         OCL::enqueueWriteImage3D(queue, velocitySrc, CL_FALSE, imageSize, inputData);
         OCL::setKernelArgMem(kernelAddVelocity, 0, velocitySrc);                                             // inVelocity
-        OCL::setKernelArgVec(kernelAddVelocity, 1, center[0], center[1], center[2]);                         // inCenter
-        OCL::setKernelArgVec(kernelAddVelocity, 2, velocityChange[0], velocityChange[1], velocityChange[2]); // inVelocityChange
-        OCL::setKernelArgFlt(kernelAddVelocity, 3, radius);                                                  // inRadius
-        OCL::setKernelArgMem(kernelAddVelocity, 4, velocityDst);                                             // outVelocity
+        OCL::setKernelArgVec(kernelAddVelocity, 1, 0.f, 0.f, 0.f);                                           // inVelocityOffset
+        OCL::setKernelArgVec(kernelAddVelocity, 2, center[0], center[1], center[2]);                         // inCenter
+        OCL::setKernelArgVec(kernelAddVelocity, 3, velocityChange[0], velocityChange[1], velocityChange[2]); // inVelocityChange
+        OCL::setKernelArgFlt(kernelAddVelocity, 4, radius);                                                  // inRadius
+        OCL::setKernelArgMem(kernelAddVelocity, 5, velocityDst);                                             // outVelocity
         OCL::enqueueKernel3D(queue, kernelAddVelocity, imageSize);
 
         if (verifiedImageSize == nullptr) {
