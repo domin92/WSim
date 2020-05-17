@@ -1,16 +1,15 @@
-# Define tests executable
-set(TARGET_WSIM_TESTS WSimTests)
-get_sources(SOURCE_FILES)
-add_executable(${TARGET_WSIM_TESTS} ${SOURCE_FILES})
-add_dependencies(${TARGET_WSIM_TESTS} ${TARGET_WSIM_SIMULATION_LIB})
-target_link_libraries(${TARGET_WSIM_TESTS} 
-    $<TARGET_FILE:gtest>
-    $<TARGET_FILE:${TARGET_WSIM_SIMULATION_LIB}>
-    $<GENEX_EVAL:$<TARGET_PROPERTY:${TARGET_WSIM_SIMULATION_LIB},LINK_LIBRARIES>>
-    $<TARGET_PROPERTY:gtest,LINK_LIBRARIES>
-)
-target_include_directories(${TARGET_WSIM_TESTS} PRIVATE $<TARGET_PROPERTY:${TARGET_WSIM_SIMULATION_LIB},INCLUDE_DIRECTORIES> )
-target_include_directories(${TARGET_WSIM_TESTS} PRIVATE ${DIR_GTEST}/googletest/include)
-target_compile_definitions(${TARGET_WSIM_TESTS} PRIVATE $<TARGET_PROPERTY:${TARGET_WSIM_SIMULATION_LIB},COMPILE_DEFINITIONS>)
-set_target_properties(${TARGET_WSIM_TESTS} PROPERTIES FOLDER Tests)
-set_target_properties(${TARGET_WSIM_TESTS} PROPERTIES CXX_STANDARD 17)
+set(MAIN_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(MAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/Main.cpp)
+
+macro(append_main_file_to_sources VARIABLE)
+    list(APPEND ${VARIABLE} ${MAIN_FILE})
+    source_group (TREE ${MAIN_FILE_DIR} FILES ${MAIN_FILE})
+endmacro()
+
+# Add subdirectories. Each define a separate compilation  target
+file(GLOB subdirectories RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
+foreach(subdir ${subdirectories})
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/CMakeLists.txt)
+        add_subdirectory(${subdir})
+    endif()
+endforeach()

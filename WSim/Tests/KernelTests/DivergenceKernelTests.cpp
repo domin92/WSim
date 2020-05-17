@@ -1,5 +1,4 @@
 #include "Tests/KernelTests/KernelTest.h"
-#include "Tests/Test.h"
 
 #include <memory>
 
