@@ -33,7 +33,7 @@ void main(int argc, char **argv) {
     ArgumentParser argumentParser{argc, argv};
     int full_size = argumentParser.getArgumentValue<int>({"-s", "--simulationSize"}, DEFAULT_GRID_SIZE); // Size of the edge of the simulation cube
     int blockProcessWithRank = argumentParser.getArgumentValue<int>({"-b", "--block"}, -1);              // -1 means do not block
-    bool printPid = argumentParser.getArgumentValue<bool>({"-p", "--printPids"}, -1);
+    bool printPid = argumentParser.getArgumentValue<bool>({"-p", "--printPids"}, 0);                     // print process ids of all MPI processes
 
     // Verify arguments
     if (full_size <= 0) {
