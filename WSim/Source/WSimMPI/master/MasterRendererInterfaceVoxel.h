@@ -8,7 +8,7 @@ class Renderer;
 class MasterRendererInterfaceVoxel : public MasterRendererInterface {
 public:
     MasterRendererInterfaceVoxel(Master &master);
-    constexpr static size_t mainBufferTexelSize = 1;
+    constexpr static size_t mainBufferTexelSize = 4 * sizeof(float);
 
     // For MPI
     virtual void mainLoop() override;

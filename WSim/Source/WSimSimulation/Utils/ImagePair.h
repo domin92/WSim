@@ -9,12 +9,12 @@ struct Image3DPair {
     }
 
     OCL::Mem &getSource() { return images[sourceResourceIndex]; }
-    OCL::Mem &getDestination() { return images[1 - sourceResourceIndex]; }
+    OCL::Mem &getDestination() { return images[sourceResourceIndex^1]; }
     OCL::Mem &getDestinationAndSwap() {
         swap();
         return getSource();
     }
-    void swap() { sourceResourceIndex = 1 - sourceResourceIndex; }
+    void swap() { sourceResourceIndex ^= 1; }
 
 protected:
     int sourceResourceIndex = 0;

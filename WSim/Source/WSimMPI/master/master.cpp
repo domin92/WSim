@@ -8,7 +8,7 @@
 #include <iostream>
 #include <mpi.h>
 
-using UsedRendererInterface = MasterRendererInterfaceWater2D;
+using UsedRendererInterface = MasterRendererInterfaceVoxel;
 Master::Master(int proc_count, int grid_size, int node_size)
     : proc_count(proc_count),
       grid_size(grid_size),

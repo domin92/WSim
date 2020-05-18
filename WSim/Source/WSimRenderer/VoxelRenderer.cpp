@@ -76,6 +76,7 @@ void VoxelRenderer::loadBuffers() {
         // top
         3, 2, 6,
         6, 7, 3};
+
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -96,6 +97,7 @@ void VoxelRenderer::loadShaders() {
     OGL::Shader fragmentShader = OGL::createShaderFromFile(GL_FRAGMENT_SHADER, "Fragment/VoxelFragment.glsl");
     this->shaderProgram = OGL::createShaderProgram(vertexShader, fragmentShader);
     this->positionUniformLocation = glGetUniformLocation(shaderProgram, "position");
+    this->colorUniformLocation = glGetUniformLocation(shaderProgram, "color");
     this->mvpUniformLocation = glGetUniformLocation(shaderProgram, "MVP");
 }
 
@@ -114,7 +116,7 @@ void VoxelRenderer::render() {
     glEnable(GL_CULL_FACE);
 
     const auto gridSizeInVoxels = nodeSizeInVoxels * gridSizeInNodes;
-    for (int z = 0; z < gridSizeInVoxels; z++) {
+    for (int z = gridSizeInVoxels-1; z >= 0; z--) {
         for (int y = 0; y < gridSizeInVoxels; y++) {
             for (int x = 0; x < gridSizeInVoxels; x++) {
 
@@ -128,15 +130,19 @@ void VoxelRenderer::render() {
 
                 int nodeIndex = z_in_grid * gridSizeInNodes * gridSizeInNodes + y_in_grid * gridSizeInNodes + x_in_grid;
 
-                int power = voxelBuffers[nodeIndex][z_in_node * nodeSizeInVoxels * nodeSizeInVoxels + y_in_node * nodeSizeInVoxels + x_in_node];
+                float red = (float)((float*)voxelBuffers[nodeIndex])[(z_in_node * nodeSizeInVoxels * nodeSizeInVoxels + y_in_node * nodeSizeInVoxels + x_in_node) * 4];
+                float green = (float)((float*)voxelBuffers[nodeIndex])[(z_in_node * nodeSizeInVoxels * nodeSizeInVoxels + y_in_node * nodeSizeInVoxels + x_in_node) * 4 + 1];
+                float blue = (float)((float*)voxelBuffers[nodeIndex])[(z_in_node * nodeSizeInVoxels * nodeSizeInVoxels + y_in_node * nodeSizeInVoxels + x_in_node) * 4 + 2];
+                
+                glUniform3f(positionUniformLocation,
+                              (x - gridSizeInVoxels / 2) * voxelSize,
+                              (y - gridSizeInVoxels / 2) * voxelSize,
+                              -(z - gridSizeInVoxels / 2) * voxelSize);
 
-                if (power > 0) {
-                    glUniform3f(positionUniformLocation,
-                                (x - gridSizeInVoxels / 2) * voxelSize,
-                                (y - gridSizeInVoxels / 2) * voxelSize,
-                                (z - gridSizeInVoxels / 2) * voxelSize);
-                    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-                }
+                glUniform3f(colorUniformLocation, red, green, blue);
+
+                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
             }
         }
     }

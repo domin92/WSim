@@ -37,5 +37,6 @@ protected:
     OGL::ShaderProgram shaderProgram;
 
     GLuint positionUniformLocation;
+    GLuint colorUniformLocation;
     GLuint mvpUniformLocation;
 };
