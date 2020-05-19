@@ -36,7 +36,8 @@ protected:
     unsigned int VAO, VBO, EBO;
     OGL::ShaderProgram shaderProgram;
 
-    GLuint positionUniformLocation;
-    GLuint colorUniformLocation;
     GLuint mvpUniformLocation;
+    GLuint simulationSizeUniformLocation;
+
+    GLuint waterTexture;
 };

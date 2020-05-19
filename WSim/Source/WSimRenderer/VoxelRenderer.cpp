@@ -12,11 +12,11 @@ VoxelRenderer::VoxelRenderer(VoxelRendererCallbacks &callbacks, int nodeSizeInVo
       voxelBuffers(voxelBuffers),
       voxelSize(2.0f / (nodeSizeInVoxels * gridSizeInNodes)),
       mvp(createMvp(screenSize)) {
+    
     loadBuffers();
     loadShaders();
 
     glUseProgram(shaderProgram);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glUniformMatrix4fv(mvpUniformLocation, 1, GL_FALSE, &mvp[0][0]);
 }
 
@@ -29,8 +29,8 @@ VoxelRenderer::~VoxelRenderer() {
 glm::mat4 VoxelRenderer::createMvp(int screenSize) {
     const glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)screenSize / (float)screenSize, 0.1f, 100.0f);
     const glm::mat4 view = glm::lookAt(
-        glm::vec3(1.5f, 1.5f, 2.5f), // Camera is at (4,3,3), in World Space
-        glm::vec3(0, 0, 0),          // and looks at the origin
+        glm::vec3(1.25, 1.25, 2.0f),      // Camera is at (4,3,3), in World Space
+        glm::vec3(0.5f, 0.5f, 0.5f),          // and looks at the origin
         glm::vec3(0, 1, 0)           // Head is up (set to 0,-1,0 to look upside-down)
     );
     const glm::mat4 model = glm::mat4(1.0f);
@@ -54,7 +54,6 @@ void VoxelRenderer::loadBuffers() {
     for (int i = 0; i < 24; i++) {
         cubeVertices[i] += 1.0f;
         cubeVertices[i] *= 0.5f;
-        cubeVertices[i] *= voxelSize;
     }
 
     unsigned int cubeIndices[36] = {
@@ -90,15 +89,28 @@ void VoxelRenderer::loadBuffers() {
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
+
+    glGenTextures(1, &waterTexture);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_3D, waterTexture);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    glEnable(GL_BLEND);                                //Enable blending.
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set blending function.
+    glEnable(GL_CULL_FACE);
+
 }
 
 void VoxelRenderer::loadShaders() {
     OGL::Shader vertexShader = OGL::createShaderFromFile(GL_VERTEX_SHADER, "Vertex/VoxelVertex.glsl");
     OGL::Shader fragmentShader = OGL::createShaderFromFile(GL_FRAGMENT_SHADER, "Fragment/VoxelFragment.glsl");
     this->shaderProgram = OGL::createShaderProgram(vertexShader, fragmentShader);
-    this->positionUniformLocation = glGetUniformLocation(shaderProgram, "position");
-    this->colorUniformLocation = glGetUniformLocation(shaderProgram, "color");
     this->mvpUniformLocation = glGetUniformLocation(shaderProgram, "MVP");
+    this->simulationSizeUniformLocation = glGetUniformLocation(shaderProgram, "simSize");
 }
 
 void VoxelRenderer::processInput(int button, int action, int mods) {
@@ -113,9 +125,7 @@ void VoxelRenderer::update(float deltaTimeSeconds) {
 
 void VoxelRenderer::render() {
 
-    glEnable(GL_CULL_FACE);
-
-    const auto gridSizeInVoxels = nodeSizeInVoxels * gridSizeInNodes;
+    /*const auto gridSizeInVoxels = nodeSizeInVoxels * gridSizeInNodes;
     for (int z = gridSizeInVoxels-1; z >= 0; z--) {
         for (int y = 0; y < gridSizeInVoxels; y++) {
             for (int x = 0; x < gridSizeInVoxels; x++) {
@@ -145,5 +155,16 @@ void VoxelRenderer::render() {
 
             }
         }
-    }
+    }*/
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, nodeSizeInVoxels, nodeSizeInVoxels, nodeSizeInVoxels, 0, GL_RGBA, GL_FLOAT, voxelBuffers[0]);
+    glGenerateMipmap(GL_TEXTURE_3D);
+
+    glUniform1i(simulationSizeUniformLocation, nodeSizeInVoxels);
+
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
 }
