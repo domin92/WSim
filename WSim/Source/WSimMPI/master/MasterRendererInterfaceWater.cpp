@@ -2,6 +2,8 @@
 
 #include "Source/WSimMPI/Utils.h"
 
+#include <cstring>
+
 MasterRendererInterfaceWater2D::MasterRendererInterfaceWater2D(Master &master)
     : MasterRendererInterface(master),
       rendererCallbacks(master),

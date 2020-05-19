@@ -1,4 +1,4 @@
-﻿#include "Master.hpp"
+﻿#include "master.hpp"
 
 #include "Source/WSimMPI/master/MasterRendererInterfaceVoxel.h"
 #include "Source/WSimMPI/master/MasterRendererInterfaceWater.hpp"

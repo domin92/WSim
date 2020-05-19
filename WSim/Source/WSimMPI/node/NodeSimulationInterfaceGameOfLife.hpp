@@ -2,6 +2,8 @@
 
 #include "Source/WSimMPI/node/NodeSimulationInterface.hpp"
 
+#include <cstddef>
+
 struct ShareBuffers;
 
 class NodeSimulationInterfaceGameOfLife : public NodeSimulationInterface {

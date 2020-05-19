@@ -1,5 +1,5 @@
-#include "Master/Master.hpp"
-#include "Node/Node.hpp"
+#include "master/master.hpp"
+#include "node/node.hpp"
 #include "Source/WSimCommon/ArgumentParser.h"
 #include "Source/WSimCommon/Logger.h"
 #include "Source/WSimMPI/Utils.h"
@@ -28,7 +28,7 @@ int my_cbrt(int a) {
     }
 }
 
-void main(int argc, char **argv) {
+int main(int argc, char **argv) {
     // Parse arguments
     ArgumentParser argumentParser{argc, argv};
     int full_size = argumentParser.getArgumentValue<int>({"-s", "--simulationSize"}, DEFAULT_GRID_SIZE); // Size of the edge of the simulation cube
@@ -37,7 +37,7 @@ void main(int argc, char **argv) {
 
     // Verify arguments
     if (full_size <= 0) {
-        return;
+        return 1;
     }
 
     int my_rank, proc_count;
@@ -64,7 +64,7 @@ void main(int argc, char **argv) {
     Logger::createFileLogger("log_file", my_rank);
 
     if (my_cbrt(proc_count - 1) == 0) {
-        return;
+        return 1;
     }
     int grid_size = my_cbrt(proc_count - 1);
     int node_size = full_size / grid_size;

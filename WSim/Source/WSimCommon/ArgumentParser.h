@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 
 class ArgumentParser {
     template <typename T>
@@ -29,15 +30,6 @@ private:
     template <typename String, typename = std::enable_if_t<std::is_same<String, std::string>::value>>
     static std::string convertFunction(const std::string &arg) {
         return arg;
-    }
-    template <typename WString, typename = std::enable_if_t<std::is_same<WString, std::wstring>::value>>
-    static std::wstring convertFunction(const std::string &arg) {
-        std::wstring result(arg.size() + 1, L' ');
-        const auto cap = result.capacity();
-        size_t charsConverted{};
-        const auto error = ::mbstowcs_s(&charsConverted, &result[0], result.capacity(), arg.c_str(), arg.size());
-        result.resize(charsConverted - 1);
-        return result;
     }
 
     // Arguments captures

@@ -67,7 +67,8 @@ __kernel void projectVelocityToDivergenceFree(__read_only image3d_t inVelocity,
     const float pressureF = read_imagef(inPressure, nearestSampler, samplePosition + (float4)(0, 0, 1, 0)).x; // Front
 
     // Sample velocity
-    const float4 velocity = read_imagef(inVelocity, velocityPosition + 0.5f);
+    const float4 velocitySamplePosition = convert_float4(velocityPosition) + 0.5f;
+    const float4 velocity = read_imagef(inVelocity, nearestSampler, velocitySamplePosition);
 
     // Compute new velocity value (so it has zero divergence)
     const float4 pressureGradient = (float4)(pressureR - pressureL, pressureU - pressureD, pressureF - pressureB, 0) / 2;

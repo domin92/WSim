@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <memory>
 
 class Logger {
     static inline std::unique_ptr<Logger> logger = {};

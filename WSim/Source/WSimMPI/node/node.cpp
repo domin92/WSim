@@ -1,4 +1,4 @@
-#include "Node.hpp"
+#include "node.hpp"
 
 #include "Source/WSimMPI/node/NodeSimulationInterfaceWater.hpp"
 #include "Source/WSimMPI/node/NodeSimulationInterfaceGameOfLife.hpp"
