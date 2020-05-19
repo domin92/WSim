@@ -8,11 +8,12 @@ VoxelRenderer::VoxelRenderer(VoxelRendererCallbacks &callbacks, int nodeSizeInVo
       callbacks(callbacks),
       nodeSizeInVoxels(nodeSizeInVoxels),
       gridSizeInNodes(gridSizeInNodes),
+      gridSizeInVoxels(nodeSizeInVoxels * gridSizeInNodes),
       screenSize(screenSize),
       voxelBuffers(voxelBuffers),
-      voxelSize(2.0f / (nodeSizeInVoxels * gridSizeInNodes)),
-      mvp(createMvp(screenSize)) {
-    
+      blueBuffer(new float[gridSizeInVoxels * gridSizeInVoxels * gridSizeInVoxels]),
+      mvp(createMvp(screenSize)){
+
     loadBuffers();
     loadShaders();
 
@@ -21,6 +22,7 @@ VoxelRenderer::VoxelRenderer(VoxelRendererCallbacks &callbacks, int nodeSizeInVo
 }
 
 VoxelRenderer::~VoxelRenderer() {
+    delete[] blueBuffer;
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
@@ -99,8 +101,8 @@ void VoxelRenderer::loadBuffers() {
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    glEnable(GL_BLEND);                                //Enable blending.
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set blending function.
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_CULL_FACE);
 
 }
@@ -125,8 +127,7 @@ void VoxelRenderer::update(float deltaTimeSeconds) {
 
 void VoxelRenderer::render() {
 
-    /*const auto gridSizeInVoxels = nodeSizeInVoxels * gridSizeInNodes;
-    for (int z = gridSizeInVoxels-1; z >= 0; z--) {
+    for (int z = 0; z < gridSizeInVoxels; z++) {
         for (int y = 0; y < gridSizeInVoxels; y++) {
             for (int x = 0; x < gridSizeInVoxels; x++) {
 
@@ -140,30 +141,24 @@ void VoxelRenderer::render() {
 
                 int nodeIndex = z_in_grid * gridSizeInNodes * gridSizeInNodes + y_in_grid * gridSizeInNodes + x_in_grid;
 
-                float red = (float)((float*)voxelBuffers[nodeIndex])[(z_in_node * nodeSizeInVoxels * nodeSizeInVoxels + y_in_node * nodeSizeInVoxels + x_in_node) * 4];
-                float green = (float)((float*)voxelBuffers[nodeIndex])[(z_in_node * nodeSizeInVoxels * nodeSizeInVoxels + y_in_node * nodeSizeInVoxels + x_in_node) * 4 + 1];
                 float blue = (float)((float*)voxelBuffers[nodeIndex])[(z_in_node * nodeSizeInVoxels * nodeSizeInVoxels + y_in_node * nodeSizeInVoxels + x_in_node) * 4 + 2];
                 
-                glUniform3f(positionUniformLocation,
-                              (x - gridSizeInVoxels / 2) * voxelSize,
-                              (y - gridSizeInVoxels / 2) * voxelSize,
-                              -(z - gridSizeInVoxels / 2) * voxelSize);
-
-                glUniform3f(colorUniformLocation, red, green, blue);
-
-                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+                blueBuffer[z * gridSizeInVoxels * gridSizeInVoxels + y * gridSizeInVoxels + x] = blue;
 
             }
         }
-    }*/
+    }
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, nodeSizeInVoxels, nodeSizeInVoxels, nodeSizeInVoxels, 0, GL_RGBA, GL_FLOAT, voxelBuffers[0]);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_3D, waterTexture);
+
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RED, gridSizeInVoxels, gridSizeInVoxels, gridSizeInVoxels, 0, GL_RED, GL_FLOAT, blueBuffer);
     glGenerateMipmap(GL_TEXTURE_3D);
 
-    glUniform1i(simulationSizeUniformLocation, nodeSizeInVoxels);
+    glUniform1i(simulationSizeUniformLocation, gridSizeInVoxels);
 
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 

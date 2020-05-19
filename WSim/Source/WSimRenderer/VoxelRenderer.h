@@ -28,9 +28,11 @@ protected:
     VoxelRendererCallbacks &callbacks;
     const int nodeSizeInVoxels;
     const int gridSizeInNodes;
+    const int gridSizeInVoxels;
     const int screenSize;
     char **const voxelBuffers;
-    const float voxelSize;
+    float *const blueBuffer;
+
     const glm::mat4 mvp;
 
     unsigned int VAO, VBO, EBO;

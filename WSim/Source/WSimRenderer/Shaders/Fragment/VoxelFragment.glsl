@@ -33,9 +33,9 @@ void main() {
             break;
         }
     
-        vec3 textureColor = texture(waterTexture, vec3(currentPosition.x, currentPosition.y, 1.0f - currentPosition.z)).rgb;
+        float textureColor = texture(waterTexture, vec3(currentPosition.x, currentPosition.y, 1.0f - currentPosition.z)).r;
 
-        if(textureColor.b > 0.1f){
+        if(textureColor > 0.1f){
             blueSum += 1;
         }
 
