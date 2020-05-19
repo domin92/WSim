@@ -2,6 +2,8 @@
 .build/
 .vs/
 
+log_file*
+
 run_standalone.sh
 run_mpi.sh
 run_renderer.sh
