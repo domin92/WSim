@@ -29,7 +29,6 @@ protected:
     VoxelRendererCallbacks &callbacks;
     const int nodeSizeInVoxels;
     const int gridSizeInNodes;
-    const int gridSizeInVoxels;
     const int screenSize;
 
     const glm::mat4 mvp;

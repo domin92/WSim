@@ -8,7 +8,6 @@ VoxelRenderer::VoxelRenderer(VoxelRendererCallbacks &callbacks, int nodeSizeInVo
       callbacks(callbacks),
       nodeSizeInVoxels(nodeSizeInVoxels),
       gridSizeInNodes(gridSizeInNodes),
-      gridSizeInVoxels(nodeSizeInVoxels * gridSizeInNodes),
       screenSize(screenSize),
       mvp(createMvp(screenSize)){
 
