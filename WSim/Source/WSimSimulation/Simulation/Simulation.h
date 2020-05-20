@@ -15,6 +15,8 @@ const static cl_image_format vectorFieldFormat = {CL_RGBA, CL_FLOAT};
 const static cl_image_format scalarFieldFormat = {CL_R, CL_FLOAT};
 class Simulation {
 public:
+    constexpr static size_t colorVoxelSize = 4 * sizeof(float);
+
     Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize);
     Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid);
 

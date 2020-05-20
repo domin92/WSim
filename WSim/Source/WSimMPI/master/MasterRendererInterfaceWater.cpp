@@ -7,7 +7,7 @@
 MasterRendererInterfaceWater2D::MasterRendererInterfaceWater2D(Master &master)
     : MasterRendererInterface(master),
       rendererCallbacks(master),
-      renderer(std::make_unique<ColorRenderer>(rendererCallbacks)) {
+      renderer(std::make_unique<ColorRenderer>(rendererCallbacks, sizeof(float) * 4)) {
 }
 
 void MasterRendererInterfaceWater2D::mainLoop() {

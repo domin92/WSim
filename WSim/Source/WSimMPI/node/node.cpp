@@ -70,7 +70,7 @@ ShareBuffers::ShareBuffers(int sh_horizontal_size, int sh_vertical_size, int sh_
 
 using UsedSimulationInterface = NodeSimulationInterfaceWater;
 Node::Node(int rank, int grid_size, int node_size)
-    : share_thickness(15), // TODO hardcoded
+    : share_thickness(UsedSimulationInterface::shareThickness),
       number_of_main_arrays(UsedSimulationInterface::mainArraysCount),
       sh_horizontal_size(node_size* node_size* share_thickness* number_of_main_arrays * UsedSimulationInterface::texelSize),
       sh_vertical_size(node_size* node_size* share_thickness* number_of_main_arrays * UsedSimulationInterface::texelSize),

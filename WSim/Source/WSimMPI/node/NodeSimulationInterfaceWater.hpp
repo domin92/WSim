@@ -9,7 +9,8 @@ struct ShareBuffers;
 class NodeSimulationInterfaceWater : public NodeSimulationInterface {
 public:
     NodeSimulationInterfaceWater(Node &node);
-    constexpr static size_t texelSize = 4 * sizeof(float);
+    constexpr static size_t shareThickness = 15u;
+    constexpr static size_t texelSize = Simulation::colorVoxelSize;
     constexpr static size_t mainArraysCount = 2;
 
     void postReceiveFromMaster(const char *receivedArray) override;

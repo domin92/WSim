@@ -24,7 +24,7 @@ struct ColorRendererCallbacks {
 
 class ColorRenderer : public Renderer {
 public:
-    ColorRenderer(ColorRendererCallbacks &callbacks);
+    ColorRenderer(ColorRendererCallbacks &callbacks, size_t voxelSize);
 
 protected:
     void processInput(int button, int action, int mods) override;

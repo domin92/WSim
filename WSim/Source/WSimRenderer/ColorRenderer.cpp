@@ -5,15 +5,16 @@
 constexpr static int initialWidth = 600;
 constexpr static int initialHeight = 600;
 
-ColorRenderer::ColorRenderer(ColorRendererCallbacks &callbacks)
+ColorRenderer::ColorRenderer(ColorRendererCallbacks &callbacks, size_t voxelSize)
     : Renderer(GLFW_OPENGL_COMPAT_PROFILE, initialWidth, initialHeight),
       callbacks(callbacks) {
+    // Prepare subImages info and data
     const auto subImagesCount = callbacks.getSubImagesCount2D();
     this->subImagesInfo.reserve(subImagesCount);
     this->subImagesData.reserve(subImagesCount);
     for (auto i = 0u; i < subImagesCount; i++) {
         const auto info = callbacks.getSubImageInfo2D(i);
-        const auto size = info.width * info.height * 4 * sizeof(float); // TODO
+        const auto size = info.width * info.height * voxelSize;
         this->subImagesInfo.push_back(info);
         this->subImagesData.push_back(std::make_unique<char[]>(size));
 
@@ -21,9 +22,17 @@ ColorRenderer::ColorRenderer(ColorRendererCallbacks &callbacks)
         this->imageHeight = std::max(this->imageHeight, info.yOffset + info.height);
     }
 
+    // Setup OpenGL stuff
     glGenTextures(1, &texture1);
     glMatrixMode(GL_PROJECTION);
     glOrtho(0, initialWidth, 0, initialHeight, -1, 1);
+    ASSERT_GL_NO_ERROR();
+
+    // Initialize full image (because glTexSubImage2D is used later)
+    auto a = std::make_unique<char[]>(imageWidth * imageHeight * voxelSize);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(imageWidth), static_cast<GLsizei>(imageHeight), 0, GL_RGBA, GL_FLOAT, a.get());
+    glBindTexture(GL_TEXTURE_2D, 0);
     ASSERT_GL_NO_ERROR();
 }
 
@@ -71,19 +80,8 @@ void ColorRenderer::processMouseMove(double screenX, double screenY) {
 }
 
 void ColorRenderer::update(float deltaTimeSeconds) {
-
     callbacks.stepSimulation(deltaTimeSeconds);
     glBindTexture(GL_TEXTURE_2D, texture1);
-
-    static bool initialized = false;
-    if (!initialized) { // TODO move to constructor
-        auto a = std::make_unique<char[]>(imageWidth * imageHeight * 4 * 4);
-        ASSERT_GL_NO_ERROR();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(imageWidth), static_cast<GLsizei>(imageHeight),
-                     0, GL_RGBA, GL_FLOAT, a.get());
-        ASSERT_GL_NO_ERROR();
-        initialized = true;
-    }
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

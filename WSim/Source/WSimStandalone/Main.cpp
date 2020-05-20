@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
     switch (mode->value) {
     case Mode::ModeEnum::Graphical2D: {
         ColorRendererCallbacksImpl rendererCallbacks{simulation};
-        ColorRenderer renderer{rendererCallbacks};
+        ColorRenderer renderer{rendererCallbacks, Simulation::colorVoxelSize};
         renderer.setFpsCallback(fpsCallback);
         renderer.mainLoop();
     }
