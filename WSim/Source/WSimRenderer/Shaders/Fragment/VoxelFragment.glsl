@@ -8,7 +8,9 @@ uniform int gridSize;
 
 out vec4 FragColor;
 
-vec3 getWaterCoords(vec3 readPos){
+vec3 getWaterTextureCoords(vec3 readPos){
+    // This function converts world space coorinates to water texture coordinates. It is needed to properly read multi-node textures.
+
     int z_in_grid = int(readPos.z * float(gridSize));
     int y_in_grid = int(readPos.y * float(gridSize));
     int x_in_grid = int(readPos.x * float(gridSize));
@@ -30,9 +32,7 @@ void main() {
 
     vec3 cameraPosition = vec3(1.25, 1.25, 2.0f);
 
-    vec3 marchingDirection = cameraPosition - worldPos;
-
-    marchingDirection = normalize(marchingDirection);
+    vec3 marchingDirection = normalize(worldPos - cameraPosition);
 
     vec3 marchingStep = marchingDirection / float(nodeSize * gridSize);
 
@@ -42,7 +42,7 @@ void main() {
 
     for (int i = 0; i < nodeSize * gridSize * 3 / 2; i++) {
 
-        currentPosition = currentPosition - marchingStep;
+        currentPosition = currentPosition + marchingStep;
 
         if ((currentPosition.x < 0 ) || (currentPosition.y < 0 ) || (currentPosition.z < 0)) {
             break;
@@ -54,11 +54,11 @@ void main() {
     
         vec3 readPos = vec3(currentPosition.x, 1.0f - currentPosition.y, 1.0f - currentPosition.z); // Flip Y and Z axis
 
-        readPos = getWaterCoords(readPos);
+        readPos = getWaterTextureCoords(readPos);
 
         vec3 textureColor = texture(waterTexture, readPos).rgb;
 
-        //FragColor = vec4(textureColor, 1);
+        //FragColor = vec4(textureColor, 1); // Uncomment to render only sides with full color
         //return;
 
         blueSum += textureColor.b;
@@ -69,8 +69,10 @@ void main() {
         blueSum = pow(blueSum,4);
     }
 
-    float alpha = min(blueSum/ 15.0f, 1.0f);
+    float waterTransparency = sqrt(min(blueSum / 5.0f, 1.0f));
 
-    FragColor = vec4(0.0f, 0.0f, 1.0f, sqrt(alpha));
+    vec3 waterColor = vec3(20, 160, 235) / 255.0f;
+
+    FragColor = vec4(waterColor, waterTransparency);
 
 };
