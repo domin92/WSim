@@ -38,9 +38,9 @@ void main() {
 
     vec3 currentPosition = worldPos;
 
-    int blueSum = 0;
+    float blueSum = 0;
 
-    for (int i = 0; i < nodeSize * gridSize; i++) {
+    for (int i = 0; i < nodeSize * gridSize * 3 / 2; i++) {
 
         currentPosition = currentPosition - marchingStep;
 
@@ -61,17 +61,15 @@ void main() {
         //FragColor = vec4(textureColor, 1);
         //return;
 
-        if(textureColor.b > 0.1f){
-            blueSum += 1;
-        }
+        blueSum += textureColor.b;
 
     }
 
-    if (blueSum <= 0) {
-        discard;
+    if (blueSum <= 1.0f) {
+        blueSum = pow(blueSum,4);
     }
 
-    float alpha = min(float(blueSum)/ 15.0f, 1.0f);
+    float alpha = min(blueSum/ 15.0f, 1.0f);
 
     FragColor = vec4(0.0f, 0.0f, 1.0f, sqrt(alpha));
 
