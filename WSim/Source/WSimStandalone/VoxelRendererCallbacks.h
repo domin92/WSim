@@ -8,7 +8,6 @@ public:
     VoxelRendererCallbacksImpl(Simulation &simulation)
         : simulation(simulation),
           voxelBuffer(std::make_unique<char[]>(simulation.getSimulationSize().getRequiredBufferSize(4 * sizeof(float)))) {
-        voxelBuffers = voxelBuffer.get();
     }
 
     void stepSimulation(float deltaTimeSeconds) override {
@@ -19,11 +18,10 @@ public:
         const Vec3 offset = simulation.getBorderOffset();
         const Vec3 size = simulation.getSimulationSize();
         OCL::enqueueReadImage3D(simulation.getCommandQueue(), simulation.getColor().getSource(), CL_BLOCKING, offset, size, voxelBuffer.get());
-        return voxelBuffers;
+        return voxelBuffer.get();
     }
 
 private:
     Simulation &simulation;
     std::unique_ptr<char[]> voxelBuffer;
-    char* voxelBuffers = {};
 };
