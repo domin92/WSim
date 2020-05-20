@@ -54,13 +54,18 @@ void Master::main() {
 
                 int idx = z_in_grid * grid_size * grid_size + y_in_grid * grid_size + x_in_grid;
 
-                int r = rand() % 100;
-
-                if (r > 50) {
-                    mapped_buffer[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node] = 1; // + r%4;
+                if (y < (3 * full_size / 5) && y > (2 * full_size / 5)) {
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4] = 0.0f;
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4 + 1] = 0.0f;
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4 + 2] = 1.0f;
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4 + 3] = 1.0f;
                 } else {
-                    mapped_buffer[idx][z_in_node * node_size * node_size + y_in_node * node_size + x_in_node] = 0;
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4] = 0.0f;
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4 + 1] = 0.0f;
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4 + 2] = 0.0f;
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4 + 3] = 1.0f;
                 }
+
             }
         }
     }

@@ -25,7 +25,7 @@ void NodeSimulationInterfaceWater::postReceiveFromMaster(const char *receivedArr
     const auto &image = simulation.getColor().getSource();
     const auto offset = simulation.getBorderOffset();
     const auto size = simulation.getSimulationSize();
-    // OCL::enqueueWriteImage3D(commandQueue, image, CL_TRUE, offset, size, receivedArray); TODO: master does not generate data
+    OCL::enqueueWriteImage3D(commandQueue, image, CL_TRUE, offset, size, receivedArray);
 }
 
 void NodeSimulationInterfaceWater::preSendToMaster(char *arrayToSend) {
