@@ -2,6 +2,7 @@
 #include "Source/WSimRenderer/FpsCounter.h"
 #include "Source/WSimSimulation/Simulation/Simulation.h"
 #include "Source/WSimStandalone/ColorRendererCallbacks.h"
+#include "Source/WSimStandalone/VoxelRendererCallbacks.h"
 
 struct FpsCallback {
     using Clock = std::chrono::steady_clock;
@@ -16,24 +17,62 @@ struct FpsCallback {
     }
 };
 
+struct Mode {
+    enum class ModeEnum {
+        Graphical2D,
+        Graphical3D,
+        Text,
+    } value;
+    Mode(ModeEnum value) : value(value) {}
+
+    static std::unique_ptr<Mode> fromString(const std::string &modeString) {
+        if (modeString == "graphical2d") {
+            return std::make_unique<Mode>(ModeEnum::Graphical2D);
+        } else if (modeString == "graphical3d") {
+            return std::make_unique<Mode>(ModeEnum::Graphical3D);
+        } else if (modeString == "text") {
+            return std::make_unique<Mode>(ModeEnum::Text);
+        } else {
+            return nullptr;
+        }
+    }
+
+    bool is2D() {
+        switch (value) {
+        case ModeEnum::Graphical2D:
+        case ModeEnum::Text:
+            return true;
+        default:
+            return false;
+        }
+    }
+
+    std::string toString() const {
+        switch (value) {
+        case ModeEnum::Graphical2D:
+            return "Graphical2D";
+        case ModeEnum::Graphical3D:
+            return "Graphical3D";
+        case ModeEnum::Text:
+            return "Text";
+        default:
+            wsimError();
+        }
+    }
+};
+
 int main(int argc, char **argv) {
     // Parse arguments
     ArgumentParser argumentParser{argc, argv};
     const auto clPlatformIndex = argumentParser.getArgumentValue<size_t>({"-p", "--platform"}, 0u);
     const auto clDeviceIndex = argumentParser.getArgumentValue<size_t>({"-d", "--device"}, 0u);
     const auto simulationSize = argumentParser.getArgumentValue<size_t>({"-s", "--size"}, 200);
-    const auto modeString = argumentParser.getArgumentValue<std::string>({"-m", "--mode"}, "graphical");
+    const auto modeString = argumentParser.getArgumentValue<std::string>({"-m", "--mode"}, "graphical2d");
 
     // Get mode
-    enum class Mode { Graphical,
-                      Text };
-    Mode mode;
-    if (modeString == "graphical") {
-        mode = Mode::Graphical;
-    } else if (modeString == "text") {
-        mode = Mode::Text;
-    } else {
-        std::cout << "Unknown mode: " << modeString << '\n';
+    const auto mode = Mode::fromString(modeString);
+    if (mode == nullptr) {
+        std::cerr << "ERROR: Invalid mode\n";
         return 1;
     }
 
@@ -42,21 +81,34 @@ int main(int argc, char **argv) {
     std::cout << "\tclPlatformIndex=" << clPlatformIndex << '\n';
     std::cout << "\tclDeviceIndex=" << clDeviceIndex << '\n';
     std::cout << "\tsimulationSize=" << simulationSize << '\n';
-    std::cout << "\tmode=" << ((mode == Mode::Graphical) ? "graphical" : "text") << '\n';
+    std::cout << "\tmode=" << mode->toString() << '\n';
 
     // Create simulation
-    const Vec3 imageSize{simulationSize, simulationSize, 1};
+    Vec3 imageSize{simulationSize, simulationSize, simulationSize};
+    if (mode->is2D()) {
+        imageSize.z = 1;
+    }
     Simulation simulation{clPlatformIndex, clDeviceIndex, imageSize};
     simulation.addObstacleAllWalls();
 
     FpsCallback fpsCallback;
 
-    if (mode == Mode::Graphical) {
+    switch (mode->value) {
+    case Mode::ModeEnum::Graphical2D: {
         ColorRendererCallbacksImpl rendererCallbacks{simulation};
         ColorRenderer renderer{rendererCallbacks};
         renderer.setFpsCallback(fpsCallback);
         renderer.mainLoop();
-    } else {
+    }
+
+    case Mode::ModeEnum::Graphical3D: {
+        VoxelRendererCallbacksImpl rendererCallbacks{simulation};
+        VoxelRenderer renderer{rendererCallbacks, static_cast<int>(simulation.getSimulationSize().x), 1, 600};
+        renderer.setFpsCallback(fpsCallback);
+        renderer.mainLoop();
+    }
+
+    case Mode::ModeEnum::Text: {
         DefaultFpsCounter fpsCounter;
         using Clock = std::chrono::steady_clock;
         auto lastFrameTime = Clock::now();
@@ -70,5 +122,6 @@ int main(int argc, char **argv) {
             simulation.stepSimulation(deltaTime);
             OCL::finish(simulation.getCommandQueue());
         }
+    }
     }
 }
