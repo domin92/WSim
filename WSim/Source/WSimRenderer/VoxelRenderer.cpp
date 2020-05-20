@@ -3,14 +3,13 @@
 #include <fstream>
 #include <iterator>
 
-VoxelRenderer::VoxelRenderer(VoxelRendererCallbacks &callbacks, int nodeSizeInVoxels, int gridSizeInNodes, int screenSize, char **voxelBuffers)
+VoxelRenderer::VoxelRenderer(VoxelRendererCallbacks &callbacks, int nodeSizeInVoxels, int gridSizeInNodes, int screenSize)
     : Renderer(GLFW_OPENGL_CORE_PROFILE, screenSize, screenSize),
       callbacks(callbacks),
       nodeSizeInVoxels(nodeSizeInVoxels),
       gridSizeInNodes(gridSizeInNodes),
       gridSizeInVoxels(nodeSizeInVoxels * gridSizeInNodes),
       screenSize(screenSize),
-      voxelBuffers(voxelBuffers),
       blueBuffer(new float[gridSizeInVoxels * gridSizeInVoxels * gridSizeInVoxels]),
       mvp(createMvp(screenSize)){
 
@@ -126,7 +125,7 @@ void VoxelRenderer::update(float deltaTimeSeconds) {
 }
 
 void VoxelRenderer::render() {
-
+    char** voxelBuffers = callbacks.getVoxelBuffers();
     for (int z = 0; z < gridSizeInVoxels; z++) {
         for (int y = 0; y < gridSizeInVoxels; y++) {
             for (int x = 0; x < gridSizeInVoxels; x++) {

@@ -14,7 +14,7 @@ void MasterRendererInterfaceVoxel::mainLoop() {
 }
 
 std::unique_ptr<Renderer> MasterRendererInterfaceVoxel::createRenderer(Master &master) {
-    auto result = new VoxelRenderer(rendererCallbacks, master.getNodeSize(), master.getGridSize(), 1000, master.getMappedBuffer());
+    auto result = new VoxelRenderer(rendererCallbacks, master.getNodeSize(), master.getGridSize(), 1000);
     return std::unique_ptr<Renderer>{result};
 }
 
@@ -22,4 +22,8 @@ MasterRendererInterfaceVoxel::VoxelRendererCallbacksImpl::VoxelRendererCallbacks
 
 void MasterRendererInterfaceVoxel::VoxelRendererCallbacksImpl::stepSimulation(float deltaTimeSeconds) {
     master.receiveFromNodes();
+}
+
+char **MasterRendererInterfaceVoxel::VoxelRendererCallbacksImpl::getVoxelBuffers() {
+    return master.getMappedBuffer();
 }

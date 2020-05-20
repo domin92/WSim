@@ -18,6 +18,7 @@ public:
     public:
         VoxelRendererCallbacksImpl(Master &master);
         void stepSimulation(float deltaTimeSeconds) override;
+        char** getVoxelBuffers() override;
 
     private:
         Master &master;

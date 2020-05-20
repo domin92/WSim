@@ -8,11 +8,12 @@
 
 struct VoxelRendererCallbacks {
     virtual void stepSimulation(float deltaTimeSeconds) = 0;
+    virtual char** getVoxelBuffers() = 0;
 };
 
 class VoxelRenderer : public Renderer {
 public:
-    VoxelRenderer(VoxelRendererCallbacks &callbacks, int nodeSizeInVoxels, int gridSizeInNodes, int screenSize, char **voxelBuffers);
+    VoxelRenderer(VoxelRendererCallbacks &callbacks, int nodeSizeInVoxels, int gridSizeInNodes, int screenSize);
     ~VoxelRenderer() override;
 
 protected:
@@ -30,7 +31,6 @@ protected:
     const int gridSizeInNodes;
     const int gridSizeInVoxels;
     const int screenSize;
-    char **const voxelBuffers;
     float *const blueBuffer;
 
     const glm::mat4 mvp;
