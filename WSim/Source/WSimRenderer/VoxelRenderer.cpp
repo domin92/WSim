@@ -10,18 +10,20 @@ VoxelRenderer::VoxelRenderer(VoxelRendererCallbacks &callbacks, int nodeSizeInVo
       gridSizeInNodes(gridSizeInNodes),
       gridSizeInVoxels(nodeSizeInVoxels * gridSizeInNodes),
       screenSize(screenSize),
-      blueBuffer(new float[gridSizeInVoxels * gridSizeInVoxels * gridSizeInVoxels]),
       mvp(createMvp(screenSize)){
 
     loadBuffers();
     loadShaders();
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_CULL_FACE);
 
     glUseProgram(shaderProgram);
     glUniformMatrix4fv(mvpUniformLocation, 1, GL_FALSE, &mvp[0][0]);
 }
 
 VoxelRenderer::~VoxelRenderer() {
-    delete[] blueBuffer;
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
@@ -30,8 +32,8 @@ VoxelRenderer::~VoxelRenderer() {
 glm::mat4 VoxelRenderer::createMvp(int screenSize) {
     const glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)screenSize / (float)screenSize, 0.1f, 100.0f);
     const glm::mat4 view = glm::lookAt(
-        glm::vec3(1.25, 1.25, 2.0f),      // Camera is at (4,3,3), in World Space
-        glm::vec3(0.5f, 0.5f, 0.5f),          // and looks at the origin
+        glm::vec3(1.25, 1.25, 2.0f), // Camera position
+        glm::vec3(0.5f, 0.5f, 0.5f), // Looks at the 0.5f, 0.5f, 0.5f
         glm::vec3(0, 1, 0)           // Head is up (set to 0,-1,0 to look upside-down)
     );
     const glm::mat4 model = glm::mat4(1.0f);
@@ -100,10 +102,6 @@ void VoxelRenderer::loadBuffers() {
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_CULL_FACE);
-
 }
 
 void VoxelRenderer::loadShaders() {
@@ -127,37 +125,13 @@ void VoxelRenderer::update(float deltaTimeSeconds) {
 
 void VoxelRenderer::render() {
 
-    char* voxelBuffers = callbacks.getVoxelBuffers();
-
-    /*for (int z = 0; z < gridSizeInVoxels; z++) {
-        for (int y = 0; y < gridSizeInVoxels; y++) {
-            for (int x = 0; x < gridSizeInVoxels; x++) {
-
-                int z_in_node = z % nodeSizeInVoxels;
-                int y_in_node = y % nodeSizeInVoxels;
-                int x_in_node = x % nodeSizeInVoxels;
-
-                int z_in_grid = z / nodeSizeInVoxels;
-                int y_in_grid = y / nodeSizeInVoxels;
-                int x_in_grid = x / nodeSizeInVoxels;
-
-                int nodeIndex = z_in_grid * gridSizeInNodes * gridSizeInNodes + y_in_grid * gridSizeInNodes + x_in_grid;
-
-                float blue = (float)((float*)voxelBuffers[nodeIndex])[(z_in_node * nodeSizeInVoxels * nodeSizeInVoxels + y_in_node * nodeSizeInVoxels + x_in_node) * 4 + 2];
-                
-                blueBuffer[z * gridSizeInVoxels * gridSizeInVoxels + y * gridSizeInVoxels + x] = blue;
-
-            }
-        }
-    }*/
-
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_3D, waterTexture);
 
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, nodeSizeInVoxels, nodeSizeInVoxels, nodeSizeInVoxels * gridSizeInNodes * gridSizeInNodes * gridSizeInNodes, 0, GL_RGBA, GL_FLOAT, voxelBuffers);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, nodeSizeInVoxels, nodeSizeInVoxels, nodeSizeInVoxels * gridSizeInNodes * gridSizeInNodes * gridSizeInNodes, 0, GL_RGBA, GL_FLOAT, callbacks.getVoxelBuffers());
     glGenerateMipmap(GL_TEXTURE_3D);
 
     glUniform1i(nodeSizeUniformLocation, nodeSizeInVoxels);

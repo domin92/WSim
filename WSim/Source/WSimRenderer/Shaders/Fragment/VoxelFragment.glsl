@@ -58,6 +58,9 @@ void main() {
 
         vec3 textureColor = texture(waterTexture, readPos).rgb;
 
+        //FragColor = vec4(textureColor, 1);
+        //return;
+
         if(textureColor.b > 0.1f){
             blueSum += 1;
         }

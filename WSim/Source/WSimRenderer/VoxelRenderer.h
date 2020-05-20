@@ -31,7 +31,6 @@ protected:
     const int gridSizeInNodes;
     const int gridSizeInVoxels;
     const int screenSize;
-    float *const blueBuffer;
 
     const glm::mat4 mvp;
 
