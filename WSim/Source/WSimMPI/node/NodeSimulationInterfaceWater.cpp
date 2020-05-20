@@ -8,6 +8,9 @@ NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node)
       simulation(0, 0, getNodeSize(node), node.get_share_thickness(), positionInGrid),
       copier(positionInGrid, (cl_command_queue &)simulation.getCommandQueue(), (size_t)node.get_share_thickness(), simulation.getSimulationSize()) {
 
+    // Gravity
+    simulation.setGravityForce(5.f);
+
     // For testing
     const auto nodeSize = node.get_node_size();
     const auto centerX = nodeSize / 2.f - node.get_x_pos_in_grid() * nodeSize;

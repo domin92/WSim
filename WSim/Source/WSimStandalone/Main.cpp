@@ -90,6 +90,7 @@ int main(int argc, char **argv) {
     }
     Simulation simulation{clPlatformIndex, clDeviceIndex, imageSize};
     simulation.addObstacleAllWalls();
+    simulation.setGravityForce(1.f);
 
     FpsCallback fpsCallback;
 
