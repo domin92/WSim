@@ -111,7 +111,8 @@ void VoxelRenderer::loadShaders() {
     OGL::Shader fragmentShader = OGL::createShaderFromFile(GL_FRAGMENT_SHADER, "Fragment/VoxelFragment.glsl");
     this->shaderProgram = OGL::createShaderProgram(vertexShader, fragmentShader);
     this->mvpUniformLocation = glGetUniformLocation(shaderProgram, "MVP");
-    this->simulationSizeUniformLocation = glGetUniformLocation(shaderProgram, "simSize");
+    this->nodeSizeUniformLocation = glGetUniformLocation(shaderProgram, "nodeSize");
+    this->gridSizeUniformLocation = glGetUniformLocation(shaderProgram, "gridSize");
 }
 
 void VoxelRenderer::processInput(int button, int action, int mods) {
@@ -125,8 +126,10 @@ void VoxelRenderer::update(float deltaTimeSeconds) {
 }
 
 void VoxelRenderer::render() {
-    char** voxelBuffers = callbacks.getVoxelBuffers();
-    for (int z = 0; z < gridSizeInVoxels; z++) {
+
+    char* voxelBuffers = callbacks.getVoxelBuffers();
+
+    /*for (int z = 0; z < gridSizeInVoxels; z++) {
         for (int y = 0; y < gridSizeInVoxels; y++) {
             for (int x = 0; x < gridSizeInVoxels; x++) {
 
@@ -146,7 +149,7 @@ void VoxelRenderer::render() {
 
             }
         }
-    }
+    }*/
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -154,10 +157,11 @@ void VoxelRenderer::render() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_3D, waterTexture);
 
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_RED, gridSizeInVoxels, gridSizeInVoxels, gridSizeInVoxels, 0, GL_RED, GL_FLOAT, blueBuffer);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, nodeSizeInVoxels, nodeSizeInVoxels, nodeSizeInVoxels * gridSizeInNodes * gridSizeInNodes * gridSizeInNodes, 0, GL_RGBA, GL_FLOAT, voxelBuffers);
     glGenerateMipmap(GL_TEXTURE_3D);
 
-    glUniform1i(simulationSizeUniformLocation, gridSizeInVoxels);
+    glUniform1i(nodeSizeUniformLocation, nodeSizeInVoxels);
+    glUniform1i(gridSizeUniformLocation, gridSizeInNodes);
 
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 

@@ -24,6 +24,6 @@ void MasterRendererInterfaceVoxel::VoxelRendererCallbacksImpl::stepSimulation(fl
     master.receiveFromNodes();
 }
 
-char **MasterRendererInterfaceVoxel::VoxelRendererCallbacksImpl::getVoxelBuffers() {
-    return master.getMappedBuffer();
+char *MasterRendererInterfaceVoxel::VoxelRendererCallbacksImpl::getVoxelBuffers() {
+    return master.getMainBuffer();
 }

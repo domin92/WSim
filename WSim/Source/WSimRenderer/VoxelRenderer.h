@@ -8,7 +8,7 @@
 
 struct VoxelRendererCallbacks {
     virtual void stepSimulation(float deltaTimeSeconds) = 0;
-    virtual char** getVoxelBuffers() = 0;
+    virtual char* getVoxelBuffers() = 0;
 };
 
 class VoxelRenderer : public Renderer {
@@ -39,7 +39,8 @@ protected:
     OGL::ShaderProgram shaderProgram;
 
     GLuint mvpUniformLocation;
-    GLuint simulationSizeUniformLocation;
+    GLuint nodeSizeUniformLocation;
+    GLuint gridSizeUniformLocation;
 
     GLuint waterTexture;
 };
