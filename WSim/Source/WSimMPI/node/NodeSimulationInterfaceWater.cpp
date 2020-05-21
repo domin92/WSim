@@ -18,6 +18,7 @@ NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node)
     const auto centerZ = -1.f * node.get_z_pos_in_grid() * nodeSize;
     Logger::get() << centerX << ", " << centerY << ", " << centerZ << std::endl;
     simulation.applyForce(FloatVec3{centerX, centerY, centerZ}, FloatVec3{50, 50, 0}, 10);
+    simulation.addObstacleAllWalls();
 }
 
 void NodeSimulationInterfaceWater::postReceiveFromMaster(const char *receivedArray) {

@@ -69,7 +69,7 @@ void main() {
         blueSum = pow(blueSum,4);
     }
 
-    float waterTransparency = sqrt(min(blueSum / 5.0f, 1.0f));
+    float waterTransparency = sqrt(min(blueSum / 15.0f, 1.0f));
 
     vec3 waterColor = vec3(20, 160, 235) / 255.0f;
 

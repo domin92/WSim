@@ -54,7 +54,7 @@ void Master::main() {
 
                 int idx = z_in_grid * grid_size * grid_size + y_in_grid * grid_size + x_in_grid;
 
-                if (y < (3 * full_size / 5) && y > (2 * full_size / 5)) {
+                if (y < (1 * full_size / 10)) {
                     ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4] = 0.0f;
                     ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4 + 1] = 0.0f;
                     ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4 + 2] = 1.0f;
