@@ -1,8 +1,13 @@
-#include "Source/WSimCommon/ArgumentParser.h"
+#if WSIM_TEXT_ONLY == 0
 #include "Source/WSimRenderer/FpsCounter.h"
-#include "Source/WSimSimulation/Simulation/Simulation.h"
 #include "Source/WSimStandalone/ColorRendererCallbacks.h"
 #include "Source/WSimStandalone/VoxelRendererCallbacks.h"
+#endif
+
+#include "Source/WSimCommon/ArgumentParser.h"
+#include "Source/WSimSimulation/Simulation/Simulation.h"
+
+#include <iostream>
 
 struct FpsCallback {
     using Clock = std::chrono::steady_clock;
@@ -26,13 +31,17 @@ struct Mode {
     Mode(ModeEnum value) : value(value) {}
 
     static std::unique_ptr<Mode> fromString(const std::string &modeString) {
-        if (modeString == "graphical2d") {
+        if (modeString == "text") {
+            return std::make_unique<Mode>(ModeEnum::Text);
+        }
+#if WSIM_TEXT_ONLY == 0
+        else if (modeString == "graphical2d") {
             return std::make_unique<Mode>(ModeEnum::Graphical2D);
         } else if (modeString == "graphical3d") {
             return std::make_unique<Mode>(ModeEnum::Graphical3D);
-        } else if (modeString == "text") {
-            return std::make_unique<Mode>(ModeEnum::Text);
-        } else {
+        }
+#endif()
+        else {
             return nullptr;
         }
     }
@@ -95,6 +104,7 @@ int main(int argc, char **argv) {
     FpsCallback fpsCallback;
 
     switch (mode->value) {
+#if WSIM_TEXT_ONLY == 0
     case Mode::ModeEnum::Graphical2D: {
         ColorRendererCallbacksImpl rendererCallbacks{simulation};
         ColorRenderer renderer{rendererCallbacks, Simulation::colorVoxelSize};
@@ -108,16 +118,17 @@ int main(int argc, char **argv) {
         renderer.setFpsCallback(fpsCallback);
         renderer.mainLoop();
     }
+#endif
 
     case Mode::ModeEnum::Text: {
-        DefaultFpsCounter fpsCounter;
+        //DefaultFpsCounter fpsCounter;
         using Clock = std::chrono::steady_clock;
         auto lastFrameTime = Clock::now();
         while (true) {
             const auto currentFrameTime = Clock::now();
             const auto deltaTime = currentFrameTime - lastFrameTime;
-            fpsCounter.push(deltaTime);
-            fpsCallback(fpsCounter.getFps());
+            //fpsCounter.push(deltaTime);
+            //fpsCallback(fpsCounter.getFps());
             lastFrameTime = currentFrameTime;
 
             simulation.stepSimulation(deltaTime);

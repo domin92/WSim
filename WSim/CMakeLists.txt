@@ -1,6 +1,5 @@
 # Find dependencies
 find_package(OpenCL REQUIRED)
-find_package(OpenGL REQUIRED)
 # Threads::Threads is used by some dependent libraries (such as gtest, glfw),
 # but find_package made by them are done in different directories, and
 # Threads::Threads variable is not visible here, hence the manual call.

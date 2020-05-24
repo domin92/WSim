@@ -24,6 +24,7 @@ function getParameters() {
         echo "  -d                  - do not compile dependencies automatically"
         echo "  -w                  - do not compile WSim automatically"
         echo "  -u                  - do not update git dependencies automatically"
+        echo "  -t                  - build text-only version"
     )
 
     # Available option values
@@ -36,9 +37,10 @@ function getParameters() {
     build_dependencies=1
     build_wsim=1
     update_dependencies=1
+    text_only=0
 
     # Override values
-    while getopts "a:c:dwuh" opt; do
+    while getopts "a:c:dwuth" opt; do
       case ${opt} in
         a ) validateOption "${architectures[*]}" "$OPTARG"
             architecture="$OPTARG" ;;
@@ -47,6 +49,7 @@ function getParameters() {
         d ) build_dependencies=0 ;;
         w ) build_wsim=0 ;;
         u ) update_dependencies=0 ;;
+        t ) text_only=1 ;;
         h ) printHelp; exit 0 ;;
         \?) printHelp; exit 1 ;;
       esac
@@ -93,22 +96,26 @@ if [ "$update_dependencies" == 1 ]; then
 fi
 
 # Build
-run_cmake "." "$build_path" $architecture $configuration
+run_cmake "." "$build_path" $architecture $configuration -DWSIM_TEXT_ONLY=$text_only
 if [ $? != 0 ]; then
     exit
 fi
 if [ "$build_dependencies" == 1 ]; then
     compile gtest
-    compile glfw
-    compile glad
-    compile glm_static
+    if [ "$text_only" == 0 ]; then
+        compile glfw
+        compile glad
+        compile glm_static
+    fi
 fi
 if [ "$build_wsim" == 1 ]; then
     compile WSimStandalone
     if [ -e run_mpi.sh ]; then
         compile WSimMPI
     fi
-    compile WSimRendererExe
+    if [ "$text_only" == 0 ]; then
+        compile WSimRendererExe
+    fi
 fi
 
 # CMake created run.sh script, set execute permissions

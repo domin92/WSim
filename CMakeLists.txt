@@ -10,6 +10,9 @@ endif()
 cmake_minimum_required(VERSION 3.12.0)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# Build options
+option(WSIM_TEXT_ONLY OFF)
+
 # Helper macro for setting variables for both current and parent scope
 macro(set_with_parent_scope VARIABLE VALUE)
     set(${VARIABLE} ${VALUE})
