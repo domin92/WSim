@@ -1,10 +1,10 @@
 #if WSIM_TEXT_ONLY == 0
-#include "Source/WSimRenderer/FpsCounter.h"
 #include "Source/WSimStandalone/ColorRendererCallbacks.h"
 #include "Source/WSimStandalone/VoxelRendererCallbacks.h"
 #endif
 
 #include "Source/WSimCommon/ArgumentParser.h"
+#include "Source/WSimCommon/FpsCounter.h"
 #include "Source/WSimSimulation/Simulation/Simulation.h"
 
 #include <iostream>
@@ -121,14 +121,14 @@ int main(int argc, char **argv) {
 #endif
 
     case Mode::ModeEnum::Text: {
-        //DefaultFpsCounter fpsCounter;
+        DefaultFpsCounter fpsCounter;
         using Clock = std::chrono::steady_clock;
         auto lastFrameTime = Clock::now();
         while (true) {
             const auto currentFrameTime = Clock::now();
             const auto deltaTime = currentFrameTime - lastFrameTime;
-            //fpsCounter.push(deltaTime);
-            //fpsCallback(fpsCounter.getFps());
+            fpsCounter.push(deltaTime);
+            fpsCallback(fpsCounter.getFps());
             lastFrameTime = currentFrameTime;
 
             simulation.stepSimulation(deltaTime);

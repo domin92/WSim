@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/WSimRenderer/FpsCounter.h"
+#include "Source/WSimCommon/FpsCounter.h"
 #include "Source/WSimRenderer/OpenGL.h"
 
 #include <cassert>
