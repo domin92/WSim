@@ -40,7 +40,7 @@ struct Mode {
         } else if (modeString == "graphical3d") {
             return std::make_unique<Mode>(ModeEnum::Graphical3D);
         }
-#endif()
+#endif
         else {
             return nullptr;
         }
