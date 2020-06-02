@@ -33,7 +33,8 @@ void displayDevice(cl_platform_id platform, cl_device_type deviceType, size_t in
     std::cout << '\n';
     std::cout << "\t\tdevice.image3DMaxSize: "
               << "{ " << info.image3DMaxSize.x << ", " << info.image3DMaxSize.y << ", " << info.image3DMaxSize.z << "}\n"
-              << "\t\tdevice.maxComputeUnits: " << info.maxComputeUnits << '\n';
+              << "\t\tdevice.maxComputeUnits: " << info.maxComputeUnits << '\n'
+              << "\t\tdevice.maxWorkGroupSize: " << info.maxWorkGroupSize << '\n';
     //<< "\t\tdevice.extensions: " << info.extensions << '\n';
 }
 

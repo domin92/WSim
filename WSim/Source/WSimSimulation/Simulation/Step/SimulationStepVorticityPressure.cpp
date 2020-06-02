@@ -25,13 +25,16 @@ void SimulationStepPressure::run(float deltaTimeSeconds) {
     OCL::enqueueKernel3D(commandQueue, kernelDivergence, gws);
 
     // Calculate pressure
+    const size_t x = 16;
+    const auto lws = Vec3{x, x, 1};
     OCL::setKernelArgMem(kernelPressureJacobi, 0, divergence); // inDivergence
     for (int i = 0; i < jacobiIterations; i++) {
         const auto pressureOffset = calculateBorderOffset(divergenceSize, gws, simulation.getPositionInGrid());
         OCL::setKernelArgMem(kernelPressureJacobi, 1, pressure.getSource());                                 // inPressure
         OCL::setKernelArgVec(kernelPressureJacobi, 2, pressureOffset.x, pressureOffset.y, pressureOffset.z); // inPressureOffset
         OCL::setKernelArgMem(kernelPressureJacobi, 3, pressure.getDestinationAndSwap());                     // outPressure
-        OCL::enqueueKernel3D(commandQueue, kernelPressureJacobi, gws);
+        ASSERT_CL_SUCCESS(clSetKernelArg(kernelPressureJacobi, 4, lws.getRequiredBufferSize(4), nullptr));
+        OCL::enqueueKernel3D(commandQueue, kernelPressureJacobi, gws, lws);
 
         // With each iteration we calculate smaller pressure field, because we sample one unit around each voxel
         gws = decreaseBorder(gws, simulation.getPositionInGrid(), 1, simulation.getSimulationSize());

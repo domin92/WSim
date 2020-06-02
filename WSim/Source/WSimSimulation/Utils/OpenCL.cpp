@@ -76,6 +76,9 @@ DeviceInfo getDeviceInfo(cl_device_id device) {
     retVal = clGetDeviceInfo(device, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(size_t), &info.maxComputeUnits, &actualSize);
     ASSERT_CL_SUCCESS(retVal);
 
+    retVal = clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &info.maxWorkGroupSize, &actualSize);
+    ASSERT_CL_SUCCESS(retVal);
+
     return info;
 }
 
@@ -172,9 +175,9 @@ Kernel createKernel(cl_program program, const char *kernelName) {
     return kernel;
 }
 
-void enqueueKernel3D(cl_command_queue commandQueue, cl_kernel kernel, Vec3 globalWorkOffset, Vec3 globalWorkSize) {
+void enqueueKernel3D(cl_command_queue commandQueue, cl_kernel kernel, Vec3 globalWorkSize, Vec3 localWorkSize) {
     cl_int retVal = clEnqueueNDRangeKernel(commandQueue, kernel, 3,
-                                           globalWorkOffset.ptr, globalWorkSize.ptr, nullptr,
+                                           nullptr, globalWorkSize.ptr, localWorkSize.ptr,
                                            0, nullptr, nullptr);
     ASSERT_CL_SUCCESS(retVal);
 }

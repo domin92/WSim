@@ -64,6 +64,7 @@ struct DeviceInfo {
     cl_device_type deviceType;
     Vec3 image3DMaxSize;
     size_t maxComputeUnits;
+    size_t maxWorkGroupSize;
 };
 PlatformInfo getPlatformInfo(cl_platform_id platform);
 DeviceInfo getDeviceInfo(cl_device_id device);
@@ -80,7 +81,7 @@ Program createProgramFromSource(cl_device_id device, cl_context context, const s
 Kernel createKernel(cl_program program, const char *kernelName);
 
 // Enqueue kernels
-void enqueueKernel3D(cl_command_queue commandQueue, cl_kernel kernel, Vec3 globalWorkOffset, Vec3 globalWorkSize);
+void enqueueKernel3D(cl_command_queue commandQueue, cl_kernel kernel, Vec3 globalWorkSize, Vec3 localWorkSize);
 void enqueueKernel3D(cl_command_queue commandQueue, cl_kernel kernel, Vec3 globalWorkSize);
 void setKernelArgMem(cl_kernel kernel, cl_uint argIndex, const Mem &mem);
 void setKernelArgFlt(cl_kernel kernel, cl_uint argIndex, float arg);
