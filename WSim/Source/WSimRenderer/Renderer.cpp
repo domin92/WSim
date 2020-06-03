@@ -5,9 +5,17 @@
 
 Renderer::Renderer(int oglProfile, int width, int height) {
     glfwInit();
+
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, oglProfile);
+    if (oglProfile == GLFW_OPENGL_COMPAT_PROFILE) {
+        // We can use OpenGL 3.1 for compatibility profile.
+        // This version does not support profile selection
+        // though, hence the lack of GLFW_OPENGL_PROFILE hint.
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    } else {
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, oglProfile);
+    }
 
     window = glfwCreateWindow(width, height, "WSim", NULL, NULL);
     if (window == NULL) {
