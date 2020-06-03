@@ -100,6 +100,7 @@ int main(int argc, char **argv) {
         ColorRenderer renderer{rendererCallbacks, Simulation::colorVoxelSize};
         renderer.setFpsCallback(fpsCallback);
         renderer.mainLoop();
+        break;
     }
 
     case Mode::ModeEnum::Graphical3D: {
@@ -107,6 +108,7 @@ int main(int argc, char **argv) {
         VoxelRenderer renderer{rendererCallbacks, static_cast<int>(simulation.getSimulationSize().x), 1, 600};
         renderer.setFpsCallback(fpsCallback);
         renderer.mainLoop();
+        break;
     }
 
     case Mode::ModeEnum::Text: {
@@ -123,6 +125,7 @@ int main(int argc, char **argv) {
             simulation.stepSimulation(deltaTime);
             OCL::finish(simulation.getCommandQueue());
         }
+        break;
     }
     }
 }
