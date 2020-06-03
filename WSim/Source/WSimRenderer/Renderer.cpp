@@ -12,6 +12,9 @@ Renderer::Renderer(int oglProfile, int width, int height) {
     window = glfwCreateWindow(width, height, "WSim", NULL, NULL);
     if (window == NULL) {
         std::cerr << "Failed to create GLFW window" << std::endl;
+        const char *log = nullptr;
+        glfwGetError(&log);
+        std::cout << log << std::endl;
         std::abort();
     }
     glfwSetWindowUserPointer(window, this);
