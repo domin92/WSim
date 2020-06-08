@@ -18,7 +18,26 @@ NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node)
     const auto centerZ = -1.f * node.get_z_pos_in_grid() * nodeSize;
     Logger::get() << centerX << ", " << centerY << ", " << centerZ << std::endl;
     simulation.applyForce(FloatVec3{centerX, centerY, centerZ}, FloatVec3{50, 50, 0}, 10);
-    simulation.addObstacleAllWalls();
+
+    if (node.get_x_pos_in_grid() == 0) {
+        simulation.addObstacleWall(Dim::X, End::Lower);
+    }
+    if (node.get_x_pos_in_grid() == node.get_grid_size() - 1) {
+        simulation.addObstacleWall(Dim::X, End::Higher);
+    }
+    if (node.get_y_pos_in_grid() == 0) {
+        simulation.addObstacleWall(Dim::Y, End::Lower);
+    }
+    if (node.get_y_pos_in_grid() == node.get_grid_size() - 1) {
+        simulation.addObstacleWall(Dim::Y, End::Higher);
+    }
+    if (node.get_z_pos_in_grid() == 0) {
+        simulation.addObstacleWall(Dim::Z, End::Lower);
+    }
+    if (node.get_z_pos_in_grid() == node.get_grid_size() - 1) {
+        simulation.addObstacleWall(Dim::Z, End::Higher);
+    }
+
 }
 
 void NodeSimulationInterfaceWater::postReceiveFromMaster(const char *receivedArray) {
