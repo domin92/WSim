@@ -2,7 +2,7 @@
 #include "Source/WSimRenderer/FpsCounter.h"
 #include "Source/WSimSimulation/Simulation/Simulation.h"
 #include "Source/WSimStandalone/ColorRendererCallbacks.h"
-#include "Source/WSimStandalone/VoxelRendererCallbacks.h"
+#include "Source/WSimStandalone/VolumeRendererCallbacks.h"
 
 struct FpsCallback {
     using Clock = std::chrono::steady_clock;
@@ -104,8 +104,8 @@ int main(int argc, char **argv) {
     }
 
     case Mode::ModeEnum::Graphical3D: {
-        VoxelRendererCallbacksImpl rendererCallbacks{simulation};
-        VoxelRenderer renderer{rendererCallbacks, static_cast<int>(simulation.getSimulationSize().x), 1, 600};
+        VolumeRendererCallbacksImpl rendererCallbacks{simulation};
+        VolumeRenderer renderer{rendererCallbacks, static_cast<int>(simulation.getSimulationSize().x), 1, 600};
         renderer.setFpsCallback(fpsCallback);
         renderer.mainLoop();
         break;

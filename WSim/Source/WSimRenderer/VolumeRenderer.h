@@ -6,15 +6,15 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
-struct VoxelRendererCallbacks {
+struct VolumeRendererCallbacks {
     virtual void stepSimulation(float deltaTimeSeconds) = 0;
-    virtual char* getVoxelBuffers() = 0;
+    virtual char *getVolumeBuffers() = 0;
 };
 
-class VoxelRenderer : public Renderer {
+class VolumeRenderer : public Renderer {
 public:
-    VoxelRenderer(VoxelRendererCallbacks &callbacks, int nodeSizeInVoxels, int gridSizeInNodes, int screenSize);
-    ~VoxelRenderer() override;
+    VolumeRenderer(VolumeRendererCallbacks &callbacks, int nodeSizeInVoxels, int gridSizeInNodes, int screenSize);
+    ~VolumeRenderer() override;
 
 protected:
     static glm::mat4 createMvp(int screenSize);
@@ -26,7 +26,7 @@ protected:
     void update(float deltaTimeSeconds) override;
     void render() override;
 
-    VoxelRendererCallbacks &callbacks;
+    VolumeRendererCallbacks &callbacks;
     const int nodeSizeInVoxels;
     const int gridSizeInNodes;
     const int screenSize;

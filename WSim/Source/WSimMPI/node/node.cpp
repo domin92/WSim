@@ -1,7 +1,6 @@
 #include "node.hpp"
 
 #include "Source/WSimMPI/node/NodeSimulationInterfaceWater.hpp"
-#include "Source/WSimMPI/node/NodeSimulationInterfaceGameOfLife.hpp"
 #include "Source/WSimMPI/Utils.h"
 #include "Source/WSimCommon/Logger.h"
 

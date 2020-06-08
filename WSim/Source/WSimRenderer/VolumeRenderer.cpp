@@ -1,9 +1,9 @@
-#include "VoxelRenderer.h"
+#include "VolumeRenderer.h"
 
 #include <fstream>
 #include <iterator>
 
-VoxelRenderer::VoxelRenderer(VoxelRendererCallbacks &callbacks, int nodeSizeInVoxels, int gridSizeInNodes, int screenSize)
+VolumeRenderer::VolumeRenderer(VolumeRendererCallbacks &callbacks, int nodeSizeInVoxels, int gridSizeInNodes, int screenSize)
     : Renderer(GLFW_OPENGL_CORE_PROFILE, screenSize, screenSize),
       callbacks(callbacks),
       nodeSizeInVoxels(nodeSizeInVoxels),
@@ -22,13 +22,13 @@ VoxelRenderer::VoxelRenderer(VoxelRendererCallbacks &callbacks, int nodeSizeInVo
     glUniformMatrix4fv(mvpUniformLocation, 1, GL_FALSE, &mvp[0][0]);
 }
 
-VoxelRenderer::~VoxelRenderer() {
+VolumeRenderer::~VolumeRenderer() {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
 }
 
-glm::mat4 VoxelRenderer::createMvp(int screenSize) {
+glm::mat4 VolumeRenderer::createMvp(int screenSize) {
     const glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)screenSize / (float)screenSize, 0.1f, 100.0f);
     const glm::mat4 view = glm::lookAt(
         glm::vec3(1.25, 1.25, 2.0f), // Camera position
@@ -40,7 +40,7 @@ glm::mat4 VoxelRenderer::createMvp(int screenSize) {
     return mvp;
 }
 
-void VoxelRenderer::loadBuffers() {
+void VolumeRenderer::loadBuffers() {
     float cubeVertices[24] = {
         // front
         -1.0, -1.0, 1.0,
@@ -103,26 +103,26 @@ void VoxelRenderer::loadBuffers() {
 
 }
 
-void VoxelRenderer::loadShaders() {
-    OGL::Shader vertexShader = OGL::createShaderFromFile(GL_VERTEX_SHADER, "Vertex/VoxelVertex.glsl");
-    OGL::Shader fragmentShader = OGL::createShaderFromFile(GL_FRAGMENT_SHADER, "Fragment/VoxelFragment.glsl");
+void VolumeRenderer::loadShaders() {
+    OGL::Shader vertexShader = OGL::createShaderFromFile(GL_VERTEX_SHADER, "Vertex/VolumeVertex.glsl");
+    OGL::Shader fragmentShader = OGL::createShaderFromFile(GL_FRAGMENT_SHADER, "Fragment/VolumeFragment.glsl");
     this->shaderProgram = OGL::createShaderProgram(vertexShader, fragmentShader);
     this->mvpUniformLocation = glGetUniformLocation(shaderProgram, "MVP");
     this->nodeSizeUniformLocation = glGetUniformLocation(shaderProgram, "nodeSize");
     this->gridSizeUniformLocation = glGetUniformLocation(shaderProgram, "gridSize");
 }
 
-void VoxelRenderer::processInput(int button, int action, int mods) {
+void VolumeRenderer::processInput(int button, int action, int mods) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
 }
 
-void VoxelRenderer::update(float deltaTimeSeconds) {
+void VolumeRenderer::update(float deltaTimeSeconds) {
     callbacks.stepSimulation(deltaTimeSeconds);
 }
 
-void VoxelRenderer::render() {
+void VolumeRenderer::render() {
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -130,7 +130,7 @@ void VoxelRenderer::render() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_3D, waterTexture);
 
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, nodeSizeInVoxels, nodeSizeInVoxels, nodeSizeInVoxels * gridSizeInNodes * gridSizeInNodes * gridSizeInNodes, 0, GL_RGBA, GL_FLOAT, callbacks.getVoxelBuffers());
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, nodeSizeInVoxels, nodeSizeInVoxels, nodeSizeInVoxels * gridSizeInNodes * gridSizeInNodes * gridSizeInNodes, 0, GL_RGBA, GL_FLOAT, callbacks.getVolumeBuffers());
     glGenerateMipmap(GL_TEXTURE_3D);
 
     glUniform1i(nodeSizeUniformLocation, nodeSizeInVoxels);

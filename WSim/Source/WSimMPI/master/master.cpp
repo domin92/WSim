@@ -1,6 +1,6 @@
 ﻿#include "master.hpp"
 
-#include "Source/WSimMPI/master/MasterRendererInterfaceVoxel.h"
+#include "Source/WSimMPI/master/MasterRendererInterfaceVolume.h"
 #include "Source/WSimMPI/master/MasterRendererInterfaceWater.hpp"
 
 #include <cstdlib>
@@ -8,7 +8,7 @@
 #include <iostream>
 #include <mpi.h>
 
-using UsedRendererInterface = MasterRendererInterfaceVoxel;
+using UsedRendererInterface = MasterRendererInterfaceVolume;
 Master::Master(int proc_count, int grid_size, int node_size)
     : proc_count(proc_count),
       grid_size(grid_size),

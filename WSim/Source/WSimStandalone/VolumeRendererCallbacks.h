@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Source/WSimRenderer/VoxelRenderer.h"
+#include "Source/WSimRenderer/VolumeRenderer.h"
 #include "Source/WSimSimulation/Simulation/Simulation.h"
 
-class VoxelRendererCallbacksImpl : public VoxelRendererCallbacks {
+class VolumeRendererCallbacksImpl : public VolumeRendererCallbacks {
 public:
-    VoxelRendererCallbacksImpl(Simulation &simulation)
+    VolumeRendererCallbacksImpl(Simulation &simulation)
         : simulation(simulation),
           voxelBuffer(std::make_unique<char[]>(simulation.getSimulationSize().getRequiredBufferSize(4 * sizeof(float)))) {
     }
@@ -14,7 +14,7 @@ public:
         simulation.stepSimulation(deltaTimeSeconds);
     }
 
-    char *getVoxelBuffers() override {
+    char *getVolumeBuffers() override {
         const Vec3 offset = simulation.getBorderOffset();
         const Vec3 size = simulation.getSimulationSize();
         OCL::enqueueReadImage3D(simulation.getCommandQueue(), simulation.getColor().getSource(), CL_BLOCKING, offset, size, voxelBuffer.get());

@@ -1,24 +1,24 @@
 #pragma once
 
 #include "Source/WSimMPI/master/MasterRendererInterface.h"
-#include "Source/WSimRenderer/VoxelRenderer.h"
+#include "Source/WSimRenderer/VolumeRenderer.h"
 
 class Renderer;
 
-class MasterRendererInterfaceVoxel : public MasterRendererInterface {
+class MasterRendererInterfaceVolume : public MasterRendererInterface {
 public:
-    MasterRendererInterfaceVoxel(Master &master);
+    MasterRendererInterfaceVolume(Master &master);
     constexpr static size_t mainBufferTexelSize = 4 * sizeof(float);
 
     // For MPI
     virtual void mainLoop() override;
 
     // For Renderer
-    class VoxelRendererCallbacksImpl : public VoxelRendererCallbacks {
+    class VolumeRendererCallbacksImpl : public VolumeRendererCallbacks {
     public:
-        VoxelRendererCallbacksImpl(Master &master);
+        VolumeRendererCallbacksImpl(Master &master);
         void stepSimulation(float deltaTimeSeconds) override;
-        char* getVoxelBuffers() override;
+        char *getVolumeBuffers() override;
 
     private:
         Master &master;
@@ -27,6 +27,6 @@ public:
 private:
     std::unique_ptr<Renderer> createRenderer(Master &master);
 
-    VoxelRendererCallbacksImpl rendererCallbacks;
+    VolumeRendererCallbacksImpl rendererCallbacks;
     std::unique_ptr<Renderer> renderer;
 };
