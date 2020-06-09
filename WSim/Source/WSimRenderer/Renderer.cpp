@@ -29,8 +29,12 @@ Renderer::Renderer(int oglProfile, int width, int height) {
 
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, callbackFrameBufferSize);
+
+    glfwSetKeyCallback(window, callbackKeyboardInput);
     glfwSetMouseButtonCallback(window, callbackProcessInput);
     glfwSetCursorPosCallback(window, callbackMouseMove);
+    glfwSetScrollCallback(window, callbackScroll);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cerr << "Failed to initialize GLAD" << std::endl;
@@ -86,6 +90,11 @@ void Renderer::callbackFrameBufferSize(GLFWwindow *window, int width, int height
     glViewport(0, 0, width, height);
 }
 
+void Renderer::callbackKeyboardInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    auto renderer = reinterpret_cast<Renderer *>(glfwGetWindowUserPointer(window));
+    renderer->processKeyboardInput(key, scancode, action, mods);
+}
+
 void Renderer::callbackProcessInput(GLFWwindow *window, int button, int action, int mods) {
     auto renderer = reinterpret_cast<Renderer *>(glfwGetWindowUserPointer(window));
     renderer->processInput(button, action, mods);
@@ -94,4 +103,9 @@ void Renderer::callbackProcessInput(GLFWwindow *window, int button, int action, 
 void Renderer::callbackMouseMove(GLFWwindow *window, double x, double y) {
     auto renderer = reinterpret_cast<Renderer *>(glfwGetWindowUserPointer(window));
     renderer->processMouseMove(x, y);
+}
+
+void Renderer::callbackScroll(GLFWwindow *window, double x, double y) {
+    auto renderer = reinterpret_cast<Renderer *>(glfwGetWindowUserPointer(window));
+    renderer->processScroll(x, y);
 }

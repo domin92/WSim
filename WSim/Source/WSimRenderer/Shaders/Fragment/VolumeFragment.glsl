@@ -5,6 +5,8 @@ in vec3 worldPos;
 uniform sampler3D waterTexture;
 uniform int nodeSize;
 uniform int gridSize;
+uniform vec3 cameraPosition;
+
 
 out vec4 FragColor;
 
@@ -29,8 +31,6 @@ vec3 getWaterTextureCoords(vec3 readPos){
 }
 
 void main() {
-
-    vec3 cameraPosition = vec3(1.25, 1.25, 2.0f);
 
     vec3 marchingDirection = normalize(worldPos - cameraPosition);
 

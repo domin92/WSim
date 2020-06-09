@@ -9,7 +9,11 @@ VolumeRenderer::VolumeRenderer(VolumeRendererCallbacks &callbacks, int nodeSizeI
       nodeSizeInVoxels(nodeSizeInVoxels),
       gridSizeInNodes(gridSizeInNodes),
       screenSize(screenSize),
-      mvp(createMvp(screenSize)){
+      mvp(createMvp()) {
+
+    cameraPos = glm::vec3(3.0f, 3.0f, 3.0f);
+    cameraFront = glm::vec3(0.0f, 0.0f, 0.0f);
+    cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
     loadBuffers();
     loadShaders();
@@ -19,7 +23,6 @@ VolumeRenderer::VolumeRenderer(VolumeRendererCallbacks &callbacks, int nodeSizeI
     glEnable(GL_CULL_FACE);
 
     glUseProgram(shaderProgram);
-    glUniformMatrix4fv(mvpUniformLocation, 1, GL_FALSE, &mvp[0][0]);
 }
 
 VolumeRenderer::~VolumeRenderer() {
@@ -28,15 +31,15 @@ VolumeRenderer::~VolumeRenderer() {
     glDeleteBuffers(1, &EBO);
 }
 
-glm::mat4 VolumeRenderer::createMvp(int screenSize) {
-    const glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)screenSize / (float)screenSize, 0.1f, 100.0f);
-    const glm::mat4 view = glm::lookAt(
-        glm::vec3(1.25, 1.25, 2.0f), // Camera position
-        glm::vec3(0.5f, 0.5f, 0.5f), // Looks at the 0.5f, 0.5f, 0.5f
-        glm::vec3(0, 1, 0)           // Head is up (set to 0,-1,0 to look upside-down)
+glm::mat4 VolumeRenderer::createMvp() {
+    glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)screenSize / (float)screenSize, 0.1f, 100.0f);
+    glm::mat4 view = glm::lookAt(
+        cameraPos,                   // Camera position
+        cameraPos + cameraFront,     // Looks at the 0.5f, 0.5f, 0.5f
+        cameraUp                     // Head is up (set to 0,-1,0 to look upside-down)
     );
-    const glm::mat4 model = glm::mat4(1.0f);
-    const glm::mat4 mvp = projection * view * model;
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 mvp = projection * view * model;
     return mvp;
 }
 
@@ -100,22 +103,16 @@ void VolumeRenderer::loadBuffers() {
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
 }
 
 void VolumeRenderer::loadShaders() {
     OGL::Shader vertexShader = OGL::createShaderFromFile(GL_VERTEX_SHADER, "Vertex/VolumeVertex.glsl");
     OGL::Shader fragmentShader = OGL::createShaderFromFile(GL_FRAGMENT_SHADER, "Fragment/VolumeFragment.glsl");
     this->shaderProgram = OGL::createShaderProgram(vertexShader, fragmentShader);
-    this->mvpUniformLocation = glGetUniformLocation(shaderProgram, "MVP");
+    this->mvpVertexUniformLocation = glGetUniformLocation(shaderProgram, "MVP");
+    this->mvpFragmentUniformLocation = glGetUniformLocation(shaderProgram, "cameraPosition");
     this->nodeSizeUniformLocation = glGetUniformLocation(shaderProgram, "nodeSize");
     this->gridSizeUniformLocation = glGetUniformLocation(shaderProgram, "gridSize");
-}
-
-void VolumeRenderer::processInput(int button, int action, int mods) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
-    }
 }
 
 void VolumeRenderer::update(float deltaTimeSeconds) {
@@ -127,6 +124,17 @@ void VolumeRenderer::render() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    glm::mat4 view = glm::lookAt(
+        glm::vec3(1.25, 1.25, 2.0f), // Camera position
+        glm::vec3(0.5f, 0.5f, 0.5f), // Looks at the 0.5f, 0.5f, 0.5f
+        glm::vec3(0, 1, 0)           // Head is up (set to 0,-1,0 to look upside-down)
+    );
+    float currentFrame = glfwGetTime();
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
+
+    mvp = createMvp();
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_3D, waterTexture);
 
@@ -135,7 +143,73 @@ void VolumeRenderer::render() {
 
     glUniform1i(nodeSizeUniformLocation, nodeSizeInVoxels);
     glUniform1i(gridSizeUniformLocation, gridSizeInNodes);
+    glUniformMatrix4fv(mvpVertexUniformLocation, 1, GL_FALSE, &mvp[0][0]);
+    glUniform3f(mvpFragmentUniformLocation, cameraPos.x, cameraPos.y, cameraPos.z);
 
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+}
 
+void VolumeRenderer::processKeyboardInput(int key, int scancode, int action, int mods) {
+    float cameraSpeed = 4.0f * deltaTime;
+    switch (key) {
+    case GLFW_KEY_ESCAPE:
+        glfwSetWindowShouldClose(window, true);
+        break;
+    case GLFW_KEY_W:
+        cameraPos += cameraSpeed * cameraFront;
+        break;
+    case GLFW_KEY_A:
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        break;
+    case GLFW_KEY_D:
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        break;
+    case GLFW_KEY_S:
+        cameraPos -= cameraSpeed * cameraFront;
+        break;
+    }
+}
+
+void VolumeRenderer::processInput(int button, int action, int mods) {
+    
+}
+
+void VolumeRenderer::processMouseMove(double xpos, double ypos) {
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+    lastX = xpos;
+    lastY = ypos;
+
+    float sensitivity = 0.1f; // change this value to your liking
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    // make sure that when pitch is out of bounds, screen doesn't get flipped
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+
+    glm::vec3 front;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(front);
+}
+
+void VolumeRenderer::processScroll(double xoffset, double yoffset) {
+    fov -= (float)yoffset;
+    if (fov < 1.0f)
+        fov = 1.0f;
+    if (fov > 45.0f)
+        fov = 45.0f;
 }
