@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Source/WSimSimulation/Simulation/Simulation.h"
 #include "Tests/UnitTests/Simulation/OclTest.h"
 

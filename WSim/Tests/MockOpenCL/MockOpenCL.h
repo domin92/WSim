@@ -36,7 +36,7 @@ void initialize();
 
 template <MockedCall mockedCall, typename MockedBody>
 void mock(MockedBody mockedBody) {
-    mockedBodies[int(mockedCall)] = mockedBody;
+    mockedBodies[int(mockedCall)] = reinterpret_cast<void*>(mockedBody);
 }
 
 }; // namespace MockOpenCL

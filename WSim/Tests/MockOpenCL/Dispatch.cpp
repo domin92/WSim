@@ -8,7 +8,7 @@
 
 template <typename ApiCall, MockOpenCL::MockedCall mockedCall, typename... Args>
 auto callMockedBody(Args... args) {
-    const auto mockedBody = static_cast<ApiCall>(MockOpenCL::mockedBodies[int(mockedCall)]);
+    const auto mockedBody = reinterpret_cast<ApiCall>(MockOpenCL::mockedBodies[int(mockedCall)]);
     assert(mockedBody != nullptr);
     return mockedBody(args...);
 }
