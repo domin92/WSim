@@ -17,6 +17,7 @@ target_link_libraries(${TARGET_WSIM_RENDERER_LIB} PUBLIC
     $<TARGET_FILE:glfw>
     $<TARGET_FILE:glad>
     $<TARGET_FILE:glm_static>
+    glfw
     ${CMAKE_DL_LIBS}
 )
 set_target_properties(${TARGET_WSIM_RENDERER_LIB} PROPERTIES FOLDER Libraries)
