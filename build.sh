@@ -24,6 +24,7 @@ function getParameters() {
         echo "  -d                  - do not compile dependencies automatically"
         echo "  -w                  - do not compile WSim automatically"
         echo "  -u                  - do not update git dependencies automatically"
+        echo "  -p                  - production build (seek for shaders in ./Kernels)"
     )
 
     # Available option values
@@ -36,9 +37,10 @@ function getParameters() {
     build_dependencies=1
     build_wsim=1
     update_dependencies=1
+    production_build=0
 
     # Override values
-    while getopts "a:c:dwuh" opt; do
+    while getopts "a:c:dwuhp" opt; do
       case ${opt} in
         a ) validateOption "${architectures[*]}" "$OPTARG"
             architecture="$OPTARG" ;;
@@ -47,6 +49,7 @@ function getParameters() {
         d ) build_dependencies=0 ;;
         w ) build_wsim=0 ;;
         u ) update_dependencies=0 ;;
+        p ) production_build=1 ;;
         h ) printHelp; exit 0 ;;
         \?) printHelp; exit 1 ;;
       esac
@@ -71,7 +74,7 @@ function run_cmake() (
 
     # Run CMake
     echo "Running CMake for \"$src_dir\" in \"$build_dir\""
-    cmake "$src_dir" $architecture_flag -DCMAKE_BUILD_TYPE=$configuration -DCMAKE_CONFIGURATION_TYPES=$configuration $@
+    cmake "$src_dir" $architecture_flag -DWSIM_PRODUCTION=$production_build -DCMAKE_BUILD_TYPE=$configuration -DCMAKE_CONFIGURATION_TYPES=$configuration $@
     if [ $? != 0 ]; then
         exit 1
     fi
