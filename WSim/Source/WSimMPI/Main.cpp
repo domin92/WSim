@@ -44,6 +44,7 @@ int main(int argc, char **argv) {
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
+    std::cerr << "rank = " << my_rank << '\n';
 
     if (printPid) {
         int myPid = getProcessId();
@@ -55,6 +56,7 @@ int main(int argc, char **argv) {
             }
         }
     }
+
     if (blockProcessWithRank == my_rank) {
         std::cerr << "Process " << my_rank << " blocked at initialization. Attach debugger to " << getProcessId() << "\n";
         while (1)

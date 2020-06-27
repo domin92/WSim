@@ -4,18 +4,45 @@
 
 #include <mpi.h>
 
+struct FpsCallback {
+    using Clock = std::chrono::steady_clock;
+    Clock::time_point lastPrintTime = {};
+
+    void operator()(unsigned int fps) {
+        const Clock::time_point now = Clock::now();
+        if (now - lastPrintTime > std::chrono::milliseconds(700)) {
+            std::cout << "FPS: " << fps << '\n';
+            lastPrintTime = now;
+        }
+    }
+};
+
 MasterRendererInterfaceVolume::MasterRendererInterfaceVolume(Master &master)
     : MasterRendererInterface(master),
       rendererCallbacks(master),
       renderer(createRenderer(master)) {}
 
 void MasterRendererInterfaceVolume::mainLoop() {
-    renderer->mainLoop();
+    std::cerr << "AAAAAAAA\n";
+
+    DefaultFpsCounter fpsCounter;
+    FpsCallback fpsCallback;
+    using Clock = std::chrono::steady_clock;
+    auto lastFrameTime = Clock::now();
+    while (true) {
+           std::cerr << "tick\n";
+        const auto currentFrameTime = Clock::now();
+        const auto deltaTime = currentFrameTime - lastFrameTime;
+        fpsCounter.push(deltaTime);
+        fpsCallback(fpsCounter.getFps());
+        lastFrameTime = currentFrameTime;
+
+        rendererCallbacks.stepSimulation(std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime).count());
+    }
 }
 
 std::unique_ptr<Renderer> MasterRendererInterfaceVolume::createRenderer(Master &master) {
-    auto result = new VolumeRenderer(rendererCallbacks, master.getNodeSize(), master.getGridSize(), 1000);
-    return std::unique_ptr<Renderer>{result};
+    return {};
 }
 
 MasterRendererInterfaceVolume::VolumeRendererCallbacksImpl::VolumeRendererCallbacksImpl(Master &master) : master(master) {}
