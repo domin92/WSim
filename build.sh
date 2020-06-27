@@ -102,9 +102,9 @@ if [ $? != 0 ]; then
 fi
 if [ "$build_dependencies" == 1 ]; then
     compile gtest
-    compile glfw
-    compile glad
-    compile glm_static
+#    compile glfw
+ #   compile glad
+  #  compile glm_static
 fi
 if [ "$build_wsim" == 1 ]; then
     compile WSimStandalone
