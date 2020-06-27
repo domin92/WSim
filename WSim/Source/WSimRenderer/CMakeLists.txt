@@ -1,3 +1,5 @@
+return()
+
 # Define WSimRenderer - an OpenGL library providing rendering algorithms
 get_sources(SOURCE_FILES)
 add_library(${TARGET_WSIM_RENDERER_LIB} STATIC ${SOURCE_FILES})

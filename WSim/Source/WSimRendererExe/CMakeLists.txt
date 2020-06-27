@@ -1,3 +1,5 @@
+return()
+
 # Define WSimRendererExe - a temporary target for testing WSimRenderer
 set(TARGET_WSIM_RENDERER_EXE WSimRendererExe)
 get_sources(SOURCE_FILES)

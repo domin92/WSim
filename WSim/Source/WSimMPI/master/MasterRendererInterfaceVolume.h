@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Source/WSimMPI/master/MasterRendererInterface.h"
-#include "Source/WSimRenderer/VolumeRenderer.h"
+//#include "Source/WSimRenderer/VolumeRenderer.h"
 
 class Renderer;
 

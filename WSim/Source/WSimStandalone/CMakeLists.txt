@@ -1,3 +1,5 @@
+return()
+
 # Define WSimStandalone - a water simulation done locally, using only one computer (no MPI involved).
 set(TARGET_WSIM_STANDALONE WSimStandalone)
 get_sources(SOURCE_FILES)
