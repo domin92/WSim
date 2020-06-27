@@ -23,14 +23,11 @@ MasterRendererInterfaceVolume::MasterRendererInterfaceVolume(Master &master)
       renderer(createRenderer(master)) {}
 
 void MasterRendererInterfaceVolume::mainLoop() {
-    std::cerr << "AAAAAAAA\n";
-
     DefaultFpsCounter fpsCounter;
     FpsCallback fpsCallback;
     using Clock = std::chrono::steady_clock;
     auto lastFrameTime = Clock::now();
     while (true) {
-           std::cerr << "tick\n";
         const auto currentFrameTime = Clock::now();
         const auto deltaTime = currentFrameTime - lastFrameTime;
         fpsCounter.push(deltaTime);
