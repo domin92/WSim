@@ -35,7 +35,7 @@ void Master::sendToNodes() {
 }
 
 void Master::receiveFromNodes() {
-    MPI_Gather(MPI_IN_PLACE, 0, MPI_CHAR, main_buffer - node_volume, node_volume, MPI_CHAR, 0, MPI_COMM_WORLD);
+    MPI_Gather(MPI_IN_PLACE, 0, MPI_CHAR, main_buffer, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
 }
 
 void Master::main() {

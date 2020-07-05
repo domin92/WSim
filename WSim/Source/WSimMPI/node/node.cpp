@@ -301,8 +301,8 @@ void Node::receive_from_master() {
 }
 
 void Node::send_to_master() {
-    simulationInterface->preSendToMaster(send_array);
-    MPI_Gather(send_array, node_volume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
+    //simulationInterface->preSendToMaster(send_array);
+    MPI_Gather(send_array, 1, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
 }
 
 void Node::share() {

@@ -11,7 +11,7 @@ struct FpsCallback {
     void operator()(unsigned int fps) {
         const Clock::time_point now = Clock::now();
         if (now - lastPrintTime > std::chrono::milliseconds(700)) {
-            std::cout << "FPS: " << fps << '\n';
+            Logger::get() << "FPS: " << fps << '\n';
             lastPrintTime = now;
         }
     }
