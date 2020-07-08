@@ -1,21 +1,9 @@
 #include "Source/WSimCommon/ArgumentParser.h"
+#include "Source/WSimCommon/DefaultFpsCallback.h"
 #include "Source/WSimRenderer/FpsCounter.h"
 #include "Source/WSimSimulation/Simulation/Simulation.h"
 #include "Source/WSimStandalone/ColorRendererCallbacks.h"
 #include "Source/WSimStandalone/VolumeRendererCallbacks.h"
-
-struct FpsCallback {
-    using Clock = std::chrono::steady_clock;
-    Clock::time_point lastPrintTime = {};
-
-    void operator()(unsigned int fps) {
-        const Clock::time_point now = Clock::now();
-        if (now - lastPrintTime > std::chrono::milliseconds(700)) {
-            std::cout << "FPS: " << fps << '\n';
-            lastPrintTime = now;
-        }
-    }
-};
 
 struct Mode {
     enum class ModeEnum {
@@ -92,7 +80,7 @@ int main(int argc, char **argv) {
     simulation.addObstacleAllWalls();
     simulation.setGravityForce(1.f);
 
-    FpsCallback fpsCallback;
+    DefaultFpsCallback fpsCallback;
 
     switch (mode->value) {
     case Mode::ModeEnum::Graphical2D: {
