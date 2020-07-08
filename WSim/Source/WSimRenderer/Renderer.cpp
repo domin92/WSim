@@ -35,7 +35,6 @@ Renderer::Renderer(int oglProfile, int width, int height)
     glfwSetMouseButtonCallback(window, callbackProcessInput);
     glfwSetCursorPosCallback(window, callbackMouseMove);
     glfwSetScrollCallback(window, callbackScroll);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cerr << "Failed to initialize GLAD" << std::endl;
