@@ -1,8 +1,8 @@
 #include "node.hpp"
 
-#include "Source/WSimMPI/node/NodeSimulationInterfaceWater.hpp"
-#include "Source/WSimMPI/Utils.h"
 #include "Source/WSimCommon/Logger.h"
+#include "Source/WSimMPI/Utils.h"
+#include "Source/WSimMPI/node/NodeSimulationInterfaceWater.hpp"
 
 #include <cstdlib>
 #include <iostream>
@@ -71,16 +71,16 @@ using UsedSimulationInterface = NodeSimulationInterfaceWater;
 Node::Node(int rank, int grid_size, int node_size)
     : share_thickness(UsedSimulationInterface::shareThickness),
       number_of_main_arrays(UsedSimulationInterface::mainArraysCount),
-      sh_horizontal_size(node_size* node_size* share_thickness* number_of_main_arrays * UsedSimulationInterface::texelSize),
-      sh_vertical_size(node_size* node_size* share_thickness* number_of_main_arrays * UsedSimulationInterface::texelSize),
-      sh_depth_size(node_size* node_size* share_thickness* number_of_main_arrays * UsedSimulationInterface::texelSize),
-      sh_corner_size(share_thickness* share_thickness* share_thickness* number_of_main_arrays * UsedSimulationInterface::texelSize),
-      sh_edge_size(share_thickness* share_thickness* node_size* number_of_main_arrays * UsedSimulationInterface::texelSize),
+      sh_horizontal_size(node_size * node_size * share_thickness * number_of_main_arrays * UsedSimulationInterface::texelSize),
+      sh_vertical_size(node_size * node_size * share_thickness * number_of_main_arrays * UsedSimulationInterface::texelSize),
+      sh_depth_size(node_size * node_size * share_thickness * number_of_main_arrays * UsedSimulationInterface::texelSize),
+      sh_corner_size(share_thickness * share_thickness * share_thickness * number_of_main_arrays * UsedSimulationInterface::texelSize),
+      sh_edge_size(share_thickness * share_thickness * node_size * number_of_main_arrays * UsedSimulationInterface::texelSize),
       shareBuffers(sh_horizontal_size, sh_vertical_size, sh_depth_size, sh_corner_size, sh_edge_size),
       rank(rank),
       grid_size(grid_size),
       node_size(node_size),
-      node_volume(node_size* node_size* node_size * UsedSimulationInterface::texelSize),
+      node_volume(node_size * node_size * node_size * UsedSimulationInterface::texelSize),
       x_pos_in_grid(convertTo3DRankX(rank, grid_size)),
       y_pos_in_grid(convertTo3DRankY(rank, grid_size)),
       z_pos_in_grid(convertTo3DRankZ(rank, grid_size)),
@@ -181,7 +181,7 @@ ShareBuffers::~ShareBuffers() {
 Node::~Node() {
     delete[] send_array;
 
-    for (int i = 0; i < main_array_size *number_of_main_arrays; i++) {
+    for (int i = 0; i < main_array_size * number_of_main_arrays; i++) {
         for (int j = 0; j < main_array_size; j++) {
             delete[] array[0][i][j];
             delete[] array[1][i][j];
@@ -264,35 +264,35 @@ void Node::share_corners() {
 }
 
 void Node::share_edges() {
-    recv_buffer(y_pos_in_grid % 2 == 0, shareBuffers.sh_edge_UL_in, shareBuffers.sh_edge_DR_out,sh_edge_size, -1, -1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 0, shareBuffers.sh_edge_DR_in, shareBuffers.sh_edge_UL_out,sh_edge_size, 1, 1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 0, shareBuffers.sh_edge_UR_in, shareBuffers.sh_edge_DL_out,sh_edge_size, 1, -1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 0, shareBuffers.sh_edge_DL_in, shareBuffers.sh_edge_UR_out,sh_edge_size, -1, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, shareBuffers.sh_edge_UL_in, shareBuffers.sh_edge_DR_out, sh_edge_size, -1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, shareBuffers.sh_edge_DR_in, shareBuffers.sh_edge_UL_out, sh_edge_size, 1, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, shareBuffers.sh_edge_UR_in, shareBuffers.sh_edge_DL_out, sh_edge_size, 1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 0, shareBuffers.sh_edge_DL_in, shareBuffers.sh_edge_UR_out, sh_edge_size, -1, 1, 0);
 
-    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_FL_in, shareBuffers.sh_edge_BR_out,sh_edge_size, -1, 0, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_BR_in, shareBuffers.sh_edge_FL_out,sh_edge_size, 1, 0, 1);
-    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_FR_in, shareBuffers.sh_edge_BL_out,sh_edge_size, 1, 0, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_BL_in, shareBuffers.sh_edge_FR_out,sh_edge_size, -1, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_FL_in, shareBuffers.sh_edge_BR_out, sh_edge_size, -1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_BR_in, shareBuffers.sh_edge_FL_out, sh_edge_size, 1, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_FR_in, shareBuffers.sh_edge_BL_out, sh_edge_size, 1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_BL_in, shareBuffers.sh_edge_FR_out, sh_edge_size, -1, 0, 1);
 
-    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_FU_in, shareBuffers.sh_edge_BD_out,sh_edge_size, 0, -1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_BD_in, shareBuffers.sh_edge_FU_out,sh_edge_size, 0, 1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_FD_in, shareBuffers.sh_edge_BU_out,sh_edge_size, 0, 1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_BU_in, shareBuffers.sh_edge_FD_out,sh_edge_size, 0, -1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_FU_in, shareBuffers.sh_edge_BD_out, sh_edge_size, 0, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_BD_in, shareBuffers.sh_edge_FU_out, sh_edge_size, 0, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_FD_in, shareBuffers.sh_edge_BU_out, sh_edge_size, 0, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 0, shareBuffers.sh_edge_BU_in, shareBuffers.sh_edge_FD_out, sh_edge_size, 0, -1, 1);
 
-    recv_buffer(y_pos_in_grid % 2 == 1, shareBuffers.sh_edge_UL_in, shareBuffers.sh_edge_DR_out,sh_edge_size, -1, -1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 1, shareBuffers.sh_edge_DR_in, shareBuffers.sh_edge_UL_out,sh_edge_size, 1, 1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 1, shareBuffers.sh_edge_UR_in, shareBuffers.sh_edge_DL_out,sh_edge_size, 1, -1, 0);
-    recv_buffer(y_pos_in_grid % 2 == 1, shareBuffers.sh_edge_DL_in, shareBuffers.sh_edge_UR_out,sh_edge_size, -1, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, shareBuffers.sh_edge_UL_in, shareBuffers.sh_edge_DR_out, sh_edge_size, -1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, shareBuffers.sh_edge_DR_in, shareBuffers.sh_edge_UL_out, sh_edge_size, 1, 1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, shareBuffers.sh_edge_UR_in, shareBuffers.sh_edge_DL_out, sh_edge_size, 1, -1, 0);
+    recv_buffer(y_pos_in_grid % 2 == 1, shareBuffers.sh_edge_DL_in, shareBuffers.sh_edge_UR_out, sh_edge_size, -1, 1, 0);
 
-    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_FL_in, shareBuffers.sh_edge_BR_out,sh_edge_size, -1, 0, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_BR_in, shareBuffers.sh_edge_FL_out,sh_edge_size, 1, 0, 1);
-    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_FR_in, shareBuffers.sh_edge_BL_out,sh_edge_size, 1, 0, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_BL_in, shareBuffers.sh_edge_FR_out,sh_edge_size, -1, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_FL_in, shareBuffers.sh_edge_BR_out, sh_edge_size, -1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_BR_in, shareBuffers.sh_edge_FL_out, sh_edge_size, 1, 0, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_FR_in, shareBuffers.sh_edge_BL_out, sh_edge_size, 1, 0, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_BL_in, shareBuffers.sh_edge_FR_out, sh_edge_size, -1, 0, 1);
 
-    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_FU_in, shareBuffers.sh_edge_BD_out,sh_edge_size, 0, -1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_BD_in, shareBuffers.sh_edge_FU_out,sh_edge_size, 0, 1, 1);
-    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_FD_in, shareBuffers.sh_edge_BU_out,sh_edge_size, 0, 1, -1);
-    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_BU_in, shareBuffers.sh_edge_FD_out,sh_edge_size, 0, -1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_FU_in, shareBuffers.sh_edge_BD_out, sh_edge_size, 0, -1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_BD_in, shareBuffers.sh_edge_FU_out, sh_edge_size, 0, 1, 1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_FD_in, shareBuffers.sh_edge_BU_out, sh_edge_size, 0, 1, -1);
+    recv_buffer(z_pos_in_grid % 2 == 1, shareBuffers.sh_edge_BU_in, shareBuffers.sh_edge_FD_out, sh_edge_size, 0, -1, 1);
 }
 
 void Node::receive_from_master() {
@@ -301,8 +301,12 @@ void Node::receive_from_master() {
 }
 
 void Node::send_to_master() {
+#ifdef WSIM_TEXT_ONLY
+    MPI_Barrier(MPI_COMM_WORLD)
+#else
     simulationInterface->preSendToMaster(send_array);
     MPI_Gather(send_array, node_volume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
+#endif
 }
 
 void Node::share() {

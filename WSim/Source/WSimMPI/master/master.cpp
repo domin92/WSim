@@ -1,14 +1,18 @@
 ﻿#include "master.hpp"
 
-#include "Source/WSimMPI/master/MasterRendererInterfaceVolume.h"
-#include "Source/WSimMPI/master/MasterRendererInterfaceWater.hpp"
-
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <mpi.h>
 
+#ifdef WSIM_TEXT_ONLY
+#include "Source/WSimMPI/master/MasterRendererInterfaceText.h"
+using UsedRendererInterface = MasterRendererInterfaceText;
+#else
+#include "Source/WSimMPI/master/MasterRendererInterfaceVolume.h"
 using UsedRendererInterface = MasterRendererInterfaceVolume;
+#endif
+
 Master::Master(int proc_count, int grid_size, int node_size)
     : proc_count(proc_count),
       grid_size(grid_size),
@@ -55,17 +59,16 @@ void Master::main() {
                 int idx = z_in_grid * grid_size * grid_size + y_in_grid * grid_size + x_in_grid;
 
                 if (y < (1 * full_size / 10)) {
-                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4] = 0.0f;
-                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4 + 1] = 0.0f;
-                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4 + 2] = 1.0f;
-                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4 + 3] = 1.0f;
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node) * 4] = 0.0f;
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node) * 4 + 1] = 0.0f;
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node) * 4 + 2] = 1.0f;
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node) * 4 + 3] = 1.0f;
                 } else {
-                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4] = 0.0f;
-                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4 + 1] = 0.0f;
-                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4 + 2] = 0.0f;
-                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node)*4 + 3] = 1.0f;
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node) * 4] = 0.0f;
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node) * 4 + 1] = 0.0f;
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node) * 4 + 2] = 0.0f;
+                    ((float *)main_buffer)[(idx * node_size * node_size * node_size + z_in_node * node_size * node_size + y_in_node * node_size + x_in_node) * 4 + 3] = 1.0f;
                 }
-
             }
         }
     }
