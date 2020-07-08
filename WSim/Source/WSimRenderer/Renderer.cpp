@@ -3,7 +3,8 @@
 #include <iostream>
 #include <thread>
 
-Renderer::Renderer(int oglProfile, int width, int height) {
+Renderer::Renderer(int oglProfile, int width, int height)
+    : MainLooper(std::chrono::milliseconds(16)) {
     glfwInit();
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -40,51 +41,24 @@ Renderer::Renderer(int oglProfile, int width, int height) {
         std::cerr << "Failed to initialize GLAD" << std::endl;
         std::abort();
     }
-
-    lastFrameTime = Clock::now();
 }
 
 Renderer::~Renderer() {
     glfwTerminate();
 }
 
-void Renderer::setFpsCallback(FpsCallback fpsCallback) {
-    this->fpsCallback = fpsCallback;
-    this->fpsCounter = std::make_unique<DefaultFpsCounter>();
-}
+void Renderer::preUpdate() {
+    // Clear window
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+};
 
-void Renderer::mainLoop() {
+void Renderer::postUpdate() {
+    render();
 
-    while (!glfwWindowShouldClose(window)) {
-        // Handle time
-        const auto frameTime = Clock::now();
-        const auto deltaTime = frameTime - lastFrameTime;
-        constexpr static auto minimumFrameLength = std::chrono::milliseconds(16);
-        if (minimumFrameLength > deltaTime) {
-            auto lackingDeltaTime = minimumFrameLength - deltaTime;
-            std::this_thread::sleep_for(lackingDeltaTime);
-        }
-        lastFrameTime = frameTime;
-        const auto deltaTimeFloat = std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime).count();
-
-        // Fps callback
-        if (fpsCallback) {
-            fpsCounter->push(deltaTime);
-            fpsCallback(fpsCounter->getFps());
-        }
-
-        // Clear window
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // Update
-        update(deltaTimeFloat);
-        render();
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-}
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+};
 
 void Renderer::callbackFrameBufferSize(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
