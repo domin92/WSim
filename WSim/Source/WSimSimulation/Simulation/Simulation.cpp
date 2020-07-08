@@ -43,6 +43,7 @@ void Simulation::stepSimulation(float deltaTimeSeconds) {
     for (auto it = simulationSteps.rbegin(); it != simulationSteps.rend(); it++) {
         (*it)->run(deltaTimeSeconds);
     }
+    OCL::finish(commandQueue);
 }
 
 void Simulation::applyForce(float positionX, float positionY, float changeX, float changeY, float radius) {
