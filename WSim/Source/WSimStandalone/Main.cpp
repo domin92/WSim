@@ -3,6 +3,7 @@
 #include "Source/WSimRenderer/FpsCounter.h"
 #include "Source/WSimSimulation/Simulation/Simulation.h"
 #include "Source/WSimStandalone/ColorRendererCallbacks.h"
+#include "Source/WSimStandalone/TextRenderer.h"
 #include "Source/WSimStandalone/VolumeRendererCallbacks.h"
 
 struct Mode {
@@ -100,19 +101,9 @@ int main(int argc, char **argv) {
     }
 
     case Mode::ModeEnum::Text: {
-        DefaultFpsCounter fpsCounter;
-        using Clock = std::chrono::steady_clock;
-        auto lastFrameTime = Clock::now();
-        while (true) {
-            const auto currentFrameTime = Clock::now();
-            const auto deltaTime = currentFrameTime - lastFrameTime;
-            fpsCounter.push(deltaTime);
-            fpsCallback(fpsCounter.getFps());
-            lastFrameTime = currentFrameTime;
-
-            simulation.stepSimulation(deltaTime);
-            OCL::finish(simulation.getCommandQueue());
-        }
+        TextRenderer renderer{simulation};
+        renderer.setFpsCallback(fpsCallback);
+        renderer.mainLoop();
         break;
     }
     }
