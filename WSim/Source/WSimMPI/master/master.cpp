@@ -15,11 +15,11 @@ Master::Master(int proc_count, int grid_size, int node_size)
       node_size(node_size),
       full_size(node_size * grid_size),
       node_volume(UsedRendererInterface::mainBufferTexelSize * node_size * node_size * node_size),
-      main_buffer(new char[(proc_count - 1)*2]),
+      main_buffer(new char[(proc_count - 1)*10]),
       mapped_buffer(new char *[proc_count - 1]),
       rendererInterface(new UsedRendererInterface(*this)) {
     for (int i = 0; i < proc_count - 1; i++) {
-        mapped_buffer[i] = main_buffer + i * node_volume;
+        mapped_buffer[i] = main_buffer;
     }
 }
 
@@ -35,7 +35,7 @@ void Master::sendToNodes() {
 }
 
 void Master::receiveFromNodes() {
-    MPI_Gather(MPI_IN_PLACE, 0, MPI_CHAR, main_buffer, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
+    //MPI_Gather(MPI_IN_PLACE, 0, MPI_CHAR, main_buffer, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
 }
 
 void Master::main() {

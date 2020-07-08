@@ -87,37 +87,6 @@ Node::Node(int rank, int grid_size, int node_size)
       simulationInterface(new UsedSimulationInterface(*this)) {
     Logger::get() << "My 3D coords: " << x_pos_in_grid << ", " << y_pos_in_grid << ", " << z_pos_in_grid << std::endl;
 
-    // Creating two 3D arrays
-    main_array_size = node_size + 2 * share_thickness;
-
-    array[0] = new char **[main_array_size * number_of_main_arrays];
-    for (int i = 0; i < main_array_size * number_of_main_arrays; i++) {
-
-        array[0][i] = new char *[main_array_size];
-        for (int j = 0; j < main_array_size; j++) {
-
-            array[0][i][j] = new char[main_array_size];
-            for (int k = 0; k < main_array_size; k++) {
-
-                array[0][i][j][k] = 0;
-            }
-        }
-    }
-
-    array[1] = new char **[main_array_size * number_of_main_arrays];
-    for (int i = 0; i < main_array_size * number_of_main_arrays; i++) {
-
-        array[1][i] = new char *[main_array_size];
-        for (int j = 0; j < main_array_size; j++) {
-
-            array[1][i][j] = new char[main_array_size];
-            for (int k = 0; k < main_array_size; k++) {
-
-                array[1][i][j][k] = 0;
-            }
-        }
-    }
-
     current_array_idx = 0;
 
     send_array = new char[10];
@@ -180,18 +149,6 @@ ShareBuffers::~ShareBuffers() {
 
 Node::~Node() {
     delete[] send_array;
-
-    for (int i = 0; i < main_array_size *number_of_main_arrays; i++) {
-        for (int j = 0; j < main_array_size; j++) {
-            delete[] array[0][i][j];
-            delete[] array[1][i][j];
-        }
-        delete[] array[0][i];
-        delete[] array[1][i];
-    }
-
-    delete[] array[0];
-    delete[] array[1];
 }
 
 bool Node::node_in_grid(int x, int y, int z) {
@@ -302,7 +259,7 @@ void Node::receive_from_master() {
 
 void Node::send_to_master() {
     //simulationInterface->preSendToMaster(send_array);
-    MPI_Gather(send_array, 1, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
+    //MPI_Gather(send_array, 1, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
 }
 
 void Node::share() {

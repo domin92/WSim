@@ -2,6 +2,21 @@
 
 #include "Source/WSimMPI/node/node.hpp"
 
+#include "Source/WSimRenderer/FpsCounter.h"
+
+struct FpsCallback {
+    using Clock = std::chrono::steady_clock;
+    Clock::time_point lastPrintTime = {};
+
+    void operator()(unsigned int fps) {
+        const Clock::time_point now = Clock::now();
+        if (now - lastPrintTime > std::chrono::milliseconds(700)) {
+            Logger::get() << "FPS: " << fps << '\n';
+            lastPrintTime = now;
+        }
+    }
+};
+
 NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node)
     : NodeSimulationInterface(node),
       positionInGrid(createPositionInGrid(node)),
@@ -97,7 +112,21 @@ void NodeSimulationInterfaceWater::preShareCopy() {
 }
 
 void NodeSimulationInterfaceWater::iter() {
-    simulation.stepSimulation(0.1f); // TODO: what this should be?
+
+    DefaultFpsCounter fpsCounter;
+    FpsCallback fpsCallback;
+    using Clock = std::chrono::steady_clock;
+    auto lastFrameTime = Clock::now();
+    while (true) {
+        const auto currentFrameTime = Clock::now();
+        const auto deltaTime = currentFrameTime - lastFrameTime;
+        fpsCounter.push(deltaTime);
+        fpsCallback(fpsCounter.getFps());
+        lastFrameTime = currentFrameTime;
+
+        simulation.stepSimulation(0.1f); // TODO: what this should be?
+    }
+
 }
 
 void NodeSimulationInterfaceWater::postShareCopy() {
