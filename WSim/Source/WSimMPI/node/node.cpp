@@ -120,7 +120,7 @@ Node::Node(int rank, int grid_size, int node_size)
 
     current_array_idx = 0;
 
-    send_array = new char[node_volume];
+    send_array = new char[10];
 }
 
 ShareBuffers::~ShareBuffers() {
@@ -296,8 +296,8 @@ void Node::share_edges() {
 }
 
 void Node::receive_from_master() {
-    MPI_Scatter(MPI_IN_PLACE, 0, MPI_CHAR, send_array, node_volume, MPI_CHAR, 0, MPI_COMM_WORLD);
-    simulationInterface->postReceiveFromMaster(send_array);
+    //MPI_Scatter(MPI_IN_PLACE, 0, MPI_CHAR, send_array, node_volume, MPI_CHAR, 0, MPI_COMM_WORLD);
+    //simulationInterface->postReceiveFromMaster(send_array);
 }
 
 void Node::send_to_master() {
