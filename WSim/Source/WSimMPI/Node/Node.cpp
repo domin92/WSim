@@ -1,8 +1,8 @@
-#include "node.hpp"
+#include "Node.hpp"
 
 #include "Source/WSimCommon/Logger.hpp"
+#include "Source/WSimMPI/Node/NodeSimulationInterfaceWater.hpp"
 #include "Source/WSimMPI/Utils.hpp"
-#include "Source/WSimMPI/node/NodeSimulationInterfaceWater.hpp"
 
 #include <cstdlib>
 #include <iostream>

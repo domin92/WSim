@@ -1,5 +1,5 @@
-#include "master/master.hpp"
-#include "node/node.hpp"
+#include "Master/Master.hpp"
+#include "Node/Node.hpp"
 #include "Source/WSimCommon/ArgumentParser.hpp"
 #include "Source/WSimCommon/Logger.hpp"
 #include "Source/WSimMPI/Utils.hpp"
@@ -32,8 +32,8 @@ int main(int argc, char **argv) {
     // Parse arguments
     ArgumentParser argumentParser{argc, argv};
     int fullSize = argumentParser.getArgumentValue<int>({"-s", "--simulationSize"}, DEFAULT_GRID_SIZE); // Size of the edge of the simulation cube
-    int blockProcessWithRank = argumentParser.getArgumentValue<int>({"-b", "--block"}, -1);              // -1 means do not block
-    bool printPid = argumentParser.getArgumentValue<bool>({"-p", "--printPids"}, 0);                     // print process ids of all MPI processes
+    int blockProcessWithRank = argumentParser.getArgumentValue<int>({"-b", "--block"}, -1);             // -1 means do not block
+    bool printPid = argumentParser.getArgumentValue<bool>({"-p", "--printPids"}, 0);                    // print process ids of all MPI processes
 
     // Verify arguments
     if (fullSize <= 0) {

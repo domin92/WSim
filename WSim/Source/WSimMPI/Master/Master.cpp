@@ -1,4 +1,4 @@
-﻿#include "master.hpp"
+﻿#include "Master.hpp"
 
 #include <cstdlib>
 #include <fstream>
@@ -6,10 +6,10 @@
 #include <mpi.h>
 
 #ifdef WSIM_TEXT_ONLY
-#include "Source/WSimMPI/master/MasterRendererInterfaceText.h"
+#include "Source/WSimMPI/Master/MasterRendererInterfaceText.hpp"
 using UsedRendererInterface = MasterRendererInterfaceText;
 #else
-#include "Source/WSimMPI/master/MasterRendererInterfaceVolume.h"
+#include "Source/WSimMPI/Master/MasterRendererInterface3D.hpp"
 using UsedRendererInterface = MasterRendererInterface3D;
 #endif
 

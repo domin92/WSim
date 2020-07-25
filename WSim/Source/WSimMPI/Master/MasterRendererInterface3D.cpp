@@ -1,4 +1,4 @@
-#include "MasterRendererInterfaceVolume.hpp"
+#include "MasterRendererInterface3D.hpp"
 
 #include "Source/WSimRenderer/VolumeRenderer.hpp"
 

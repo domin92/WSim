@@ -1,4 +1,4 @@
-#include "MasterRendererInterfaceWater.hpp"
+#include "MasterRendererInterface2D.hpp"
 
 #include "Source/WSimMPI/Utils.hpp"
 

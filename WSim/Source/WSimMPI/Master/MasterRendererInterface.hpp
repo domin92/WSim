@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/WSimMPI/master/master.hpp"
+#include "Source/WSimMPI/Master/Master.hpp"
 
 #include <memory>
 

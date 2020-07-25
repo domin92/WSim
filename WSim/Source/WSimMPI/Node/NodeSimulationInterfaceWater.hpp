@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/WSimMPI/node/NodeSimulationInterface.hpp"
-#include "Source/WSimMPI/node/OclCopyHelper.hpp"
+#include "Source/WSimMPI/Node/NodeSimulationInterface.hpp"
+#include "Source/WSimMPI/Node/OclCopyHelper.hpp"
 #include "Source/WSimSimulation/Simulation/Simulation.hpp"
 
 struct ShareBuffers;

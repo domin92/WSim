@@ -1,6 +1,6 @@
 #include "NodeSimulationInterfaceWater.hpp"
 
-#include "Source/WSimMPI/node/node.hpp"
+#include "Source/WSimMPI/Node/Node.hpp"
 
 NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node)
     : NodeSimulationInterface(node),
@@ -37,7 +37,6 @@ NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node)
     if (node.getZPosInGrid() == node.getGridSize() - 1) {
         simulation.addObstacleWall(Dim::Z, End::Higher);
     }
-
 }
 
 void NodeSimulationInterfaceWater::postReceiveFromMaster(const char *receivedArray) {
