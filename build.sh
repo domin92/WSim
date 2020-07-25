@@ -23,7 +23,6 @@ function getParameters() {
         echo "  -c <Debug|Release>  - select configuration (default: Debug)"
         echo "  -d                  - do not compile dependencies automatically"
         echo "  -w                  - do not compile WSim automatically"
-        echo "  -u                  - do not update git dependencies automatically"
         echo "  -p                  - production build (seek for shaders in ./Kernels)"
     )
 
@@ -40,7 +39,7 @@ function getParameters() {
     production_build=0
 
     # Override values
-    while getopts "a:c:dwuhp" opt; do
+    while getopts "a:c:dwhp" opt; do
       case ${opt} in
         a ) validateOption "${architectures[*]}" "$OPTARG"
             architecture="$OPTARG" ;;
@@ -48,7 +47,6 @@ function getParameters() {
             configuration="$OPTARG" ;;
         d ) build_dependencies=0 ;;
         w ) build_wsim=0 ;;
-        u ) update_dependencies=0 ;;
         p ) production_build=1 ;;
         h ) printHelp; exit 0 ;;
         \?) printHelp; exit 1 ;;
@@ -89,11 +87,6 @@ function compile() (
 # Initialize
 getParameters $@
 build_path=`realpath .build -m`/"$architecture"_"$configuration"
-
-# Clone dependencies needed by WSim
-if [ "$update_dependencies" == 1 ]; then
-    git submodule update --init --recursive
-fi
 
 # Build
 run_cmake "." "$build_path" $architecture $configuration
