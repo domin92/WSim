@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/WSimRenderer/VolumeRenderer.h"
-#include "Source/WSimSimulation/Simulation/Simulation.h"
+#include "Source/WSimRenderer/VolumeRenderer.hpp"
+#include "Source/WSimSimulation/Simulation/Simulation.hpp"
 
 class VolumeRendererCallbacksImpl : public VolumeRendererCallbacks {
 public:

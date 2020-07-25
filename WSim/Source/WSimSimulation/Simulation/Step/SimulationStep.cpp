@@ -1,6 +1,6 @@
-#include "SimulationStep.h"
+#include "SimulationStep.hpp"
 
-#include "Source/WSimCommon/Error.h"
+#include "Source/WSimCommon/Error.hpp"
 
 SimulationStep::SimulationStep(Simulation &simulation, Vec3 &outputVelocitySize, Vec3 inputVelocitySize)
     : SimulationStep(simulation, const_cast<const Vec3 &>(outputVelocitySize), inputVelocitySize) {

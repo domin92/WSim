@@ -1,4 +1,4 @@
-#include "KernelManager.h"
+#include "KernelManager.hpp"
 
 KernelManager::KernelManager(OCL::Device &device, OCL::Context &context)
     : device(device),

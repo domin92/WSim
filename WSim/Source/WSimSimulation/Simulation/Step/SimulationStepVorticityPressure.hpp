@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/WSimSimulation/Simulation/Step/SimulationStep.h"
-#include "Source/WSimSimulation/Utils/ImagePair.h"
+#include "Source/WSimSimulation/Simulation/Step/SimulationStep.hpp"
+#include "Source/WSimSimulation/Utils/ImagePair.hpp"
 
 // This step performs three things, resulting in total border decrease of jacobiIterations+1:
 // 1. Calculate velocity divergence. This decreases border by 1

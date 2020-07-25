@@ -1,6 +1,6 @@
 #include "MasterRendererInterfaceWater.hpp"
 
-#include "Source/WSimMPI/Utils.h"
+#include "Source/WSimMPI/Utils.hpp"
 
 #include <cstring>
 

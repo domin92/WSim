@@ -1,4 +1,4 @@
-#include "ColorRenderer.h"
+#include "ColorRenderer.hpp"
 
 #include <algorithm>
 

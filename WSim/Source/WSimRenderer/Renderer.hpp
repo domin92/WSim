@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/WSimCommon/MainLooper.h"
-#include "Source/WSimRenderer/OpenGL.h"
+#include "Source/WSimCommon/MainLooper.hpp"
+#include "Source/WSimRenderer/OpenGL.hpp"
 
 #include <iostream>
 

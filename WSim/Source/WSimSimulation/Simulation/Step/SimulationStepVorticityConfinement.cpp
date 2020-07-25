@@ -1,6 +1,6 @@
-#include "SimulationStepVorticityConfinement.h"
+#include "SimulationStepVorticityConfinement.hpp"
 
-#include "Source/WSimSimulation/Simulation/Simulation.h"
+#include "Source/WSimSimulation/Simulation/Simulation.hpp"
 
 SimulationStepVorticityConfinement::SimulationStepVorticityConfinement(Simulation &simulation, Vec3 &outputVelocitySize)
     : SimulationStep(simulation, outputVelocitySize, increaseBorder(outputVelocitySize, simulation.getPositionInGrid(), 2)),

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Source/WSimCommon/EdgeHelpers.h"
-#include "Source/WSimSimulation/Simulation/BorderMaths.h"
-#include "Source/WSimSimulation/Utils/OpenCL.h"
+#include "Source/WSimCommon/EdgeHelpers.hpp"
+#include "Source/WSimSimulation/Simulation/BorderMaths.hpp"
+#include "Source/WSimSimulation/Utils/OpenCL.hpp"
 
 class OclCopyHelper {
 public:

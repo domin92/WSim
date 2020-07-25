@@ -1,6 +1,6 @@
-#include "SimulationStepGravity.h"
+#include "SimulationStepGravity.hpp"
 
-#include "Source/WSimSimulation/Simulation/Simulation.h"
+#include "Source/WSimSimulation/Simulation/Simulation.hpp"
 
 SimulationStepGravity::SimulationStepGravity(Simulation &simulation, Vec3 &outputVelocitySize)
     : SimulationStep(simulation, outputVelocitySize, outputVelocitySize),

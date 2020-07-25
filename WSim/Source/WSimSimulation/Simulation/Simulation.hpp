@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Source/WSimCommon/EdgeHelpers.h"
-#include "Source/WSimSimulation/Simulation/BorderMaths.h"
-#include "Source/WSimSimulation/Simulation/Step/SimulationStep.h"
-#include "Source/WSimSimulation/Utils/ImagePair.h"
-#include "Source/WSimSimulation/Utils/KernelManager.h"
-#include "Source/WSimSimulation/Utils/OpenCL.h"
+#include "Source/WSimCommon/EdgeHelpers.hpp"
+#include "Source/WSimSimulation/Simulation/BorderMaths.hpp"
+#include "Source/WSimSimulation/Simulation/Step/SimulationStep.hpp"
+#include "Source/WSimSimulation/Utils/ImagePair.hpp"
+#include "Source/WSimSimulation/Utils/KernelManager.hpp"
+#include "Source/WSimSimulation/Utils/OpenCL.hpp"
 
 #include <chrono>
 #include <memory>

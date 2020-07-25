@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/WSimCommon/MainLooper.h"
-#include "Source/WSimMPI/master/MasterRendererInterface.h"
+#include "Source/WSimCommon/MainLooper.hpp"
+#include "Source/WSimMPI/master/MasterRendererInterface.hpp"
 
 class TextRenderer : public MainLooper {
 public:

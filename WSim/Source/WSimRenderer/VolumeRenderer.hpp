@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/WSimRenderer/Renderer.h"
+#include "Source/WSimRenderer/Renderer.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>

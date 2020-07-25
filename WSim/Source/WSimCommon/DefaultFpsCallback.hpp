@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/WSimCommon/Logger.h"
+#include "Source/WSimCommon/Logger.hpp"
 
 #include <chrono>
 

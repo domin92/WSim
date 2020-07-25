@@ -1,4 +1,4 @@
-#include "OpenCL.h"
+#include "OpenCL.hpp"
 
 #include <fstream>
 #include <iostream>

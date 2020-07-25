@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/WSimSimulation/Simulation/Step/SimulationStep.h"
-#include "Source/WSimSimulation/Utils/OpenCL.h"
+#include "Source/WSimSimulation/Simulation/Step/SimulationStep.hpp"
+#include "Source/WSimSimulation/Utils/OpenCL.hpp"
 
 // This is the first step (which is created lastly, because steps are created in reverse order).
 // It performs border reduction from actual border being used to the size needed by next steps.

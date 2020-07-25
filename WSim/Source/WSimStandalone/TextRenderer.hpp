@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/WSimCommon/MainLooper.h"
-#include "Source/WSimSimulation/Simulation/Simulation.h"
+#include "Source/WSimCommon/MainLooper.hpp"
+#include "Source/WSimSimulation/Simulation/Simulation.hpp"
 
 class TextRenderer : public MainLooper {
 public:

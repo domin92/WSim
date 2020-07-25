@@ -1,4 +1,4 @@
-#include "VolumeRenderer.h"
+#include "VolumeRenderer.hpp"
 
 #include <fstream>
 #include <iterator>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/WSimSimulation/Utils/OpenCL.h"
+#include "Source/WSimSimulation/Utils/OpenCL.hpp"
 
 struct Image3DPair {
     explicit Image3DPair(cl_context context, Vec3 size, const cl_image_format &format) {

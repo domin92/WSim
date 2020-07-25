@@ -2,9 +2,9 @@
 
 #define CL_TARGET_OPENCL_VERSION 120
 
-#include "Source/WSimCommon/Error.h"
-#include "Source/WSimCommon/Logger.h"
-#include "Source/WSimCommon/Vec3.h"
+#include "Source/WSimCommon/Error.hpp"
+#include "Source/WSimCommon/Logger.hpp"
+#include "Source/WSimCommon/Vec3.hpp"
 
 #include <CL/cl.h>
 #include <iostream>

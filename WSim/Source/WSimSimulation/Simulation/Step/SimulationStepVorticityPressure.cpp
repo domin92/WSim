@@ -1,6 +1,6 @@
-#include "SimulationStepVorticityPressure.h"
+#include "SimulationStepVorticityPressure.hpp"
 
-#include "Source/WSimSimulation/Simulation/Simulation.h"
+#include "Source/WSimSimulation/Simulation/Simulation.hpp"
 
 SimulationStepPressure::SimulationStepPressure(Simulation &simulation, size_t jacobiIterations, Vec3 &outputVelocitySize)
     : SimulationStep(simulation, outputVelocitySize, increaseBorder(outputVelocitySize, simulation.getPositionInGrid(), static_cast<int>(jacobiIterations + 1))),

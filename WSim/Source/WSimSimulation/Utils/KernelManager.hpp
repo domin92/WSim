@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/WSimSimulation/Utils/OpenCL.h"
+#include "Source/WSimSimulation/Utils/OpenCL.hpp"
 
 #include <string>
 #include <unordered_map>

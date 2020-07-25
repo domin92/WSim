@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/WSimCommon/Vec3.h"
+#include "Source/WSimCommon/Vec3.hpp"
 
 struct PositionInGrid {
     PositionInGrid() {}

@@ -1,5 +1,5 @@
-#include "Source/WSimCommon/EdgeHelpers.h"
-#include "Source/WSimCommon/Error.h"
+#include "Source/WSimCommon/EdgeHelpers.hpp"
+#include "Source/WSimCommon/Error.hpp"
 
 size_t &selectDimension(Vec3 &vector, Dim dimension) {
     const size_t &result = selectDimension(const_cast<const Vec3 &>(vector), dimension);

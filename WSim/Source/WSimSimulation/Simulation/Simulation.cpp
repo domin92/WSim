@@ -1,10 +1,10 @@
-#include "Simulation.h"
+#include "Simulation.hpp"
 
-#include "Source/WSimSimulation/Simulation/Step/SimulationStepAdvection.h"
-#include "Source/WSimSimulation/Simulation/Step/SimulationStepColorAdvection.h"
-#include "Source/WSimSimulation/Simulation/Step/SimulationStepGravity.h"
-#include "Source/WSimSimulation/Simulation/Step/SimulationStepVorticityConfinement.h"
-#include "Source/WSimSimulation/Simulation/Step/SimulationStepVorticityPressure.h"
+#include "Source/WSimSimulation/Simulation/Step/SimulationStepAdvection.hpp"
+#include "Source/WSimSimulation/Simulation/Step/SimulationStepColorAdvection.hpp"
+#include "Source/WSimSimulation/Simulation/Step/SimulationStepGravity.hpp"
+#include "Source/WSimSimulation/Simulation/Step/SimulationStepVorticityConfinement.hpp"
+#include "Source/WSimSimulation/Simulation/Step/SimulationStepVorticityPressure.hpp"
 
 Simulation::Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize)
     : Simulation(platformIndex, deviceIndex, simulationSize, 0, PositionInGrid{Vec3{0, 0, 0}, Vec3{1, 1, 1}}) {}

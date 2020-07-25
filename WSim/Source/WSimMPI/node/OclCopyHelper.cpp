@@ -1,6 +1,6 @@
-#include "OclCopyHelper.h"
+#include "OclCopyHelper.hpp"
 
-#include "Source/WSimCommon/Error.h"
+#include "Source/WSimCommon/Error.hpp"
 
 #include <type_traits>
 

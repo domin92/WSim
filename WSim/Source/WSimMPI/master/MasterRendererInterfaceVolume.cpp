@@ -1,6 +1,6 @@
-#include "MasterRendererInterfaceVolume.h"
+#include "MasterRendererInterfaceVolume.hpp"
 
-#include "Source/WSimRenderer/VolumeRenderer.h"
+#include "Source/WSimRenderer/VolumeRenderer.hpp"
 
 #include <mpi.h>
 

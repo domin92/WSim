@@ -1,10 +1,10 @@
-#include "Source/WSimCommon/ArgumentParser.h"
-#include "Source/WSimCommon/DefaultFpsCallback.h"
-#include "Source/WSimRenderer/FpsCounter.h"
-#include "Source/WSimSimulation/Simulation/Simulation.h"
-#include "Source/WSimStandalone/ColorRendererCallbacks.h"
-#include "Source/WSimStandalone/TextRenderer.h"
-#include "Source/WSimStandalone/VolumeRendererCallbacks.h"
+#include "Source/WSimCommon/ArgumentParser.hpp"
+#include "Source/WSimCommon/DefaultFpsCallback.hpp"
+#include "Source/WSimRenderer/FpsCounter.hpp"
+#include "Source/WSimSimulation/Simulation/Simulation.hpp"
+#include "Source/WSimStandalone/ColorRendererCallbacks.hpp"
+#include "Source/WSimStandalone/TextRenderer.hpp"
+#include "Source/WSimStandalone/VolumeRendererCallbacks.hpp"
 
 struct Mode {
     enum class ModeEnum {

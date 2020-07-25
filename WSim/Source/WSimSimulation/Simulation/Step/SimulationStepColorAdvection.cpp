@@ -1,6 +1,6 @@
-#include "SimulationStepColorAdvection.h"
+#include "SimulationStepColorAdvection.hpp"
 
-#include "Source/WSimSimulation/Simulation/Simulation.h"
+#include "Source/WSimSimulation/Simulation/Simulation.hpp"
 
 SimulationStepColorAdvection::SimulationStepColorAdvection(Simulation &simulation)
     : SimulationStep(simulation, simulation.getSimulationSize(), simulation.getSimulationSizeWithBorder()),

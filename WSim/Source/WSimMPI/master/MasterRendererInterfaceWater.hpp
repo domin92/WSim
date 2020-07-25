@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/WSimMPI/master/MasterRendererInterface.h"
-#include "Source/WSimRenderer/ColorRenderer.h"
+#include "Source/WSimMPI/master/MasterRendererInterface.hpp"
+#include "Source/WSimRenderer/ColorRenderer.hpp"
 
 class Renderer;
 

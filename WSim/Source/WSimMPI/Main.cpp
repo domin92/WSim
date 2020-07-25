@@ -1,8 +1,8 @@
 #include "master/master.hpp"
 #include "node/node.hpp"
-#include "Source/WSimCommon/ArgumentParser.h"
-#include "Source/WSimCommon/Logger.h"
-#include "Source/WSimMPI/Utils.h"
+#include "Source/WSimCommon/ArgumentParser.hpp"
+#include "Source/WSimCommon/Logger.hpp"
+#include "Source/WSimMPI/Utils.hpp"
 
 #include <cstdlib>
 #include <mpi.h>

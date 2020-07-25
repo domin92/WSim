@@ -1,6 +1,6 @@
-#include "SimulationStepAdvection.h"
+#include "SimulationStepAdvection.hpp"
 
-#include "Source/WSimSimulation/Simulation/Simulation.h"
+#include "Source/WSimSimulation/Simulation/Simulation.hpp"
 
 SimulationStepAdvection::SimulationStepAdvection(Simulation &simulation, Vec3 &outputVelocitySize)
     : SimulationStep(simulation, outputVelocitySize, simulation.getSimulationSizeWithBorder()),

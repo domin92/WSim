@@ -1,5 +1,4 @@
-#ifndef NODE_HPP
-#define NODE_HPP
+#pragma once
 
 #include <memory>
 
@@ -133,5 +132,3 @@ public:
     auto getZPosInGrid() const { return zPosInGrid; }
     auto getGridSize() const { return gridSize; }
 };
-
-#endif

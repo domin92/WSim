@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/WSimRenderer/ColorRenderer.h"
-#include "Source/WSimSimulation/Simulation/Simulation.h"
+#include "Source/WSimRenderer/ColorRenderer.hpp"
+#include "Source/WSimSimulation/Simulation/Simulation.hpp"
 
 class ColorRendererCallbacksImpl : public ColorRendererCallbacks {
 public:

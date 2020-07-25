@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/WSimRenderer/FpsCounter.h"
+#include "Source/WSimRenderer/FpsCounter.hpp"
 
 #include <chrono>
 #include <functional>

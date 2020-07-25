@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/WSimSimulation/Simulation/Step/SimulationStep.h"
-#include "Source/WSimSimulation/Utils/OpenCL.h"
+#include "Source/WSimSimulation/Simulation/Step/SimulationStep.hpp"
+#include "Source/WSimSimulation/Utils/OpenCL.hpp"
 
 // This step performs two things, resulting in total border decrease of 2
 // 1. Calculate vorticity, which is the curl of velocity. This is a differential operator,

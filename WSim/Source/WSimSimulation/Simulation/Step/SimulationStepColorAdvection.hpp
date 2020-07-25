@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/WSimSimulation/Simulation/Step/SimulationStep.h"
-#include "Source/WSimSimulation/Utils/OpenCL.h"
+#include "Source/WSimSimulation/Simulation/Step/SimulationStep.hpp"
+#include "Source/WSimSimulation/Utils/OpenCL.hpp"
 
 // This is the last step of whole iteration, when simulation produces a color texture
 // It advects RGBA color through the velocity field to achieve visible fluid movement.

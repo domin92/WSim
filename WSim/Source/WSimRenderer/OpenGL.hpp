@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/WSimCommon/Error.h"
+#include "Source/WSimCommon/Error.hpp"
 
 #include <iostream>
 #include <string>

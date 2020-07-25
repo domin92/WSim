@@ -1,6 +1,6 @@
-#include "BorderMaths.h"
+#include "BorderMaths.hpp"
 
-#include "Source/WSimCommon/Error.h"
+#include "Source/WSimCommon/Error.hpp"
 
 Vec3 increaseBorder(Vec3 simulationSize, PositionInGrid positionInGrid, int borderWidthChange) {
     const auto borderX = 2 - static_cast<int>(positionInGrid.edgeL) - static_cast<int>(positionInGrid.edgeR);

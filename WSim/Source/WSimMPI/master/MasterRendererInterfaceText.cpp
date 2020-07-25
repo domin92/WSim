@@ -1,4 +1,4 @@
-#include "Source/WSimMPI/master/MasterRendererInterfaceText.h"
+#include "Source/WSimMPI/master/MasterRendererInterfaceText.hpp"
 
 #include <mpi.h>
 

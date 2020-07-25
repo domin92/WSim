@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/WSimRenderer/Renderer.h"
+#include "Source/WSimRenderer/Renderer.hpp"
 
 #include <memory>
 #include <vector>
