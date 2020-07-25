@@ -5,9 +5,9 @@
 
 class Renderer;
 
-class MasterRendererInterfaceVolume : public MasterRendererInterface {
+class MasterRendererInterface3D : public MasterRendererInterface {
 public:
-    MasterRendererInterfaceVolume(Master &master);
+    MasterRendererInterface3D(Master &master);
     constexpr static size_t mainBufferTexelSize = 4 * sizeof(float);
 
     // For MPI

@@ -4,23 +4,23 @@
 
 #include <cstring>
 
-MasterRendererInterfaceWater2D::MasterRendererInterfaceWater2D(Master &master)
+MasterRendererInterface2D::MasterRendererInterface2D(Master &master)
     : MasterRendererInterface(master),
       rendererCallbacks(master),
       renderer(std::make_unique<ColorRenderer>(rendererCallbacks, sizeof(float) * 4)) {
 }
 
-void MasterRendererInterfaceWater2D::mainLoop() {
+void MasterRendererInterface2D::mainLoop() {
     renderer->mainLoop();
 }
 
-MasterRendererInterfaceWater2D::ColorRendererCallbacksImpl::ColorRendererCallbacksImpl(Master &master) : master(master) {}
+MasterRendererInterface2D::ColorRendererCallbacksImpl::ColorRendererCallbacksImpl(Master &master) : master(master) {}
 
-size_t MasterRendererInterfaceWater2D::ColorRendererCallbacksImpl::getSubImagesCount2D() {
+size_t MasterRendererInterface2D::ColorRendererCallbacksImpl::getSubImagesCount2D() {
     return static_cast<size_t>(master.getProcCount()) - 1u;
 }
 
-ColorRendererCallbacks::SubImageInfo MasterRendererInterfaceWater2D::ColorRendererCallbacksImpl::getSubImageInfo2D(size_t subImageIndex) {
+ColorRendererCallbacks::SubImageInfo MasterRendererInterface2D::ColorRendererCallbacksImpl::getSubImageInfo2D(size_t subImageIndex) {
     SubImageInfo info{};
     const auto nodeRank = subImageIndex + 1; // convert methods expect process ranks
     if (convertTo3DRankZ(nodeRank, master.getGridSize()) != 0) {
@@ -36,7 +36,7 @@ ColorRendererCallbacks::SubImageInfo MasterRendererInterfaceWater2D::ColorRender
     return info;
 }
 
-void MasterRendererInterfaceWater2D::ColorRendererCallbacksImpl::getSubImage2D(size_t subImageIndex, void *data) {
+void MasterRendererInterface2D::ColorRendererCallbacksImpl::getSubImage2D(size_t subImageIndex, void *data) {
     const auto gridSize = master.getGridSize();
     const auto nodeRank = subImageIndex + 1; // convert methods expect process ranks
     const auto xInGrid = convertTo3DRankX(nodeRank, master.getGridSize());
@@ -49,18 +49,18 @@ void MasterRendererInterfaceWater2D::ColorRendererCallbacksImpl::getSubImage2D(s
     memcpy(data, buffer, nodeArea);
 }
 
-void MasterRendererInterfaceWater2D::ColorRendererCallbacksImpl::applyForce(float positionX, float positionY, float changeX, float changeY, float radius) {
+void MasterRendererInterface2D::ColorRendererCallbacksImpl::applyForce(float positionX, float positionY, float changeX, float changeY, float radius) {
     wsimError();
 }
 
-void MasterRendererInterfaceWater2D::ColorRendererCallbacksImpl::stop() {
+void MasterRendererInterface2D::ColorRendererCallbacksImpl::stop() {
     wsimError();
 }
 
-void MasterRendererInterfaceWater2D::ColorRendererCallbacksImpl::reset() {
+void MasterRendererInterface2D::ColorRendererCallbacksImpl::reset() {
     wsimError();
 }
 
-void MasterRendererInterfaceWater2D::ColorRendererCallbacksImpl::stepSimulation(float deltaTimeSeconds) {
+void MasterRendererInterface2D::ColorRendererCallbacksImpl::stepSimulation(float deltaTimeSeconds) {
     master.receiveFromNodes();
 }

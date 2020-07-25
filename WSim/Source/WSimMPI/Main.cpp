@@ -31,26 +31,26 @@ int my_cbrt(int a) {
 int main(int argc, char **argv) {
     // Parse arguments
     ArgumentParser argumentParser{argc, argv};
-    int full_size = argumentParser.getArgumentValue<int>({"-s", "--simulationSize"}, DEFAULT_GRID_SIZE); // Size of the edge of the simulation cube
+    int fullSize = argumentParser.getArgumentValue<int>({"-s", "--simulationSize"}, DEFAULT_GRID_SIZE); // Size of the edge of the simulation cube
     int blockProcessWithRank = argumentParser.getArgumentValue<int>({"-b", "--block"}, -1);              // -1 means do not block
     bool printPid = argumentParser.getArgumentValue<bool>({"-p", "--printPids"}, 0);                     // print process ids of all MPI processes
 
     // Verify arguments
-    if (full_size <= 0) {
+    if (fullSize <= 0) {
         return 1;
     }
 
-    int my_rank, proc_count;
+    int my_rank, procCount;
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &proc_count);
+    MPI_Comm_size(MPI_COMM_WORLD, &procCount);
 
     if (printPid) {
         int myPid = getProcessId();
-        auto pids = std::make_unique<int[]>(proc_count);
+        auto pids = std::make_unique<int[]>(procCount);
         MPI_Gather(&myPid, 1, MPI_INT, pids.get(), 1, MPI_INT, 0, MPI_COMM_WORLD);
         if (my_rank == 0) {
-            for (int i = 0; i < proc_count; i++) {
+            for (int i = 0; i < procCount; i++) {
                 std::cerr << "Process " << i << " pid = " << pids[i] << '\n';
             }
         }
@@ -63,17 +63,17 @@ int main(int argc, char **argv) {
 
     Logger::createFileLogger("log_file", my_rank);
 
-    if (my_cbrt(proc_count - 1) == 0) {
+    if (my_cbrt(procCount - 1) == 0) {
         return 1;
     }
-    int grid_size = my_cbrt(proc_count - 1);
-    int node_size = full_size / grid_size;
+    int gridSize = my_cbrt(procCount - 1);
+    int nodeSize = fullSize / gridSize;
 
     if (my_rank == 0) {
-        Master master(proc_count, grid_size, node_size);
+        Master master(procCount, gridSize, nodeSize);
         master.main();
     } else {
-        Node node(my_rank, grid_size, node_size);
+        Node node(my_rank, gridSize, nodeSize);
         node.main();
     }
 

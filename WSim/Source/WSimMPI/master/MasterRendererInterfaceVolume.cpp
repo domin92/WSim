@@ -4,26 +4,26 @@
 
 #include <mpi.h>
 
-MasterRendererInterfaceVolume::MasterRendererInterfaceVolume(Master &master)
+MasterRendererInterface3D::MasterRendererInterface3D(Master &master)
     : MasterRendererInterface(master),
       rendererCallbacks(master),
       renderer(createRenderer(master)) {}
 
-void MasterRendererInterfaceVolume::mainLoop() {
+void MasterRendererInterface3D::mainLoop() {
     renderer->mainLoop();
 }
 
-std::unique_ptr<Renderer> MasterRendererInterfaceVolume::createRenderer(Master &master) {
+std::unique_ptr<Renderer> MasterRendererInterface3D::createRenderer(Master &master) {
     auto result = new VolumeRenderer(rendererCallbacks, master.getNodeSize(), master.getGridSize(), 1000);
     return std::unique_ptr<Renderer>{result};
 }
 
-MasterRendererInterfaceVolume::VolumeRendererCallbacksImpl::VolumeRendererCallbacksImpl(Master &master) : master(master) {}
+MasterRendererInterface3D::VolumeRendererCallbacksImpl::VolumeRendererCallbacksImpl(Master &master) : master(master) {}
 
-void MasterRendererInterfaceVolume::VolumeRendererCallbacksImpl::stepSimulation(float deltaTimeSeconds) {
+void MasterRendererInterface3D::VolumeRendererCallbacksImpl::stepSimulation(float deltaTimeSeconds) {
     master.receiveFromNodes();
 }
 
-char *MasterRendererInterfaceVolume::VolumeRendererCallbacksImpl::getVolumeBuffers() {
+char *MasterRendererInterface3D::VolumeRendererCallbacksImpl::getVolumeBuffers() {
     return master.getMainBuffer();
 }

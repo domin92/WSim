@@ -5,9 +5,9 @@
 
 class Renderer;
 
-class MasterRendererInterfaceWater2D : public MasterRendererInterface {
+class MasterRendererInterface2D : public MasterRendererInterface {
 public:
-    MasterRendererInterfaceWater2D(Master &master);
+    MasterRendererInterface2D(Master &master);
     constexpr static size_t mainBufferTexelSize = 4 * sizeof(float);
 
     // For MPI

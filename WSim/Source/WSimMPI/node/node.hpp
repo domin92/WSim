@@ -69,9 +69,9 @@ struct ShareBuffers {
 
 class Node{
 	int rank;
-	int grid_size; // Number of nodes in side of 3d grid
-	int node_size; // Size of the cude side in bytes
-    int node_volume;
+	int gridSize; // Number of nodes in side of 3d grid
+	int nodeSize; // Size of the cude side in bytes
+    int nodeVolume;
 
     const int share_thickness; // Thickness of shared areas in bytes
 
@@ -113,7 +113,7 @@ class Node{
 	void send_to_master();
 	
 public:
-	Node(int rank, int grid_size, int node_size);
+	Node(int rank, int gridSize, int nodeSize);
 	~Node();
 
 	void main();
@@ -122,7 +122,7 @@ public:
 
 	// Getters
 	auto& get_share_buffers() const { return shareBuffers; }
-	auto get_node_size() const { return node_size; }
+	auto get_node_size() const { return nodeSize; }
 	auto get_share_thickness() const { return share_thickness; }
 	auto get_current_array_idx() const { return current_array_idx; }
 	auto get_main_array_size() const { return main_array_size; }
@@ -131,7 +131,7 @@ public:
 	auto get_x_pos_in_grid() const { return x_pos_in_grid; }
 	auto get_y_pos_in_grid() const { return y_pos_in_grid; }
 	auto get_z_pos_in_grid() const { return z_pos_in_grid; }
-	auto get_grid_size() const { return grid_size; }
+	auto get_grid_size() const { return gridSize; }
 	auto get_rank() const { return rank; }
 };
 

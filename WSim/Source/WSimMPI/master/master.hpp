@@ -1,5 +1,4 @@
-#ifndef MASTER_HPP
-#define MASTER_HPP
+#pragma once
 
 #include <memory>
 
@@ -7,22 +6,22 @@ class MasterRendererInterface;
 
 class Master {
     // Sizes
-    const int grid_size;
-    const int node_size;
-    const int full_size;
-    const int proc_count;
-    const int node_volume;
+    const int gridSize;
+    const int nodeSize;
+    const int fullSize;
+    const int procCount;
+    const int nodeVolume;
 
     // Allocations
-    char **mapped_buffer;
-    char *main_buffer;
+    char **mappedBuffer;
+    char *mainBuffer;
 
     // Renderer
     std::unique_ptr<MasterRendererInterface> rendererInterface;
 
 public:
     // General
-    Master(int proc_count, int grid_size, int node_size);
+    Master(int proc_count, int grid_size, int nodeSize);
     ~Master();
     void main();
 
@@ -31,13 +30,11 @@ public:
     void receiveFromNodes();
 
     // Getters
-    auto getGridSize() const { return grid_size; }
-    auto getNodeSize() const { return node_size; }
-    auto getFullSize() const { return full_size; }
-    auto getProcCount() const { return proc_count; }
-    auto getNodeVolume() const { return node_volume; }
-    auto getMainBuffer() const { return main_buffer; }
-    auto getMappedBuffer() const { return mapped_buffer; }
+    auto getGridSize() const { return gridSize; }
+    auto getNodeSize() const { return nodeSize; }
+    auto getFullSize() const { return fullSize; }
+    auto getProcCount() const { return procCount; }
+    auto getNodeVolume() const { return nodeVolume; }
+    auto getMainBuffer() const { return mainBuffer; }
+    auto getMappedBuffer() const { return mappedBuffer; }
 };
-
-#endif

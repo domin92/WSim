@@ -1,7 +1,7 @@
 #pragma once
 
 // Calculating node position in 3D space - VERY IMPORTANT!
-// For grid_size = 2 we have:
+// For gridSize = 2 we have:
 //
 // Rank | x | y | z
 // 1    | 0 | 0 | 0
