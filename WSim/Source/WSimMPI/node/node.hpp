@@ -125,18 +125,13 @@ public:
     void main();
 
     // Getters
-    auto &get_share_buffers() const { return shareBuffers; }
-    auto get_node_size() const { return nodeSize; }
-    auto get_share_thickness() const { return shareThickness; }
-    auto get_current_array_idx() const { return currentArrayIndex; }
-    auto get_main_array_size() const { return mainArraySize; }
-    char ***get_main_array_input() const { return array[currentArrayIndex]; }
-    char ***get_main_array_output() const { return array[currentArrayIndex ^ 1]; }
-    auto get_x_pos_in_grid() const { return xPosInGrid; }
-    auto get_y_pos_in_grid() const { return yPosInGrid; }
-    auto get_z_pos_in_grid() const { return zPosInGrid; }
-    auto get_grid_size() const { return gridSize; }
-    auto get_rank() const { return rank; }
+    auto &getShareBuffers() const { return shareBuffers; }
+    auto getNodeSize() const { return nodeSize; }
+    auto getShareThickness() const { return shareThickness; }
+    auto getXPosInGrid() const { return xPosInGrid; }
+    auto getYPosInGrid() const { return yPosInGrid; }
+    auto getZPosInGrid() const { return zPosInGrid; }
+    auto getGridSize() const { return gridSize; }
 };
 
 #endif

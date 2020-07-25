@@ -5,36 +5,36 @@
 NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node)
     : NodeSimulationInterface(node),
       positionInGrid(createPositionInGrid(node)),
-      simulation(0, 0, getNodeSize(node), node.get_share_thickness(), positionInGrid),
-      copier(positionInGrid, (cl_command_queue &)simulation.getCommandQueue(), (size_t)node.get_share_thickness(), simulation.getSimulationSize()) {
+      simulation(0, 0, getNodeSize(node), node.getShareThickness(), positionInGrid),
+      copier(positionInGrid, (cl_command_queue &)simulation.getCommandQueue(), (size_t)node.getShareThickness(), simulation.getSimulationSize()) {
 
     // Gravity
     simulation.setGravityForce(5.f);
 
     // For testing
-    const auto nodeSize = node.get_node_size();
-    const auto centerX = nodeSize / 2.f - node.get_x_pos_in_grid() * nodeSize;
-    const auto centerY = nodeSize / 2.f - node.get_y_pos_in_grid() * nodeSize;
-    const auto centerZ = -1.f * node.get_z_pos_in_grid() * nodeSize;
+    const auto nodeSize = node.getNodeSize();
+    const auto centerX = nodeSize / 2.f - node.getXPosInGrid() * nodeSize;
+    const auto centerY = nodeSize / 2.f - node.getYPosInGrid() * nodeSize;
+    const auto centerZ = -1.f * node.getZPosInGrid() * nodeSize;
     Logger::get() << centerX << ", " << centerY << ", " << centerZ << std::endl;
     simulation.applyForce(FloatVec3{centerX, centerY, centerZ}, FloatVec3{50, 50, 0}, 10);
 
-    if (node.get_x_pos_in_grid() == 0) {
+    if (node.getXPosInGrid() == 0) {
         simulation.addObstacleWall(Dim::X, End::Lower);
     }
-    if (node.get_x_pos_in_grid() == node.get_grid_size() - 1) {
+    if (node.getXPosInGrid() == node.getGridSize() - 1) {
         simulation.addObstacleWall(Dim::X, End::Higher);
     }
-    if (node.get_y_pos_in_grid() == 0) {
+    if (node.getYPosInGrid() == 0) {
         simulation.addObstacleWall(Dim::Y, End::Lower);
     }
-    if (node.get_y_pos_in_grid() == node.get_grid_size() - 1) {
+    if (node.getYPosInGrid() == node.getGridSize() - 1) {
         simulation.addObstacleWall(Dim::Y, End::Higher);
     }
-    if (node.get_z_pos_in_grid() == 0) {
+    if (node.getZPosInGrid() == 0) {
         simulation.addObstacleWall(Dim::Z, End::Lower);
     }
-    if (node.get_z_pos_in_grid() == node.get_grid_size() - 1) {
+    if (node.getZPosInGrid() == node.getGridSize() - 1) {
         simulation.addObstacleWall(Dim::Z, End::Higher);
     }
 
@@ -57,7 +57,7 @@ void NodeSimulationInterfaceWater::preSendToMaster(char *arrayToSend) {
 }
 
 void NodeSimulationInterfaceWater::preShareCopy() {
-    const auto &shareBuffers = node.get_share_buffers();
+    const auto &shareBuffers = node.getShareBuffers();
     const auto copy = [&shareBuffers, this](cl_mem image, size_t imageIndex) {
         copier.preShareCopySide(image, imageIndex, shareBuffers.sh_vertical_D_out, Dim::Y, End::Higher);
         copier.preShareCopySide(image, imageIndex, shareBuffers.sh_vertical_U_out, Dim::Y, End::Lower);
@@ -101,7 +101,7 @@ void NodeSimulationInterfaceWater::iter() {
 }
 
 void NodeSimulationInterfaceWater::postShareCopy() {
-    const auto &shareBuffers = node.get_share_buffers();
+    const auto &shareBuffers = node.getShareBuffers();
     const auto copy = [&shareBuffers, this](cl_mem image, size_t imageIndex) {
         copier.postShareCopySide(image, imageIndex, shareBuffers.sh_vertical_D_in, Dim::Y, End::Higher);
         copier.postShareCopySide(image, imageIndex, shareBuffers.sh_vertical_U_in, Dim::Y, End::Lower);
@@ -141,22 +141,22 @@ void NodeSimulationInterfaceWater::postShareCopy() {
 
 PositionInGrid NodeSimulationInterfaceWater::createPositionInGrid(Node &node) {
     const Vec3 position = {
-        static_cast<size_t>(node.get_x_pos_in_grid()),
-        static_cast<size_t>(node.get_y_pos_in_grid()),
-        static_cast<size_t>(node.get_z_pos_in_grid()),
+        static_cast<size_t>(node.getXPosInGrid()),
+        static_cast<size_t>(node.getYPosInGrid()),
+        static_cast<size_t>(node.getZPosInGrid()),
     };
     const Vec3 size = {
-        static_cast<size_t>(node.get_grid_size()),
-        static_cast<size_t>(node.get_grid_size()),
-        static_cast<size_t>(node.get_grid_size()),
+        static_cast<size_t>(node.getGridSize()),
+        static_cast<size_t>(node.getGridSize()),
+        static_cast<size_t>(node.getGridSize()),
     };
     return PositionInGrid{position, size};
 }
 
 Vec3 NodeSimulationInterfaceWater::getNodeSize(Node &node) {
     return Vec3{
-        static_cast<size_t>(node.get_node_size()),
-        static_cast<size_t>(node.get_node_size()),
-        static_cast<size_t>(node.get_node_size()),
+        static_cast<size_t>(node.getNodeSize()),
+        static_cast<size_t>(node.getNodeSize()),
+        static_cast<size_t>(node.getNodeSize()),
     };
 }
