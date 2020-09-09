@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <mpi.h>
 
 class NodeSimulationInterface;
 
@@ -99,6 +100,9 @@ private:
     char ***array[2];        // Two 3D arrays - input, output
     int currentArrayIndex;   // Index of the current input array
     char *sendArray;         // Buffer for communication with master
+
+    // MPI_Request used to block Igather
+    MPI_Request igatherRequest;
 
     // Helpers for checking neigbours
     int getNeighbourRank(int neighbourOffsetX, int neighbourOffsetY, int neighbourOffsetZ);

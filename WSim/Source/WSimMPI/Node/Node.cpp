@@ -6,7 +6,6 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <mpi.h>
 
 ShareBuffers::ShareBuffers(int shHorizontalSize, int shVerticalSize, int shDepthSize, int shCornerSize, int shEdgeSize) {
     sh_horizontal_L_in = new char[shHorizontalSize];
@@ -122,6 +121,8 @@ Node::Node(int rank, int gridSize, int nodeSize)
     currentArrayIndex = 0;
 
     sendArray = new char[nodeVolume];
+
+    igatherRequest = MPI_REQUEST_NULL;
 }
 
 ShareBuffers::~ShareBuffers() {
@@ -304,7 +305,8 @@ void Node::sendToMaster() {
     MPI_Barrier(MPI_COMM_WORLD)
 #else
     simulationInterface->preSendToMaster(sendArray);
-    MPI_Gather(sendArray, nodeVolume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
+    MPI_Wait(&igatherRequest, MPI_STATUS_IGNORE);
+    MPI_Igather(sendArray, nodeVolume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD, &igatherRequest);
 #endif
 }
 

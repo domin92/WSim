@@ -12,7 +12,7 @@ VolumeRenderer::VolumeRenderer(VolumeRendererCallbacks &callbacks, int nodeSizeI
       mvp(createMvp()) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    cameraPos = glm::vec3(3.0f, 3.0f, 3.0f);
+    cameraPos = glm::vec3(2.0f, 2.0f, 2.0f);
     cameraFront = glm::vec3(0.0f, 0.0f, 0.0f);
     cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -125,11 +125,6 @@ void VolumeRenderer::render() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glm::mat4 view = glm::lookAt(
-        glm::vec3(1.25, 1.25, 2.0f), // Camera position
-        glm::vec3(0.5f, 0.5f, 0.5f), // Looks at the 0.5f, 0.5f, 0.5f
-        glm::vec3(0, 1, 0)           // Head is up (set to 0,-1,0 to look upside-down)
-    );
     float currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
@@ -153,6 +148,7 @@ void VolumeRenderer::render() {
 void VolumeRenderer::processKeyboardInput(int key, int scancode, int action, int mods) {
     float cameraSpeed = 4.0f * deltaTime;
     switch (key) {
+    case GLFW_KEY_Q:
     case GLFW_KEY_ESCAPE:
         glfwSetWindowShouldClose(window, true);
         break;
