@@ -19,6 +19,8 @@ Where `<number of processes>` is a cube number + 1 e.g. 2,9 or 28. `<simulation 
 Now
 - Fix gravity
 - Fix walls on more than one node
+- Fix camera lookAt
+- Fix window closing
 - Level set physics
 - Level set rendering
 - Reduce share arrays size (4 Floats to 1 Float, 4 Floats to 4 Bytes?)
