@@ -12,18 +12,18 @@ Use MS-MPI or MPICH
 mpiexec.exe -n <number of processes> .\WSimMPI.exe <simulation size> // MS-MPI
 mpiexec -np <number of processes> WSimMPI <simulation size> //MPICH
 ```
-Where `<number of processes>` is a cube number + 1 e.g. 2,9 or 28. `<simulation size>` is a size of a simulation cube e.g. 100 (60 by default).
+Where `<number of processes>` is a number of nodes + master process (n^3 + 1) e.g. 2,9 or 28. 
+`<simulation size>` is a size of an edge of simulation cube e.g. 100 (60 by default).
 
 ## TO-DO
 
 Now
-- Fix gravity
+- Fix gravity - weird things happen
 - Fix walls on more than one node
-- Fix camera lookAt
-- Fix window closing
+- Fix camera initial lookAt
+- Fix window - unable to close
 - Level set physics
 - Level set rendering
-- Reduce share arrays size (4 Floats to 1 Float, 4 Floats to 4 Bytes?)
 
 Later
 - Render on nodes and send 2D images to master
