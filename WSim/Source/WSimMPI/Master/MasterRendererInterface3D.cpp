@@ -24,6 +24,6 @@ void MasterRendererInterface3D::VolumeRendererCallbacksImpl::stepSimulation(floa
     master.receiveFromNodes();
 }
 
-char *MasterRendererInterface3D::VolumeRendererCallbacksImpl::getVolumeBuffers() {
+uint8_t *MasterRendererInterface3D::VolumeRendererCallbacksImpl::getVolumeBuffers() {
     return master.getMainBuffer();
 }

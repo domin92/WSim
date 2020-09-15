@@ -19,7 +19,7 @@ Simulation::Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulation
       context(OCL::createContext(platform, device)),
       commandQueue(OCL::createCommandQueue(context, device)),
       velocity(context, simulationSizeWithBorder, vectorFieldFormat),
-      color(context, simulationSizeWithBorder, vectorFieldFormat),
+      color(context, simulationSizeWithBorder, colorFieldFormat),
       obstacles(OCL::createReadWriteImage3D(context, simulationSize, vectorFieldFormat)),
       kernels(device, context),
       kernelInitializeColor(kernels["initialize.cl"]["initializeColor"]),

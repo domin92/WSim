@@ -10,11 +10,11 @@ class NodeSimulationInterfaceWater : public NodeSimulationInterface {
 public:
     NodeSimulationInterfaceWater(Node &node);
     constexpr static size_t shareThickness = 15u;
-    constexpr static size_t texelSize = Simulation::colorVoxelSize;
-    constexpr static size_t mainArraysCount = 2;
+    constexpr static size_t colorVoxelSize = Simulation::colorVoxelSize;
+    constexpr static size_t velocityVoxelSize = Simulation::velocityVoxelSize;
 
-    void postReceiveFromMaster(const char *receivedArray) override;
-    void preSendToMaster(char *arrayToSend) override;
+    void postReceiveFromMaster(const uint8_t *receivedArray) override;
+    void preSendToMaster(uint8_t *arrayToSend) override;
     void preShareCopy() override;
     void iter() override;
     void postShareCopy() override;

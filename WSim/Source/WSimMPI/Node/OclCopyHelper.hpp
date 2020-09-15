@@ -8,13 +8,13 @@ class OclCopyHelper {
 public:
     OclCopyHelper(PositionInGrid grid, cl_command_queue &commandQueue, size_t border, Vec3 baseSize);
 
-    void preShareCopySide(cl_mem image, size_t indexInOutputBuffer, void *outputBuffer, Dim dimension, End end);
-    void preShareCopyEdge(cl_mem image, size_t indexInOutputBuffer, void *outputBuffer, Dim dimension1, End end1, Dim dimension2, End end2);
-    void preShareCopyCorner(cl_mem image, size_t indexInOutputBuffer, void *outputBuffer, End endX, End endY, End endZ);
+    void preShareCopySide(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, void *outputBuffer, Dim dimension, End end);
+    void preShareCopyEdge(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, void *outputBuffer, Dim dimension1, End end1, Dim dimension2, End end2);
+    void preShareCopyCorner(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, void *outputBuffer, End endX, End endY, End endZ);
 
-    void postShareCopySide(cl_mem image, size_t indexInOutputBuffer, const void *inputBuffer, Dim dimension, End end);
-    void postShareCopyEdge(cl_mem image, size_t indexInOutputBuffer, const void *inputBuffer, Dim dimension1, End end1, Dim dimension2, End end2);
-    void postShareCopyCorner(cl_mem image, size_t indexInOutputBuffer, const void *inputBuffer, End endX, End endY, End endZ);
+    void postShareCopySide(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, const void *inputBuffer, Dim dimension, End end);
+    void postShareCopyEdge(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, const void *inputBuffer, Dim dimension1, End end1, Dim dimension2, End end2);
+    void postShareCopyCorner(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, const void *inputBuffer, End endX, End endY, End endZ);
 
 private:
     bool shouldNotShare(Dim dimension, End end);

@@ -2,13 +2,14 @@
 
 #include "Source/WSimMPI/Master/MasterRendererInterface.hpp"
 #include "Source/WSimRenderer/ColorRenderer.hpp"
+#include "Source/WSimSimulation/Simulation/Simulation.hpp"
 
 class Renderer;
 
 class MasterRendererInterface2D : public MasterRendererInterface {
 public:
     MasterRendererInterface2D(Master &master);
-    constexpr static size_t mainBufferTexelSize = 4 * sizeof(float);
+    constexpr static size_t mainBufferTexelSize = Simulation::colorVoxelSize;
 
     // For MPI
     virtual void mainLoop() override;

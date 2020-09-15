@@ -8,119 +8,86 @@
 #include <iostream>
 
 ShareBuffers::ShareBuffers(int shHorizontalSize, int shVerticalSize, int shDepthSize, int shCornerSize, int shEdgeSize) {
-    sh_horizontal_L_in = new char[shHorizontalSize];
-    sh_horizontal_L_out = new char[shHorizontalSize];
-    sh_horizontal_R_in = new char[shHorizontalSize];
-    sh_horizontal_R_out = new char[shHorizontalSize];
+    sh_horizontal_L_in  = new uint8_t[shHorizontalSize];
+    sh_horizontal_L_out = new uint8_t[shHorizontalSize];
+    sh_horizontal_R_in  = new uint8_t[shHorizontalSize];
+    sh_horizontal_R_out = new uint8_t[shHorizontalSize];
 
-    sh_vertical_U_in = new char[shVerticalSize];
-    sh_vertical_U_out = new char[shVerticalSize];
-    sh_vertical_D_in = new char[shVerticalSize];
-    sh_vertical_D_out = new char[shVerticalSize];
+    sh_vertical_U_in  = new uint8_t[shVerticalSize];
+    sh_vertical_U_out = new uint8_t[shVerticalSize];
+    sh_vertical_D_in  = new uint8_t[shVerticalSize];
+    sh_vertical_D_out = new uint8_t[shVerticalSize];
 
-    sh_depth_F_in = new char[shDepthSize];
-    sh_depth_F_out = new char[shDepthSize];
-    sh_depth_B_in = new char[shDepthSize];
-    sh_depth_B_out = new char[shDepthSize];
+    sh_depth_F_in  = new uint8_t[shDepthSize];
+    sh_depth_F_out = new uint8_t[shDepthSize];
+    sh_depth_B_in  = new uint8_t[shDepthSize];
+    sh_depth_B_out = new uint8_t[shDepthSize];
 
-    sh_corner_FUL_in = new char[shCornerSize];
-    sh_corner_FUL_out = new char[shCornerSize];
-    sh_corner_FUR_in = new char[shCornerSize];
-    sh_corner_FUR_out = new char[shCornerSize];
-    sh_corner_FDL_in = new char[shCornerSize];
-    sh_corner_FDL_out = new char[shCornerSize];
-    sh_corner_FDR_in = new char[shCornerSize];
-    sh_corner_FDR_out = new char[shCornerSize];
-    sh_corner_BUL_in = new char[shCornerSize];
-    sh_corner_BUL_out = new char[shCornerSize];
-    sh_corner_BUR_in = new char[shCornerSize];
-    sh_corner_BUR_out = new char[shCornerSize];
-    sh_corner_BDL_in = new char[shCornerSize];
-    sh_corner_BDL_out = new char[shCornerSize];
-    sh_corner_BDR_in = new char[shCornerSize];
-    sh_corner_BDR_out = new char[shCornerSize];
+    sh_corner_FUL_in  = new uint8_t[shCornerSize];
+    sh_corner_FUL_out = new uint8_t[shCornerSize];
+    sh_corner_FUR_in  = new uint8_t[shCornerSize];
+    sh_corner_FUR_out = new uint8_t[shCornerSize];
+    sh_corner_FDL_in  = new uint8_t[shCornerSize];
+    sh_corner_FDL_out = new uint8_t[shCornerSize];
+    sh_corner_FDR_in  = new uint8_t[shCornerSize];
+    sh_corner_FDR_out = new uint8_t[shCornerSize];
+    sh_corner_BUL_in  = new uint8_t[shCornerSize];
+    sh_corner_BUL_out = new uint8_t[shCornerSize];
+    sh_corner_BUR_in  = new uint8_t[shCornerSize];
+    sh_corner_BUR_out = new uint8_t[shCornerSize];
+    sh_corner_BDL_in  = new uint8_t[shCornerSize];
+    sh_corner_BDL_out = new uint8_t[shCornerSize];
+    sh_corner_BDR_in  = new uint8_t[shCornerSize];
+    sh_corner_BDR_out = new uint8_t[shCornerSize];
 
-    sh_edge_UL_in = new char[shEdgeSize];
-    sh_edge_UL_out = new char[shEdgeSize];
-    sh_edge_UR_in = new char[shEdgeSize];
-    sh_edge_UR_out = new char[shEdgeSize];
-    sh_edge_DL_in = new char[shEdgeSize];
-    sh_edge_DL_out = new char[shEdgeSize];
-    sh_edge_DR_in = new char[shEdgeSize];
-    sh_edge_DR_out = new char[shEdgeSize];
-    sh_edge_FL_in = new char[shEdgeSize];
-    sh_edge_FL_out = new char[shEdgeSize];
-    sh_edge_FR_in = new char[shEdgeSize];
-    sh_edge_FR_out = new char[shEdgeSize];
-    sh_edge_FU_in = new char[shEdgeSize];
-    sh_edge_FU_out = new char[shEdgeSize];
-    sh_edge_FD_in = new char[shEdgeSize];
-    sh_edge_FD_out = new char[shEdgeSize];
-    sh_edge_BL_in = new char[shEdgeSize];
-    sh_edge_BL_out = new char[shEdgeSize];
-    sh_edge_BR_in = new char[shEdgeSize];
-    sh_edge_BR_out = new char[shEdgeSize];
-    sh_edge_BU_in = new char[shEdgeSize];
-    sh_edge_BU_out = new char[shEdgeSize];
-    sh_edge_BD_in = new char[shEdgeSize];
-    sh_edge_BD_out = new char[shEdgeSize];
+    sh_edge_UL_in  = new uint8_t[shEdgeSize];
+    sh_edge_UL_out = new uint8_t[shEdgeSize];
+    sh_edge_UR_in  = new uint8_t[shEdgeSize];
+    sh_edge_UR_out = new uint8_t[shEdgeSize];
+    sh_edge_DL_in  = new uint8_t[shEdgeSize];
+    sh_edge_DL_out = new uint8_t[shEdgeSize];
+    sh_edge_DR_in  = new uint8_t[shEdgeSize];
+    sh_edge_DR_out = new uint8_t[shEdgeSize];
+    sh_edge_FL_in  = new uint8_t[shEdgeSize];
+    sh_edge_FL_out = new uint8_t[shEdgeSize];
+    sh_edge_FR_in  = new uint8_t[shEdgeSize];
+    sh_edge_FR_out = new uint8_t[shEdgeSize];
+    sh_edge_FU_in  = new uint8_t[shEdgeSize];
+    sh_edge_FU_out = new uint8_t[shEdgeSize];
+    sh_edge_FD_in  = new uint8_t[shEdgeSize];
+    sh_edge_FD_out = new uint8_t[shEdgeSize];
+    sh_edge_BL_in  = new uint8_t[shEdgeSize];
+    sh_edge_BL_out = new uint8_t[shEdgeSize];
+    sh_edge_BR_in  = new uint8_t[shEdgeSize];
+    sh_edge_BR_out = new uint8_t[shEdgeSize];
+    sh_edge_BU_in  = new uint8_t[shEdgeSize];
+    sh_edge_BU_out = new uint8_t[shEdgeSize];
+    sh_edge_BD_in  = new uint8_t[shEdgeSize];
+    sh_edge_BD_out = new uint8_t[shEdgeSize];
 }
 
 using UsedSimulationInterface = NodeSimulationInterfaceWater;
 Node::Node(int rank, int gridSize, int nodeSize)
     : shareThickness(UsedSimulationInterface::shareThickness),
-      numberOfMainArrays(UsedSimulationInterface::mainArraysCount),
-      shHorizontalSize(nodeSize * nodeSize * shareThickness * numberOfMainArrays * UsedSimulationInterface::texelSize),
-      shVerticalSize(nodeSize * nodeSize * shareThickness * numberOfMainArrays * UsedSimulationInterface::texelSize),
-      shDepthSize(nodeSize * nodeSize * shareThickness * numberOfMainArrays * UsedSimulationInterface::texelSize),
-      shCornerSize(shareThickness * shareThickness * shareThickness * numberOfMainArrays * UsedSimulationInterface::texelSize),
-      shEdgeSize(shareThickness * shareThickness * nodeSize * numberOfMainArrays * UsedSimulationInterface::texelSize),
+      shHorizontalSize(nodeSize       * nodeSize       * shareThickness * (UsedSimulationInterface::colorVoxelSize + UsedSimulationInterface::velocityVoxelSize)),
+      shVerticalSize(  nodeSize       * nodeSize       * shareThickness * (UsedSimulationInterface::colorVoxelSize + UsedSimulationInterface::velocityVoxelSize)),
+      shDepthSize(     nodeSize       * nodeSize       * shareThickness * (UsedSimulationInterface::colorVoxelSize + UsedSimulationInterface::velocityVoxelSize)),
+      shCornerSize(    shareThickness * shareThickness * shareThickness * (UsedSimulationInterface::colorVoxelSize + UsedSimulationInterface::velocityVoxelSize)),
+      shEdgeSize(      shareThickness * shareThickness * nodeSize       * (UsedSimulationInterface::colorVoxelSize + UsedSimulationInterface::velocityVoxelSize)),
       shareBuffers(shHorizontalSize, shVerticalSize, shDepthSize, shCornerSize, shEdgeSize),
       rank(rank),
       gridSize(gridSize),
       nodeSize(nodeSize),
-      nodeVolume(nodeSize * nodeSize * nodeSize * UsedSimulationInterface::texelSize),
+      nodeVolume(nodeSize * nodeSize * nodeSize * UsedSimulationInterface::colorVoxelSize), // Only color representation of simulation (TODO level set values)
       xPosInGrid(convertTo3DRankX(rank, gridSize)),
       yPosInGrid(convertTo3DRankY(rank, gridSize)),
       zPosInGrid(convertTo3DRankZ(rank, gridSize)),
-      simulationInterface(new UsedSimulationInterface(*this)),
-      mainArraySize(nodeSize + 2 * shareThickness) {
+      simulationInterface(new UsedSimulationInterface(*this)) {
 
     // Log position in frid
     Logger::get() << "My 3D coords: " << xPosInGrid << ", " << yPosInGrid << ", " << zPosInGrid << std::endl;
 
-    // Creating two 3D arrays
-    array[0] = new char **[mainArraySize * numberOfMainArrays];
-    for (int i = 0; i < mainArraySize * numberOfMainArrays; i++) {
-
-        array[0][i] = new char *[mainArraySize];
-        for (int j = 0; j < mainArraySize; j++) {
-
-            array[0][i][j] = new char[mainArraySize];
-            for (int k = 0; k < mainArraySize; k++) {
-
-                array[0][i][j][k] = 0;
-            }
-        }
-    }
-
-    array[1] = new char **[mainArraySize * numberOfMainArrays];
-    for (int i = 0; i < mainArraySize * numberOfMainArrays; i++) {
-
-        array[1][i] = new char *[mainArraySize];
-        for (int j = 0; j < mainArraySize; j++) {
-
-            array[1][i][j] = new char[mainArraySize];
-            for (int k = 0; k < mainArraySize; k++) {
-
-                array[1][i][j][k] = 0;
-            }
-        }
-    }
-
-    currentArrayIndex = 0;
-
-    sendArray = new char[nodeVolume];
+    sendArray = new uint8_t[nodeVolume];
 
     igatherRequest = MPI_REQUEST_NULL;
 }
@@ -182,18 +149,6 @@ ShareBuffers::~ShareBuffers() {
 
 Node::~Node() {
     delete[] sendArray;
-
-    for (int i = 0; i < mainArraySize * numberOfMainArrays; i++) {
-        for (int j = 0; j < mainArraySize; j++) {
-            delete[] array[0][i][j];
-            delete[] array[1][i][j];
-        }
-        delete[] array[0][i];
-        delete[] array[1][i];
-    }
-
-    delete[] array[0];
-    delete[] array[1];
 }
 
 bool Node::isNeighbourInGrid(int neighbourOffsetX, int neighbourOffsetY, int neighbourOffsetZ) {
@@ -207,7 +162,7 @@ inline int Node::getNeighbourRank(int neighbourOffsetX, int neighbourOffsetY, in
     return rank + neighbourOffsetZ * gridSize * gridSize + neighbourOffsetY * gridSize + neighbourOffsetX;
 }
 
-inline void Node::shareBuffer(bool condition, char *intput_buffer, char *output_buffer, int size, int in_x, int in_y, int in_z) {
+inline void Node::shareBuffer(bool condition, uint8_t *intput_buffer, uint8_t *output_buffer, int size, int in_x, int in_y, int in_z) {
     if (condition) {
         if (isNeighbourInGrid(in_x, in_y, in_z)) {
             MPI_Recv(intput_buffer, size, MPI_CHAR, getNeighbourRank(in_x, in_y, in_z), 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -328,7 +283,6 @@ void Node::main() {
 
         // Step iteration
         simulationInterface->iter();
-        currentArrayIndex ^= 1;
 
         // Gather results in master
         sendToMaster();

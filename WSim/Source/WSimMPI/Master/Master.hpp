@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <cstdint>
 
 class MasterRendererInterface;
 
@@ -13,8 +14,8 @@ class Master {
     const int nodeVolume;
 
     // Allocations
-    char **mappedBuffer;
-    char *mainBuffer;
+    uint8_t **mappedBuffer;
+    uint8_t *mainBuffer;
 
     // Renderer
     std::unique_ptr<MasterRendererInterface> rendererInterface;

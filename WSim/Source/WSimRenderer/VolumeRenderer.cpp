@@ -125,7 +125,7 @@ void VolumeRenderer::render() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    float currentFrame = glfwGetTime();
+    float currentFrame = static_cast<float>(glfwGetTime());
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 
@@ -134,7 +134,7 @@ void VolumeRenderer::render() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_3D, waterTexture);
 
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, nodeSizeInVoxels, nodeSizeInVoxels, nodeSizeInVoxels * gridSizeInNodes * gridSizeInNodes * gridSizeInNodes, 0, GL_RGBA, GL_FLOAT, callbacks.getVolumeBuffers());
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RED, nodeSizeInVoxels, nodeSizeInVoxels, nodeSizeInVoxels * gridSizeInNodes * gridSizeInNodes * gridSizeInNodes, 0, GL_RED, GL_FLOAT, callbacks.getVolumeBuffers());
     glGenerateMipmap(GL_TEXTURE_3D);
 
     glUniform1i(nodeSizeUniformLocation, nodeSizeInVoxels);
@@ -170,7 +170,11 @@ void VolumeRenderer::processKeyboardInput(int key, int scancode, int action, int
 void VolumeRenderer::processInput(int button, int action, int mods) {
 }
 
-void VolumeRenderer::processMouseMove(double xpos, double ypos) {
+void VolumeRenderer::processMouseMove(double inXpos, double inYpos) {
+
+    float xpos = static_cast<float>(inXpos);
+    float ypos = static_cast<float>(inYpos);
+
     if (firstMouse) {
         lastX = xpos;
         lastY = ypos;

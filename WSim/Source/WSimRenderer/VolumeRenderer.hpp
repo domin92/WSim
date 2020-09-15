@@ -8,7 +8,7 @@
 
 struct VolumeRendererCallbacks {
     virtual void stepSimulation(float deltaTimeSeconds) = 0;
-    virtual char *getVolumeBuffers() = 0;
+    virtual uint8_t *getVolumeBuffers() = 0;
 };
 
 class VolumeRenderer : public Renderer {

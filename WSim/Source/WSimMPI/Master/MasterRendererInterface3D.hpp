@@ -2,13 +2,14 @@
 
 #include "Source/WSimMPI/Master/MasterRendererInterface.hpp"
 #include "Source/WSimRenderer/VolumeRenderer.hpp"
+#include "Source/WSimSimulation/Simulation/Simulation.hpp"
 
 class Renderer;
 
 class MasterRendererInterface3D : public MasterRendererInterface {
 public:
     MasterRendererInterface3D(Master &master);
-    constexpr static size_t mainBufferTexelSize = 4 * sizeof(float);
+    constexpr static size_t colorVoxelSize = Simulation::colorVoxelSize;
 
     // For MPI
     virtual void mainLoop() override;
@@ -18,7 +19,7 @@ public:
     public:
         VolumeRendererCallbacksImpl(Master &master);
         void stepSimulation(float deltaTimeSeconds) override;
-        char *getVolumeBuffers() override;
+        uint8_t *getVolumeBuffers() override;
 
     private:
         Master &master;

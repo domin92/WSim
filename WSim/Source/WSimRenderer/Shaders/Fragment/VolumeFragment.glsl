@@ -56,12 +56,12 @@ void main() {
 
         readPos = getWaterTextureCoords(readPos);
 
-        vec3 textureColor = texture(waterTexture, readPos).rgb;
+        float textureColor = texture(waterTexture, readPos).r;
 
-        //FragColor = vec4(textureColor, 1); // Uncomment to render only sides with full color
+        //FragColor = vec4(textureColor, 0, 0, 1); // Uncomment to render only sides with full color
         //return;
 
-        blueSum += textureColor.b;
+        blueSum += textureColor;
 
     }
 

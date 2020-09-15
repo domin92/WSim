@@ -18,9 +18,9 @@ Master::Master(int procCount, int grid_size, int nodeSize)
       gridSize(grid_size),
       nodeSize(nodeSize),
       fullSize(nodeSize * grid_size),
-      nodeVolume(UsedRendererInterface::mainBufferTexelSize * nodeSize * nodeSize * nodeSize),
-      mainBuffer(new char[(procCount - 1) * nodeVolume]),
-      mappedBuffer(new char *[procCount - 1]),
+      nodeVolume(nodeSize * nodeSize * nodeSize * UsedRendererInterface::colorVoxelSize),
+      mainBuffer(new uint8_t[(procCount - 1) * nodeVolume]),
+      mappedBuffer(new uint8_t *[procCount - 1]),
       rendererInterface(new UsedRendererInterface(*this)) {
     for (int i = 0; i < procCount - 1; i++) {
         mappedBuffer[i] = mainBuffer + i * nodeVolume;
@@ -61,15 +61,9 @@ void Master::main() {
                 int idx = z_in_grid * gridSize * gridSize + y_in_grid * gridSize + x_in_grid;
 
                 if (y < (1 * fullSize / 10)) {
-                    ((float *)mainBuffer)[(idx * nodeSize * nodeSize * nodeSize + z_in_node * nodeSize * nodeSize + y_in_node * nodeSize + x_in_node) * 4] = 0.0f;
-                    ((float *)mainBuffer)[(idx * nodeSize * nodeSize * nodeSize + z_in_node * nodeSize * nodeSize + y_in_node * nodeSize + x_in_node) * 4 + 1] = 0.0f;
-                    ((float *)mainBuffer)[(idx * nodeSize * nodeSize * nodeSize + z_in_node * nodeSize * nodeSize + y_in_node * nodeSize + x_in_node) * 4 + 2] = 1.0f;
-                    ((float *)mainBuffer)[(idx * nodeSize * nodeSize * nodeSize + z_in_node * nodeSize * nodeSize + y_in_node * nodeSize + x_in_node) * 4 + 3] = 1.0f;
+                    reinterpret_cast<float *>(mainBuffer)[idx * nodeSize * nodeSize * nodeSize + z_in_node * nodeSize * nodeSize + y_in_node * nodeSize + x_in_node] = 1.0f;
                 } else {
-                    ((float *)mainBuffer)[(idx * nodeSize * nodeSize * nodeSize + z_in_node * nodeSize * nodeSize + y_in_node * nodeSize + x_in_node) * 4] = 0.0f;
-                    ((float *)mainBuffer)[(idx * nodeSize * nodeSize * nodeSize + z_in_node * nodeSize * nodeSize + y_in_node * nodeSize + x_in_node) * 4 + 1] = 0.0f;
-                    ((float *)mainBuffer)[(idx * nodeSize * nodeSize * nodeSize + z_in_node * nodeSize * nodeSize + y_in_node * nodeSize + x_in_node) * 4 + 2] = 0.0f;
-                    ((float *)mainBuffer)[(idx * nodeSize * nodeSize * nodeSize + z_in_node * nodeSize * nodeSize + y_in_node * nodeSize + x_in_node) * 4 + 3] = 1.0f;
+                    reinterpret_cast<float *>(mainBuffer)[idx * nodeSize * nodeSize * nodeSize + z_in_node * nodeSize * nodeSize + y_in_node * nodeSize + x_in_node] = 0.0f;
                 }
             }
         }

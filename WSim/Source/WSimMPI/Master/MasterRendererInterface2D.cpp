@@ -44,7 +44,7 @@ void MasterRendererInterface2D::ColorRendererCallbacksImpl::getSubImage2D(size_t
     const auto zInGrid = convertTo3DRankZ(nodeRank, master.getGridSize());
     wsimErrorUnless(zInGrid == 0); // Renderer shouldn't call this method for back planes
 
-    const char *buffer = master.getMappedBuffer()[subImageIndex];
+    const uint8_t *buffer = master.getMappedBuffer()[subImageIndex];
     const auto nodeArea = master.getNodeVolume() / master.getNodeSize(); // We only copy first plane (z=0)
     memcpy(data, buffer, nodeArea);
 }
