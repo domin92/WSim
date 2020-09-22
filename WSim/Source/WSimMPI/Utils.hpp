@@ -14,18 +14,21 @@
 // 8    | 1 | 1 | 1
 //
 
-inline int convertTo3DRankX(int linearRank, int gridSize) {
-    const int adjusted_rank = linearRank - 1; // Rank excluding master
-    return (adjusted_rank) % gridSize;
+inline auto convertTo3DRankX(size_t linearRank, size_t gridSize) {
+    wsimErrorIf(linearRank == 0);
+    const auto adjustedRank = linearRank - 1; // Rank excluding master
+    return (adjustedRank) % gridSize;
 }
 
-inline int convertTo3DRankY(int linearRank, int gridSize) {
-    const int adjusted_rank = linearRank - 1; // Rank excluding master
-    return ((adjusted_rank) % (gridSize * gridSize)) / gridSize;
+inline auto convertTo3DRankY(size_t linearRank, size_t gridSize) {
+    wsimErrorIf(linearRank == 0);
+    const auto adjustedRank = linearRank - 1; // Rank excluding master
+    return ((adjustedRank) % (gridSize * gridSize)) / gridSize;
 }
-inline int convertTo3DRankZ(int linearRank, int gridSize) {
-    const int adjusted_rank = linearRank - 1; // Rank excluding master
-    return (adjusted_rank) / (gridSize * gridSize);
+inline auto convertTo3DRankZ(size_t linearRank, size_t gridSize) {
+    wsimErrorIf(linearRank == 0);
+    const auto adjustedRank = linearRank - 1; // Rank excluding master
+    return (adjustedRank) / (gridSize * gridSize);
 }
 
 #ifdef _WIN32

@@ -88,9 +88,9 @@ private:
     const int nodeVolume;
 
     // Position in grid
-    const int xPosInGrid;
-    const int yPosInGrid;
-    const int zPosInGrid;
+    const size_t xPosInGrid;
+    const size_t yPosInGrid;
+    const size_t zPosInGrid;
 
     // Simulation
     std::unique_ptr<NodeSimulationInterface> simulationInterface;
