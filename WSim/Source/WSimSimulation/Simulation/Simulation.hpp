@@ -12,8 +12,9 @@
 #include <vector>
 
 const static cl_image_format vectorFieldFormat = {CL_RGBA, CL_FLOAT};
-const static cl_image_format colorFieldFormat = {CL_R, CL_FLOAT};
 const static cl_image_format scalarFieldFormat = {CL_R, CL_FLOAT};
+const static cl_image_format colorFieldFormat = scalarFieldFormat;
+
 class Simulation {
 public:
     constexpr static size_t colorVoxelSize = 1 * sizeof(float);
