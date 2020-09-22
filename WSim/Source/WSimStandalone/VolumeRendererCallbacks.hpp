@@ -7,14 +7,14 @@ class VolumeRendererCallbacksImpl : public VolumeRendererCallbacks {
 public:
     VolumeRendererCallbacksImpl(Simulation &simulation)
         : simulation(simulation),
-          voxelBuffer(std::make_unique<char[]>(simulation.getSimulationSize().getRequiredBufferSize(4 * sizeof(float)))) {
+          voxelBuffer(std::make_unique<uint8_t[]>(simulation.getSimulationSize().getRequiredBufferSize(4 * sizeof(float)))) {
     }
 
     void stepSimulation(float deltaTimeSeconds) override {
         simulation.stepSimulation(deltaTimeSeconds);
     }
 
-    char *getVolumeBuffers() override {
+    uint8_t *getVolumeBuffers() override {
         const Vec3 offset = simulation.getBorderOffset();
         const Vec3 size = simulation.getSimulationSize();
         OCL::enqueueReadImage3D(simulation.getCommandQueue(), simulation.getColor().getSource(), CL_BLOCKING, offset, size, voxelBuffer.get());
@@ -23,5 +23,5 @@ public:
 
 private:
     Simulation &simulation;
-    std::unique_ptr<char[]> voxelBuffer;
+    std::unique_ptr<uint8_t[]> voxelBuffer;
 };

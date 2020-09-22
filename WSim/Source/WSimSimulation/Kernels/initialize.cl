@@ -11,14 +11,13 @@ __kernel void initializeColor(int4 inImageSize,
 
     float4 color = (float4)(0, 0, 0, 0);
     if (c % 4 == 0) {
-        color.y = 1;
+        color.x = 1;
     } else if (c % 4 == 1) {
-        color.x = 1;
+        color.x = 0;
     } else if (c % 4 == 2) {
-        color.x = 1;
-        color.y = 1;
+        color.x = 0.3;
     } else {
-        color.z = 1;
+        color.x = 0.7;
     }
 
     write_imagef(outColor, threadPosition, color);
