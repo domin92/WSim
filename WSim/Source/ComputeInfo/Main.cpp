@@ -1,4 +1,4 @@
-#include "Source/WSimSimulation/Utils/OpenCL.h"
+#include "Source/WSimSimulation/Utils/OpenCL.hpp"
 
 #include <cstdint>
 #include <iostream>

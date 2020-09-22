@@ -1,4 +1,4 @@
-#include "Source/WSimSimulation/Simulation/Simulation.h"
+#include "Source/WSimSimulation/Simulation/Simulation.hpp"
 #include "Tests/UnitTests/Simulation/OclTest.h"
 
 struct SimulationTest : OclTest {
