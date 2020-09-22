@@ -7,7 +7,7 @@ class VolumeRendererCallbacksImpl : public VolumeRendererCallbacks {
 public:
     VolumeRendererCallbacksImpl(Simulation &simulation)
         : simulation(simulation),
-          voxelBuffer(std::make_unique<uint8_t[]>(simulation.getSimulationSize().getRequiredBufferSize(4 * sizeof(float)))) {
+          voxelBuffer(std::make_unique<uint8_t[]>(simulation.getSimulationSize().getRequiredBufferSize(Simulation::colorVoxelSize))) {
     }
 
     void stepSimulation(float deltaTimeSeconds) override {

@@ -197,7 +197,7 @@ void setKernelArgFlt(cl_kernel kernel, cl_uint argIndex, float arg) {
 
 void setKernelArgVec(cl_kernel kernel, cl_uint argIndex, float x, float y, float z) {
     const cl_float4 vec4 = {x, y, z, 0};
-    ASSERT_CL_SUCCESS(clSetKernelArg(kernel, argIndex, sizeof(float) * 4, &vec4));
+    ASSERT_CL_SUCCESS(clSetKernelArg(kernel, argIndex, sizeof(cl_float4), &vec4));
 }
 
 void setKernelArgVec(cl_kernel kernel, cl_uint argIndex, size_t x, size_t y, size_t z) {

@@ -11,14 +11,15 @@
 #include <memory>
 #include <vector>
 
-const static cl_image_format vectorFieldFormat = {CL_RGBA, CL_FLOAT};
-const static cl_image_format scalarFieldFormat = {CL_R, CL_FLOAT};
-const static cl_image_format colorFieldFormat = scalarFieldFormat;
+constexpr static cl_image_format vectorFieldFormat = {CL_RGBA, CL_FLOAT};
+constexpr static cl_image_format scalarFieldFormat = {CL_R, CL_FLOAT};
+constexpr static cl_image_format velocityFieldFormat = vectorFieldFormat;
+constexpr static cl_image_format colorFieldFormat = scalarFieldFormat;
 
 class Simulation {
 public:
-    constexpr static size_t colorVoxelSize = 1 * sizeof(float);
-    constexpr static size_t velocityVoxelSize = 4 * sizeof(float);
+    constexpr static size_t colorVoxelSize = OCL::getSizeOfTexel(colorFieldFormat);
+    constexpr static size_t velocityVoxelSize = OCL::getSizeOfTexel(velocityFieldFormat);
 
     Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize);
     Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid);

@@ -96,12 +96,35 @@ void enqueueWriteImage3D(cl_command_queue commandQueue, cl_mem image, cl_bool bl
 void enqueueFillImage3D(cl_command_queue queue, cl_mem image, const void *pattern, Vec3 offset, Vec3 region);
 void enqueueZeroImage3D(cl_command_queue queue, cl_mem image, Vec3 imageSize);
 
-// Misc
+// Task submission
 void finish(cl_command_queue commandQueue);
 void flush(cl_command_queue commandQueue);
 
 // Create allocations
 Mem createReadWriteImage3D(cl_context context, Vec3 size, const cl_image_format &format);
+
+// Utility helpers
+constexpr inline size_t getChannelCount(cl_channel_order channelOrder) {
+    switch (channelOrder) {
+    case CL_R:
+        return 1;
+    case CL_RGBA:
+        return 4;
+    default:
+        wsimError();
+    }
+}
+constexpr inline size_t getSizeOfChannel(cl_channel_type dataType) {
+    switch (dataType) {
+    case CL_FLOAT:
+        return sizeof(cl_float);
+    default:
+        wsimError();
+    }
+}
+constexpr inline size_t getSizeOfTexel(cl_image_format format) {
+    return getChannelCount(format.image_channel_order) * getSizeOfChannel(format.image_channel_data_type);
+}
 
 } // namespace OCL
 
