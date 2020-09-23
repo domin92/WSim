@@ -30,7 +30,7 @@ protected:
     void processInput(int button, int action, int mods) override;
     void processMouseMove(double x, double y) override;
     void processScroll(double xoffset, double yoffset) override {}
-    void processKeyboardInput(int key, int scancode, int action, int mods) override {};
+    void processKeyboardInput(int key, int scancode, int action, int mods) override;
     void update(float deltaTimeSeconds) override;
     void render() override;
 

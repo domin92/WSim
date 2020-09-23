@@ -57,6 +57,9 @@ void Renderer::postUpdate() {
 
     glfwSwapBuffers(window);
     glfwPollEvents();
+}
+bool Renderer::shouldClose() {
+    return glfwWindowShouldClose(window);
 };
 
 void Renderer::callbackFrameBufferSize(GLFWwindow *window, int width, int height) {

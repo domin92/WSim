@@ -25,6 +25,7 @@ protected:
     void preUpdate() override;
     virtual void render() = 0;
     void postUpdate() override;
+    bool shouldClose() override;
 
     GLFWwindow *window{};
 };

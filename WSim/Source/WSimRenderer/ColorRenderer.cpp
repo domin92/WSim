@@ -41,6 +41,9 @@ void ColorRenderer::processInput(int button, int action, int mods) {
     glfwGetCursorPos(window, &x, &y);
 
     switch (button) {
+    case GLFW_KEY_ESCAPE:
+        glfwSetWindowShouldClose(window, true);
+        break;
     case GLFW_MOUSE_BUTTON_LEFT:
         clicked = (action == GLFW_PRESS);
         if (clicked) {
@@ -77,6 +80,15 @@ void ColorRenderer::processMouseMove(double screenX, double screenY) {
     // Apply force at given point
     const float radius = static_cast<float>(imageWidth) / 10.f;
     callbacks.applyForce(x, y, deltaX, deltaY, radius);
+}
+
+void ColorRenderer::processKeyboardInput(int key, int scancode, int action, int mods) {
+    switch (key) {
+    case GLFW_KEY_Q:
+    case GLFW_KEY_ESCAPE:
+        glfwSetWindowShouldClose(window, true);
+        break;
+    }
 }
 
 void ColorRenderer::update(float deltaTimeSeconds) {
