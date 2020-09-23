@@ -21,8 +21,6 @@ Where `<number of processes>` is a number of nodes + master process (n^3 + 1) e.
 Now
 - Fix gravity - weird things happen
 - Fix walls on more than one node
-- Fix camera initial lookAt
-- Fix window - unable to close
 - Level set physics
 - Level set rendering
 
