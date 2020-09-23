@@ -20,6 +20,7 @@ protected:
     glm::mat4 createMvp();
     void loadBuffers();
     void loadShaders();
+    void updateCameraFront();
 
     void processInput(int button, int action, int mods) override;
     void processKeyboardInput(int key, int scancode, int action, int mods) override;
@@ -51,12 +52,12 @@ protected:
 
     // Model-view-projection matrix
     glm::mat4 mvp = {};
-    glm::vec3 cameraPos = glm::vec3(2.0f, 2.0f, 2.0f);        // Initial position
-    glm::vec3 cameraFront = glm::normalize(cameraPos * -1.f); // Initial look direction - look at (0,0,0)
+    glm::vec3 cameraPos = glm::vec3(2.0f, 2.0f, 2.0f);
+    glm::vec3 cameraFront = {};
     const glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
     float fov = 45.0f;
-    float yaw = -90.0f;
-    float pitch = 0.0f;
+    float yaw = -140.f;
+    float pitch = -40.f;
 
     // Cached values for mouse movement
     bool firstMouse = true;

@@ -13,6 +13,7 @@ VolumeRenderer::VolumeRenderer(VolumeRendererCallbacks &callbacks, int nodeSizeI
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     loadBuffers();
     loadShaders();
+    updateCameraFront();
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -111,6 +112,13 @@ void VolumeRenderer::loadShaders() {
     this->gridSizeUniformLocation = glGetUniformLocation(shaderProgram, "gridSize");
 }
 
+void VolumeRenderer::updateCameraFront() {
+    cameraFront.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront.y = sin(glm::radians(pitch));
+    cameraFront.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(cameraFront);
+}
+
 void VolumeRenderer::update(float deltaTimeSeconds) {
     callbacks.stepSimulation(deltaTimeSeconds);
 }
@@ -190,11 +198,7 @@ void VolumeRenderer::processMouseMove(double inXpos, double inYpos) {
     if (pitch < -89.0f)
         pitch = -89.0f;
 
-    glm::vec3 front;
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y = sin(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraFront = glm::normalize(front);
+    updateCameraFront();
 }
 
 void VolumeRenderer::processScroll(double xoffset, double yoffset) {
