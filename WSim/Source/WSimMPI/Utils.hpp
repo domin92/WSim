@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Source/WSimCommon/Error.hpp"
+
 // Calculating node position in 3D space - VERY IMPORTANT!
 // For gridSize = 2 we have:
 //
