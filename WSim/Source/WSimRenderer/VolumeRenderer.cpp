@@ -1,5 +1,6 @@
 #include "VolumeRenderer.hpp"
 
+#include <algorithm>
 #include <fstream>
 #include <iterator>
 
@@ -28,7 +29,7 @@ VolumeRenderer::~VolumeRenderer() {
 }
 
 glm::mat4 VolumeRenderer::createMvp() {
-    glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)screenSize / (float)screenSize, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(fov), (float)screenSize / (float)screenSize, 0.1f, 100.0f);
     glm::mat4 view = glm::lookAt(
         cameraPos,               // Eye position
         cameraPos + cameraFront, // Focus point
@@ -209,8 +210,6 @@ void VolumeRenderer::processMouseMove(double inXpos, double inYpos) {
 
 void VolumeRenderer::processScroll(double xoffset, double yoffset) {
     fov -= (float)yoffset;
-    if (fov < 1.0f)
-        fov = 1.0f;
-    if (fov > 45.0f)
-        fov = 45.0f;
+    fov = std::clamp(fov, 1.f, 90.f);
+    mvpDirty = true;
 }

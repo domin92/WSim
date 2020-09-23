@@ -57,8 +57,8 @@ protected:
     glm::vec3 cameraFront = {};
     const glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
     float fov = 45.0f;
-    float yaw = -140.f;
-    float pitch = -40.f;
+    float yaw = -136.f;
+    float pitch = -37.f;
 
     // Cached values for mouse movement
     bool firstMouse = true;
