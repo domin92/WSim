@@ -28,8 +28,6 @@ protected:
     void update(float deltaTimeSeconds) override;
     void render() override;
 
-    
-
     VolumeRendererCallbacks &callbacks;
     const int nodeSizeInVoxels;
     const int gridSizeInNodes;
@@ -47,9 +45,9 @@ protected:
 
     GLuint waterTexture;
 
-    glm::vec3 cameraPos;
-    glm::vec3 cameraFront; 
-    glm::vec3 cameraUp;
+    glm::vec3 cameraPos = glm::vec3(2.0f, 2.0f, 2.0f);        // Initial position
+    glm::vec3 cameraFront = glm::normalize(cameraPos * -1.f); // Initial look direction - look at (0,0,0)
+    const glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
     bool firstMouse = true;
     float yaw = -90.0f;

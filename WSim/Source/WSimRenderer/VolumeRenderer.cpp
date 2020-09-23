@@ -11,11 +11,6 @@ VolumeRenderer::VolumeRenderer(VolumeRendererCallbacks &callbacks, int nodeSizeI
       screenSize(screenSize),
       mvp(createMvp()) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    cameraPos = glm::vec3(2.0f, 2.0f, 2.0f);
-    cameraFront = glm::normalize(cameraPos * -1.f);
-    cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
     loadBuffers();
     loadShaders();
 
@@ -35,9 +30,9 @@ VolumeRenderer::~VolumeRenderer() {
 glm::mat4 VolumeRenderer::createMvp() {
     glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)screenSize / (float)screenSize, 0.1f, 100.0f);
     glm::mat4 view = glm::lookAt(
-        cameraPos,               // Camera position
-        cameraPos + cameraFront, // Looks at the 0.5f, 0.5f, 0.5f
-        cameraUp                 // Head is up (set to 0,-1,0 to look upside-down)
+        cameraPos,               // Eye position
+        cameraPos + cameraFront, // Focus point
+        cameraUp                 // Up direction
     );
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 mvp = projection * view * model;
