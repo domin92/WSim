@@ -17,6 +17,8 @@ public:
     void mainLoop();
 
 protected:
+    auto getDeltaTime() { return deltaTime; }
+
     virtual void preUpdate() {}
     virtual void update(float deltaTime) = 0;
     virtual void postUpdate() {}
@@ -25,6 +27,7 @@ protected:
 private:
     const Clock::duration minimumFrameLength;
     Clock::time_point lastFrameTime;
+    float deltaTime = {};
 
     // Fps measuring
     FpsCallback fpsCallback = {};

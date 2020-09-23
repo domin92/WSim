@@ -120,10 +120,6 @@ void VolumeRenderer::render() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    float currentFrame = static_cast<float>(glfwGetTime());
-    deltaTime = currentFrame - lastFrame;
-    lastFrame = currentFrame;
-
     mvp = createMvp();
 
     glActiveTexture(GL_TEXTURE0);
@@ -141,7 +137,7 @@ void VolumeRenderer::render() {
 }
 
 void VolumeRenderer::processKeyboardInput(int key, int scancode, int action, int mods) {
-    float cameraSpeed = 4.0f * deltaTime;
+    float cameraSpeed = 4.0f * getDeltaTime();
     switch (key) {
     case GLFW_KEY_Q:
     case GLFW_KEY_ESCAPE:

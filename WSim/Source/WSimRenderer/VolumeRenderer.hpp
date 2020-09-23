@@ -28,34 +28,38 @@ protected:
     void update(float deltaTimeSeconds) override;
     void render() override;
 
+    // Basic data
     VolumeRendererCallbacks &callbacks;
     const int nodeSizeInVoxels;
     const int gridSizeInNodes;
     const int screenSize;
 
-    glm::mat4 mvp;
+    // Buffers for cube
+    GLuint VAO{};
+    GLuint VBO{};
+    GLuint EBO{};
 
-    unsigned int VAO, VBO, EBO;
-    OGL::ShaderProgram shaderProgram;
+    // Texture
+    GLuint waterTexture{};
 
-    GLuint mvpVertexUniformLocation;
-    GLuint mvpFragmentUniformLocation;
-    GLuint nodeSizeUniformLocation;
-    GLuint gridSizeUniformLocation;
+    // Shader
+    OGL::ShaderProgram shaderProgram{};
+    GLuint mvpVertexUniformLocation{};
+    GLuint mvpFragmentUniformLocation{};
+    GLuint nodeSizeUniformLocation{};
+    GLuint gridSizeUniformLocation{};
 
-    GLuint waterTexture;
-
+    // Model-view-projection matrix
+    glm::mat4 mvp = {};
     glm::vec3 cameraPos = glm::vec3(2.0f, 2.0f, 2.0f);        // Initial position
     glm::vec3 cameraFront = glm::normalize(cameraPos * -1.f); // Initial look direction - look at (0,0,0)
     const glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-    bool firstMouse = true;
+    float fov = 45.0f;
     float yaw = -90.0f;
     float pitch = 0.0f;
-    float lastX = 800.0f / 2.0;
-    float lastY = 600.0 / 2.0;
-    float fov = 45.0f;
 
-    float deltaTime = 0.0f;
-    float lastFrame = 0.0f;
+    // Cached values for mouse movement
+    bool firstMouse = true;
+    float lastX = {};
+    float lastY = {};
 };

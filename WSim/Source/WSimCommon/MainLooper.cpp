@@ -22,7 +22,7 @@ void MainLooper::mainLoop() {
             std::this_thread::sleep_for(lackingDeltaTime);
         }
         lastFrameTime = frameTime;
-        const auto deltaTimeFloat = std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime).count();
+        this->deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime).count();
 
         // Fps callback
         if (fpsCallback) {
@@ -32,7 +32,7 @@ void MainLooper::mainLoop() {
 
         // Update
         preUpdate();
-        update(deltaTimeFloat);
+        update(this->deltaTime);
         postUpdate();
     }
 }
