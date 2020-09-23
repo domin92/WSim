@@ -51,6 +51,7 @@ protected:
     GLuint gridSizeUniformLocation{};
 
     // Model-view-projection matrix
+    bool mvpDirty = true;
     glm::mat4 mvp = {};
     glm::vec3 cameraPos = glm::vec3(2.0f, 2.0f, 2.0f);
     glm::vec3 cameraFront = {};

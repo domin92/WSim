@@ -8,8 +8,7 @@ VolumeRenderer::VolumeRenderer(VolumeRendererCallbacks &callbacks, int nodeSizeI
       callbacks(callbacks),
       nodeSizeInVoxels(nodeSizeInVoxels),
       gridSizeInNodes(gridSizeInNodes),
-      screenSize(screenSize),
-      mvp(createMvp()) {
+      screenSize(screenSize) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     loadBuffers();
     loadShaders();
@@ -117,6 +116,7 @@ void VolumeRenderer::updateCameraFront() {
     cameraFront.y = sin(glm::radians(pitch));
     cameraFront.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     cameraFront = glm::normalize(cameraFront);
+    mvpDirty = true;
 }
 
 void VolumeRenderer::update(float deltaTimeSeconds) {
@@ -124,11 +124,13 @@ void VolumeRenderer::update(float deltaTimeSeconds) {
 }
 
 void VolumeRenderer::render() {
+    if (mvpDirty) {
+        mvp = createMvp();
+        mvpDirty = false;
+    }
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-
-    mvp = createMvp();
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_3D, waterTexture);
@@ -153,15 +155,19 @@ void VolumeRenderer::processKeyboardInput(int key, int scancode, int action, int
         break;
     case GLFW_KEY_W:
         cameraPos += cameraSpeed * cameraFront;
+        mvpDirty = true;
         break;
     case GLFW_KEY_A:
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        mvpDirty = true;
         break;
     case GLFW_KEY_D:
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        mvpDirty = true;
         break;
     case GLFW_KEY_S:
         cameraPos -= cameraSpeed * cameraFront;
+        mvpDirty = true;
         break;
     }
 }
