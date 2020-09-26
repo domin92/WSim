@@ -7,22 +7,22 @@
 #include <cstdlib>
 #include <iostream>
 
-ShareBuffers::ShareBuffers(int shHorizontalSize, int shVerticalSize, int shDepthSize, int shCornerSize, int shEdgeSize) {
+ShareBuffers::ShareBuffers(int shSideSize, int shCornerSize, int shEdgeSize) {
     // clang-format off
-    sh_horizontal_L_in  = new uint8_t[shHorizontalSize];
-    sh_horizontal_L_out = new uint8_t[shHorizontalSize];
-    sh_horizontal_R_in  = new uint8_t[shHorizontalSize];
-    sh_horizontal_R_out = new uint8_t[shHorizontalSize];
+    sh_horizontal_L_in  = new uint8_t[shSideSize];
+    sh_horizontal_L_out = new uint8_t[shSideSize];
+    sh_horizontal_R_in  = new uint8_t[shSideSize];
+    sh_horizontal_R_out = new uint8_t[shSideSize];
 
-    sh_vertical_U_in  = new uint8_t[shVerticalSize];
-    sh_vertical_U_out = new uint8_t[shVerticalSize];
-    sh_vertical_D_in  = new uint8_t[shVerticalSize];
-    sh_vertical_D_out = new uint8_t[shVerticalSize];
+    sh_vertical_U_in  = new uint8_t[shSideSize];
+    sh_vertical_U_out = new uint8_t[shSideSize];
+    sh_vertical_D_in  = new uint8_t[shSideSize];
+    sh_vertical_D_out = new uint8_t[shSideSize];
 
-    sh_depth_F_in  = new uint8_t[shDepthSize];
-    sh_depth_F_out = new uint8_t[shDepthSize];
-    sh_depth_B_in  = new uint8_t[shDepthSize];
-    sh_depth_B_out = new uint8_t[shDepthSize];
+    sh_depth_F_in  = new uint8_t[shSideSize];
+    sh_depth_F_out = new uint8_t[shSideSize];
+    sh_depth_B_in  = new uint8_t[shSideSize];
+    sh_depth_B_out = new uint8_t[shSideSize];
 
     sh_corner_FUL_in  = new uint8_t[shCornerSize];
     sh_corner_FUL_out = new uint8_t[shCornerSize];
@@ -71,13 +71,11 @@ ShareBuffers::ShareBuffers(int shHorizontalSize, int shVerticalSize, int shDepth
 Node::Node(int rank, int gridSize, int nodeSize)
     : shareThickness(15),
       // clang-format off
-      shHorizontalSize(nodeSize       * nodeSize       * shareThickness * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
-      shVerticalSize(  nodeSize       * nodeSize       * shareThickness * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
-      shDepthSize(     nodeSize       * nodeSize       * shareThickness * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
-      shCornerSize(    shareThickness * shareThickness * shareThickness * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
-      shEdgeSize(      shareThickness * shareThickness * nodeSize       * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
+      shSideSize   (shareThickness * nodeSize       * nodeSize       * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
+      shEdgeSize   (shareThickness * shareThickness * nodeSize       * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
+      shCornerSize (shareThickness * shareThickness * shareThickness * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
       // clang-format on
-      shareBuffers(shHorizontalSize, shVerticalSize, shDepthSize, shCornerSize, shEdgeSize),
+      shareBuffers(shSideSize, shCornerSize, shEdgeSize),
       rank(rank),
       gridSize(gridSize),
       nodeSize(nodeSize),
@@ -174,23 +172,23 @@ inline void Node::shareBuffer(bool condition, uint8_t *intput_buffer, uint8_t *o
 }
 
 void Node::shareSide() {
-    shareBuffer(yPosInGrid % 2 == 0, shareBuffers.sh_vertical_U_in, shareBuffers.sh_vertical_D_out, shVerticalSize, 0, -1, 0);
-    shareBuffer(yPosInGrid % 2 == 0, shareBuffers.sh_vertical_D_in, shareBuffers.sh_vertical_U_out, shVerticalSize, 0, 1, 0);
+    shareBuffer(yPosInGrid % 2 == 0, shareBuffers.sh_vertical_U_in, shareBuffers.sh_vertical_D_out, shSideSize, 0, -1, 0);
+    shareBuffer(yPosInGrid % 2 == 0, shareBuffers.sh_vertical_D_in, shareBuffers.sh_vertical_U_out, shSideSize, 0, 1, 0);
 
-    shareBuffer(yPosInGrid % 2 == 1, shareBuffers.sh_vertical_U_in, shareBuffers.sh_vertical_D_out, shVerticalSize, 0, -1, 0);
-    shareBuffer(yPosInGrid % 2 == 1, shareBuffers.sh_vertical_D_in, shareBuffers.sh_vertical_U_out, shVerticalSize, 0, 1, 0);
+    shareBuffer(yPosInGrid % 2 == 1, shareBuffers.sh_vertical_U_in, shareBuffers.sh_vertical_D_out, shSideSize, 0, -1, 0);
+    shareBuffer(yPosInGrid % 2 == 1, shareBuffers.sh_vertical_D_in, shareBuffers.sh_vertical_U_out, shSideSize, 0, 1, 0);
 
-    shareBuffer(xPosInGrid % 2 == 0, shareBuffers.sh_horizontal_L_in, shareBuffers.sh_horizontal_R_out, shHorizontalSize, -1, 0, 0);
-    shareBuffer(xPosInGrid % 2 == 0, shareBuffers.sh_horizontal_R_in, shareBuffers.sh_horizontal_L_out, shHorizontalSize, 1, 0, 0);
+    shareBuffer(xPosInGrid % 2 == 0, shareBuffers.sh_horizontal_L_in, shareBuffers.sh_horizontal_R_out, shSideSize, -1, 0, 0);
+    shareBuffer(xPosInGrid % 2 == 0, shareBuffers.sh_horizontal_R_in, shareBuffers.sh_horizontal_L_out, shSideSize, 1, 0, 0);
 
-    shareBuffer(xPosInGrid % 2 == 1, shareBuffers.sh_horizontal_L_in, shareBuffers.sh_horizontal_R_out, shHorizontalSize, -1, 0, 0);
-    shareBuffer(xPosInGrid % 2 == 1, shareBuffers.sh_horizontal_R_in, shareBuffers.sh_horizontal_L_out, shHorizontalSize, 1, 0, 0);
+    shareBuffer(xPosInGrid % 2 == 1, shareBuffers.sh_horizontal_L_in, shareBuffers.sh_horizontal_R_out, shSideSize, -1, 0, 0);
+    shareBuffer(xPosInGrid % 2 == 1, shareBuffers.sh_horizontal_R_in, shareBuffers.sh_horizontal_L_out, shSideSize, 1, 0, 0);
 
-    shareBuffer(zPosInGrid % 2 == 0, shareBuffers.sh_depth_F_in, shareBuffers.sh_depth_B_out, shDepthSize, 0, 0, -1);
-    shareBuffer(zPosInGrid % 2 == 0, shareBuffers.sh_depth_B_in, shareBuffers.sh_depth_F_out, shDepthSize, 0, 0, 1);
+    shareBuffer(zPosInGrid % 2 == 0, shareBuffers.sh_depth_F_in, shareBuffers.sh_depth_B_out, shSideSize, 0, 0, -1);
+    shareBuffer(zPosInGrid % 2 == 0, shareBuffers.sh_depth_B_in, shareBuffers.sh_depth_F_out, shSideSize, 0, 0, 1);
 
-    shareBuffer(zPosInGrid % 2 == 1, shareBuffers.sh_depth_F_in, shareBuffers.sh_depth_B_out, shDepthSize, 0, 0, -1);
-    shareBuffer(zPosInGrid % 2 == 1, shareBuffers.sh_depth_B_in, shareBuffers.sh_depth_F_out, shDepthSize, 0, 0, 1);
+    shareBuffer(zPosInGrid % 2 == 1, shareBuffers.sh_depth_F_in, shareBuffers.sh_depth_B_out, shSideSize, 0, 0, -1);
+    shareBuffer(zPosInGrid % 2 == 1, shareBuffers.sh_depth_B_in, shareBuffers.sh_depth_F_out, shSideSize, 0, 0, 1);
 }
 
 void Node::shareCorners() {

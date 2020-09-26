@@ -7,7 +7,7 @@
 class NodeSimulationInterface;
 
 struct ShareBuffers {
-    ShareBuffers(int shHorizontalSize, int sh_vertical_size, int shDepthSize, int shCornerSize, int shEdgeSize);
+    ShareBuffers(int shSideSize, int shCornerSize, int shEdgeSize);
     ~ShareBuffers();
 
     uint8_t *sh_horizontal_L_in; // Left
@@ -74,9 +74,7 @@ private:
     const int shareThickness; // Thickness of shared areas in bytes
 
     // Share buffers
-    const int shHorizontalSize;
-    const int shVerticalSize;
-    const int shDepthSize;
+    const int shSideSize;
     const int shCornerSize;
     const int shEdgeSize;
     const ShareBuffers shareBuffers; // buffers used for sharing with neighbouring nodes;
