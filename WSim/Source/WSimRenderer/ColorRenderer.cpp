@@ -29,9 +29,9 @@ ColorRenderer::ColorRenderer(ColorRendererCallbacks &callbacks, size_t voxelSize
     ASSERT_GL_NO_ERROR();
 
     // Initialize full image (because glTexSubImage2D is used later)
-    auto a = std::make_unique<uint8_t[]>(imageWidth * imageHeight * voxelSize);
+    auto a = std::make_unique<uint8_t[]>(imageWidth * imageHeight * voxelSize * 4);
     glBindTexture(GL_TEXTURE_2D, texture1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, static_cast<GLsizei>(imageWidth), static_cast<GLsizei>(imageHeight), 0, GL_RED, GL_FLOAT, a.get());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(imageWidth), static_cast<GLsizei>(imageHeight), 0, GL_RGBA, GL_FLOAT, a.get());
     glBindTexture(GL_TEXTURE_2D, 0);
     ASSERT_GL_NO_ERROR();
 }
@@ -111,7 +111,7 @@ void ColorRenderer::update(float deltaTimeSeconds) {
         const auto yOffset = static_cast<GLint>(info.yOffset);
         const auto width = static_cast<GLsizei>(info.width);
         const auto height = static_cast<GLsizei>(info.height);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, xOffset, yOffset, width, height, GL_RED, GL_FLOAT, data.get());
+        glTexSubImage2D(GL_TEXTURE_2D, 0, xOffset, yOffset, width, height, GL_BLUE, GL_FLOAT, data.get());
         ASSERT_GL_NO_ERROR();
     }
 
