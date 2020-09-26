@@ -91,7 +91,7 @@ void NodeSimulationInterfaceWater::preShareCopy() {
     };
 
     copy(simulation.getColor().getSource(), 0, 0);
-    copy(simulation.getVelocity().getSource(), 1, colorVoxelSize);
+    copy(simulation.getVelocity().getSource(), 1, Simulation::colorVoxelSize);
     clFinish(simulation.getCommandQueue());
 }
 
@@ -135,7 +135,7 @@ void NodeSimulationInterfaceWater::postShareCopy() {
     };
 
     copy(simulation.getColor().getSource(), 0, 0);
-    copy(simulation.getVelocity().getSource(), 1, colorVoxelSize);
+    copy(simulation.getVelocity().getSource(), 1, Simulation::colorVoxelSize);
 }
 
 PositionInGrid NodeSimulationInterfaceWater::createPositionInGrid(Node &node) {

@@ -8,6 +8,7 @@
 #include <iostream>
 
 ShareBuffers::ShareBuffers(int shHorizontalSize, int shVerticalSize, int shDepthSize, int shCornerSize, int shEdgeSize) {
+    // clang-format off
     sh_horizontal_L_in  = new uint8_t[shHorizontalSize];
     sh_horizontal_L_out = new uint8_t[shHorizontalSize];
     sh_horizontal_R_in  = new uint8_t[shHorizontalSize];
@@ -64,32 +65,30 @@ ShareBuffers::ShareBuffers(int shHorizontalSize, int shVerticalSize, int shDepth
     sh_edge_BU_out = new uint8_t[shEdgeSize];
     sh_edge_BD_in  = new uint8_t[shEdgeSize];
     sh_edge_BD_out = new uint8_t[shEdgeSize];
+    // clang-format on
 }
 
-using UsedSimulationInterface = NodeSimulationInterfaceWater;
 Node::Node(int rank, int gridSize, int nodeSize)
-    : shareThickness(UsedSimulationInterface::shareThickness),
-      shHorizontalSize(nodeSize       * nodeSize       * shareThickness * (UsedSimulationInterface::colorVoxelSize + UsedSimulationInterface::velocityVoxelSize)),
-      shVerticalSize(  nodeSize       * nodeSize       * shareThickness * (UsedSimulationInterface::colorVoxelSize + UsedSimulationInterface::velocityVoxelSize)),
-      shDepthSize(     nodeSize       * nodeSize       * shareThickness * (UsedSimulationInterface::colorVoxelSize + UsedSimulationInterface::velocityVoxelSize)),
-      shCornerSize(    shareThickness * shareThickness * shareThickness * (UsedSimulationInterface::colorVoxelSize + UsedSimulationInterface::velocityVoxelSize)),
-      shEdgeSize(      shareThickness * shareThickness * nodeSize       * (UsedSimulationInterface::colorVoxelSize + UsedSimulationInterface::velocityVoxelSize)),
+    : shareThickness(15),
+      // clang-format off
+      shHorizontalSize(nodeSize       * nodeSize       * shareThickness * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
+      shVerticalSize(  nodeSize       * nodeSize       * shareThickness * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
+      shDepthSize(     nodeSize       * nodeSize       * shareThickness * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
+      shCornerSize(    shareThickness * shareThickness * shareThickness * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
+      shEdgeSize(      shareThickness * shareThickness * nodeSize       * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
+      // clang-format on
       shareBuffers(shHorizontalSize, shVerticalSize, shDepthSize, shCornerSize, shEdgeSize),
       rank(rank),
       gridSize(gridSize),
       nodeSize(nodeSize),
-      nodeVolume(nodeSize * nodeSize * nodeSize * UsedSimulationInterface::colorVoxelSize), // Only color representation of simulation (TODO level set values)
+      nodeVolume(nodeSize * nodeSize * nodeSize * Simulation::colorVoxelSize), // Only color representation of simulation (TODO level set values)
       xPosInGrid(convertTo3DRankX(rank, gridSize)),
       yPosInGrid(convertTo3DRankY(rank, gridSize)),
       zPosInGrid(convertTo3DRankZ(rank, gridSize)),
-      simulationInterface(new UsedSimulationInterface(*this)) {
-
-    // Log position in frid
+      simulationInterface(new NodeSimulationInterfaceWater(*this)),
+      sendArray(new uint8_t[nodeVolume]),
+      igatherRequest(MPI_REQUEST_NULL) {
     Logger::get() << "My 3D coords: " << xPosInGrid << ", " << yPosInGrid << ", " << zPosInGrid << std::endl;
-
-    sendArray = new uint8_t[nodeVolume];
-
-    igatherRequest = MPI_REQUEST_NULL;
 }
 
 ShareBuffers::~ShareBuffers() {
