@@ -23,17 +23,15 @@ ColorRenderer::ColorRenderer(ColorRendererCallbacks &callbacks, size_t voxelSize
     }
 
     // Setup OpenGL stuff
-    glGenTextures(1, &texture1);
-    glMatrixMode(GL_PROJECTION);
-    glOrtho(0, initialWidth, 0, initialHeight, -1, 1);
-    ASSERT_GL_NO_ERROR();
+    CHECK_GL_ERROR(glGenTextures(1, &texture1))
+    CHECK_GL_ERROR(glMatrixMode(GL_PROJECTION))
+    CHECK_GL_ERROR(glOrtho(0, initialWidth, 0, initialHeight, -1, 1))
 
     // Initialize full image (because glTexSubImage2D is used later)
     auto a = std::make_unique<uint8_t[]>(imageWidth * imageHeight * voxelSize * 4);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(imageWidth), static_cast<GLsizei>(imageHeight), 0, GL_RGBA, GL_FLOAT, a.get());
-    glBindTexture(GL_TEXTURE_2D, 0);
-    ASSERT_GL_NO_ERROR();
+    CHECK_GL_ERROR(glBindTexture(GL_TEXTURE_2D, texture1))
+    CHECK_GL_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(imageWidth), static_cast<GLsizei>(imageHeight), 0, GL_RGBA, GL_FLOAT, a.get()))
+    CHECK_GL_ERROR(glBindTexture(GL_TEXTURE_2D, 0))
 }
 
 void ColorRenderer::processInput(int button, int action, int mods) {
@@ -93,10 +91,10 @@ void ColorRenderer::processKeyboardInput(int key, int scancode, int action, int 
 
 void ColorRenderer::update(float deltaTimeSeconds) {
     callbacks.stepSimulation(deltaTimeSeconds);
-    glBindTexture(GL_TEXTURE_2D, texture1);
+    CHECK_GL_ERROR(glBindTexture(GL_TEXTURE_2D, texture1))
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST))
+    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST))
     for (auto i = 0u; i < subImagesData.size(); i++) {
         const auto &info = subImagesInfo[i];
         if (!info.valid) {
@@ -111,19 +109,17 @@ void ColorRenderer::update(float deltaTimeSeconds) {
         const auto yOffset = static_cast<GLint>(info.yOffset);
         const auto width = static_cast<GLsizei>(info.width);
         const auto height = static_cast<GLsizei>(info.height);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, xOffset, yOffset, width, height, GL_BLUE, GL_FLOAT, data.get());
-        ASSERT_GL_NO_ERROR();
+        CHECK_GL_ERROR(glTexSubImage2D(GL_TEXTURE_2D, 0, xOffset, yOffset, width, height, GL_BLUE, GL_FLOAT, data.get()))
     }
 
-    glBindTexture(GL_TEXTURE_2D, 0);
-    ASSERT_GL_NO_ERROR();
+    CHECK_GL_ERROR(glBindTexture(GL_TEXTURE_2D, 0))
 }
 
 void ColorRenderer::render() {
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    glBegin(GL_QUADS);
+    CHECK_GL_ERROR(glEnable(GL_TEXTURE_2D));
+    CHECK_GL_ERROR(glBindTexture(GL_TEXTURE_2D, texture1));
 
+    glBegin(GL_QUADS);
     glTexCoord2i(0, 1);
     glVertex2i(100, 100);
     glTexCoord2i(0, 0);
@@ -132,12 +128,10 @@ void ColorRenderer::render() {
     glVertex2i(500, 500);
     glTexCoord2i(1, 1);
     glVertex2i(500, 100);
+    CHECK_GL_ERROR(glEnd())
 
-    glEnd();
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
-
-    ASSERT_GL_NO_ERROR();
+    CHECK_GL_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+    CHECK_GL_ERROR(glDisable(GL_TEXTURE_2D))
 }
 
 float ColorRenderer::transformCoordsFromAbsoluteSpaceToSimulationSpaceX(double x) {

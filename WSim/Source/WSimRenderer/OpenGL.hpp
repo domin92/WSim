@@ -19,6 +19,10 @@
         }                                                                            \
     }
 
+#define CHECK_GL_ERROR(expression) \
+    expression;                    \
+    ASSERT_GL_NO_ERROR()
+
 #define DEFINE_RAII_WRAPPER(name, glType, releaseMethod)          \
     class name {                                                  \
     protected:                                                    \
