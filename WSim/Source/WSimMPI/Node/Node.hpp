@@ -1,8 +1,8 @@
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <mpi.h>
-#include <cstdint>
 
 class NodeSimulationInterface;
 
@@ -96,7 +96,7 @@ private:
     std::unique_ptr<NodeSimulationInterface> simulationInterface;
 
     // Arrays containing all the pixels (including shared areas)
-    uint8_t *sendArray;         // Buffer for communication with master
+    uint8_t *sendArray; // Buffer for communication with master
 
     // MPI_Request used to block Igather
     MPI_Request igatherRequest;
@@ -107,9 +107,7 @@ private:
 
     // Methods for sharing buffers beetween nodes
     void shareBuffer(bool condition, uint8_t *intput_buffer, uint8_t *output_buffer, int size, int in_x, int in_y, int in_z);
-    void shareHorizontal();
-    void shareVertical();
-    void shareDepth();
+    void shareSide();
     void shareCorners();
     void shareEdges();
     void share(); // shares everything

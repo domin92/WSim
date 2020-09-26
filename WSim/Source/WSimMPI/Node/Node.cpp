@@ -173,23 +173,19 @@ inline void Node::shareBuffer(bool condition, uint8_t *intput_buffer, uint8_t *o
     }
 }
 
-void Node::shareVertical() {
+void Node::shareSide() {
     shareBuffer(yPosInGrid % 2 == 0, shareBuffers.sh_vertical_U_in, shareBuffers.sh_vertical_D_out, shVerticalSize, 0, -1, 0);
     shareBuffer(yPosInGrid % 2 == 0, shareBuffers.sh_vertical_D_in, shareBuffers.sh_vertical_U_out, shVerticalSize, 0, 1, 0);
 
     shareBuffer(yPosInGrid % 2 == 1, shareBuffers.sh_vertical_U_in, shareBuffers.sh_vertical_D_out, shVerticalSize, 0, -1, 0);
     shareBuffer(yPosInGrid % 2 == 1, shareBuffers.sh_vertical_D_in, shareBuffers.sh_vertical_U_out, shVerticalSize, 0, 1, 0);
-}
 
-void Node::shareHorizontal() {
     shareBuffer(xPosInGrid % 2 == 0, shareBuffers.sh_horizontal_L_in, shareBuffers.sh_horizontal_R_out, shHorizontalSize, -1, 0, 0);
     shareBuffer(xPosInGrid % 2 == 0, shareBuffers.sh_horizontal_R_in, shareBuffers.sh_horizontal_L_out, shHorizontalSize, 1, 0, 0);
 
     shareBuffer(xPosInGrid % 2 == 1, shareBuffers.sh_horizontal_L_in, shareBuffers.sh_horizontal_R_out, shHorizontalSize, -1, 0, 0);
     shareBuffer(xPosInGrid % 2 == 1, shareBuffers.sh_horizontal_R_in, shareBuffers.sh_horizontal_L_out, shHorizontalSize, 1, 0, 0);
-}
 
-void Node::shareDepth() {
     shareBuffer(zPosInGrid % 2 == 0, shareBuffers.sh_depth_F_in, shareBuffers.sh_depth_B_out, shDepthSize, 0, 0, -1);
     shareBuffer(zPosInGrid % 2 == 0, shareBuffers.sh_depth_B_in, shareBuffers.sh_depth_F_out, shDepthSize, 0, 0, 1);
 
@@ -265,9 +261,7 @@ void Node::sendToMaster() {
 }
 
 void Node::share() {
-    shareVertical();
-    shareHorizontal();
-    shareDepth();
+    shareSide();
     shareCorners();
     shareEdges();
 }
