@@ -2,6 +2,7 @@
 #include "Node/Node.hpp"
 #include "Source/WSimCommon/ArgumentParser.hpp"
 #include "Source/WSimCommon/Logger.hpp"
+#include "Source/WSimCommon/SimulationMode.h"
 #include "Source/WSimMPI/Utils.hpp"
 
 #include <cstdlib>
@@ -69,8 +70,9 @@ int main(int argc, char **argv) {
     int gridSize = my_cbrt(procCount - 1);
     int nodeSize = fullSize / gridSize;
 
+    const auto simulationMode = SimulationMode::Enum::Graphical3D;
     if (my_rank == 0) {
-        Master master(procCount, gridSize, nodeSize);
+        Master master(procCount, gridSize, nodeSize, simulationMode);
         master.main();
     } else {
         Node node(my_rank, gridSize, nodeSize);

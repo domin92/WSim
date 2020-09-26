@@ -9,7 +9,6 @@ class Renderer;
 class MasterRendererInterface2D : public MasterRendererInterface {
 public:
     MasterRendererInterface2D(Master &master);
-    constexpr static size_t mainBufferTexelSize = Simulation::colorVoxelSize;
 
     // For MPI
     virtual void mainLoop() override;

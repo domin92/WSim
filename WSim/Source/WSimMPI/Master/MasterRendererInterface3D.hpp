@@ -9,7 +9,6 @@ class Renderer;
 class MasterRendererInterface3D : public MasterRendererInterface {
 public:
     MasterRendererInterface3D(Master &master);
-    constexpr static size_t colorVoxelSize = Simulation::colorVoxelSize;
 
     // For MPI
     virtual void mainLoop() override;

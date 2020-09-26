@@ -1,29 +1,39 @@
 ﻿#include "Master.hpp"
 
+#include "Source/WSimCommon/SimulationMode.h"
+#include "Source/WSimMPI/Master/MasterRendererInterface2D.hpp"
+#include "Source/WSimMPI/Master/MasterRendererInterface3D.hpp"
+#include "Source/WSimMPI/Master/MasterRendererInterfaceText.hpp"
+
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <mpi.h>
 
-#ifdef WSIM_TEXT_ONLY
-#include "Source/WSimMPI/Master/MasterRendererInterfaceText.hpp"
-using UsedRendererInterface = MasterRendererInterfaceText;
-#else
-#include "Source/WSimMPI/Master/MasterRendererInterface3D.hpp"
-using UsedRendererInterface = MasterRendererInterface3D;
-#endif
-
-Master::Master(int procCount, int grid_size, int nodeSize)
+Master::Master(int procCount, int gridSizeInNodes, int nodeSize, SimulationMode simulationMode)
     : procCount(procCount),
-      gridSize(grid_size),
+      gridSize(gridSizeInNodes),
       nodeSize(nodeSize),
-      fullSize(nodeSize * grid_size),
-      nodeVolume(nodeSize * nodeSize * nodeSize * UsedRendererInterface::colorVoxelSize),
+      fullSize(nodeSize * gridSizeInNodes),
+      nodeVolume(nodeSize * nodeSize * nodeSize * Simulation::colorVoxelSize),
       mainBuffer(new uint8_t[(procCount - 1) * nodeVolume]),
       mappedBuffer(new uint8_t *[procCount - 1]),
-      rendererInterface(new UsedRendererInterface(*this)) {
+      rendererInterface(createRendererInterface(simulationMode)) {
     for (int i = 0; i < procCount - 1; i++) {
         mappedBuffer[i] = mainBuffer + i * nodeVolume;
+    }
+}
+
+std::unique_ptr<MasterRendererInterface> Master::createRendererInterface(SimulationMode simulationMode) {
+    switch (simulationMode.value) {
+    case SimulationMode::Enum::Graphical2D:
+        return std::unique_ptr<MasterRendererInterface>{new MasterRendererInterface2D(*this)};
+    case SimulationMode::Enum::Graphical3D:
+        return std::unique_ptr<MasterRendererInterface>{new MasterRendererInterface3D(*this)};
+    case SimulationMode::Enum::Text:
+        return std::unique_ptr<MasterRendererInterface>{new MasterRendererInterfaceText(*this)};
+    default:
+        wsimError();
     }
 }
 

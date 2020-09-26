@@ -1,9 +1,10 @@
 #pragma once
 
-#include <memory>
 #include <cstdint>
+#include <memory>
 
 class MasterRendererInterface;
+struct SimulationMode;
 
 class Master {
     // Sizes
@@ -22,9 +23,12 @@ class Master {
 
 public:
     // General
-    Master(int proc_count, int grid_size, int nodeSize);
+    Master(int procCount, int gridSizeInNodes, int nodeSize, SimulationMode simulationMode);
     ~Master();
     void main();
+
+    // Creation helpers
+    std::unique_ptr<MasterRendererInterface> createRendererInterface(SimulationMode simulationMode);
 
     // Nodes communication
     void sendToNodes();
