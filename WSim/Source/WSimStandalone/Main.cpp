@@ -1,54 +1,11 @@
 #include "Source/WSimCommon/ArgumentParser.hpp"
 #include "Source/WSimCommon/DefaultFpsCallback.hpp"
+#include "Source/WSimCommon/SimulationMode.h"
 #include "Source/WSimRenderer/FpsCounter.hpp"
 #include "Source/WSimSimulation/Simulation/Simulation.hpp"
 #include "Source/WSimStandalone/ColorRendererCallbacks.hpp"
 #include "Source/WSimStandalone/TextRenderer.hpp"
 #include "Source/WSimStandalone/VolumeRendererCallbacks.hpp"
-
-struct Mode {
-    enum class ModeEnum {
-        Graphical2D,
-        Graphical3D,
-        Text,
-    } value;
-    Mode(ModeEnum value) : value(value) {}
-
-    static std::unique_ptr<Mode> fromString(const std::string &modeString) {
-        if (modeString == "graphical2d") {
-            return std::make_unique<Mode>(ModeEnum::Graphical2D);
-        } else if (modeString == "graphical3d") {
-            return std::make_unique<Mode>(ModeEnum::Graphical3D);
-        } else if (modeString == "text") {
-            return std::make_unique<Mode>(ModeEnum::Text);
-        } else {
-            return nullptr;
-        }
-    }
-
-    bool is2D() {
-        switch (value) {
-        case ModeEnum::Graphical2D:
-        case ModeEnum::Text:
-            return true;
-        default:
-            return false;
-        }
-    }
-
-    std::string toString() const {
-        switch (value) {
-        case ModeEnum::Graphical2D:
-            return "Graphical2D";
-        case ModeEnum::Graphical3D:
-            return "Graphical3D";
-        case ModeEnum::Text:
-            return "Text";
-        default:
-            wsimError();
-        }
-    }
-};
 
 int main(int argc, char **argv) {
     // Parse arguments
@@ -59,7 +16,7 @@ int main(int argc, char **argv) {
     const auto modeString = argumentParser.getArgumentValue<std::string>({"-m", "--mode"}, "graphical2d");
 
     // Get mode
-    const auto mode = Mode::fromString(modeString);
+    const auto mode = SimulationMode::fromString(modeString);
     if (mode == nullptr) {
         std::cerr << "ERROR: Invalid mode\n";
         return 1;
@@ -84,7 +41,7 @@ int main(int argc, char **argv) {
     DefaultFpsCallback fpsCallback;
 
     switch (mode->value) {
-    case Mode::ModeEnum::Graphical2D: {
+    case SimulationMode::Enum::Graphical2D: {
         ColorRendererCallbacksImpl rendererCallbacks{simulation};
         ColorRenderer renderer{rendererCallbacks, Simulation::colorVoxelSize};
         renderer.setFpsCallback(fpsCallback);
@@ -92,7 +49,7 @@ int main(int argc, char **argv) {
         break;
     }
 
-    case Mode::ModeEnum::Graphical3D: {
+    case SimulationMode::Enum::Graphical3D: {
         VolumeRendererCallbacksImpl rendererCallbacks{simulation};
         VolumeRenderer renderer{rendererCallbacks, static_cast<int>(simulation.getSimulationSize().x), 1, 600};
         renderer.setFpsCallback(fpsCallback);
@@ -100,7 +57,7 @@ int main(int argc, char **argv) {
         break;
     }
 
-    case Mode::ModeEnum::Text: {
+    case SimulationMode::Enum::Text: {
         TextRenderer renderer{simulation};
         renderer.setFpsCallback(fpsCallback);
         renderer.mainLoop();
