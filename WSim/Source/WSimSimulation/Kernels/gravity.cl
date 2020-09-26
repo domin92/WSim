@@ -15,10 +15,7 @@ __kernel void applyGravity(__read_only image3d_t inVelocity,
     const float4 color = read_imagef(inColor, nearestSampler, samplePosition);
 
     // Calculate change of velocity to be applied
-    float4 velocityChange = inDownDirection * inGravityForce;
-    if (color.x > 0.3 || color.y > 0.3 || color.z < 0.2) {
-        velocityChange = (float4)(0);
-    }
+    const float4 velocityChange = inDownDirection * inGravityForce * color.x;
 
     // Write to output buffer
     float4 newVelocity = currentVelocity + velocityChange;

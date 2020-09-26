@@ -30,7 +30,7 @@ Simulation::Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulation
     simulationSteps.emplace_back(new SimulationStepColorAdvection(*this));
     simulationSteps.emplace_back(new SimulationStepPressure(*this, 5, currentSimulationSize));
     //simulationSteps.emplace_back(new SimulationStepVorticityConfinement(*this, currentSimulationSize)); // Doesn't work in 3D
-    //simulationSteps.emplace_back(new SimulationStepGravity(*this, currentSimulationSize));
+    simulationSteps.emplace_back(new SimulationStepGravity(*this, currentSimulationSize));
     simulationSteps.emplace_back(new SimulationStepAdvection(*this, currentSimulationSize));
 
     // Initialize all textures
