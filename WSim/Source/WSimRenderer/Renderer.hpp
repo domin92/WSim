@@ -17,10 +17,10 @@ protected:
     static void callbackMouseMove(GLFWwindow *window, double x, double y);
     static void callbackScroll(GLFWwindow *window, double x, double y);
 
-    virtual void processInput(int button, int action, int mods) = 0;
-    virtual void processKeyboardInput(int key, int scancode, int action, int mods) = 0;
-    virtual void processMouseMove(double x, double y) = 0;
-    virtual void processScroll(double xoffset, double yoffset) = 0;
+    virtual void processInput(int button, int action, int mods){};
+    virtual void processKeyboardInput(int key, int scancode, int action, int mods){};
+    virtual void processMouseMove(double x, double y){};
+    virtual void processScroll(double xoffset, double yoffset){};
 
     void preUpdate() override;
     virtual void render() = 0;
