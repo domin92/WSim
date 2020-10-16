@@ -19,7 +19,8 @@ Where `<number of processes>` is a number of nodes + master process (n^3 + 1) e.
 ## TO-DO
 
 Now
-- Fix gravity - weird things happen
+- Fix artifacts - weird things happen
+- Fix appearing water - in -> out sum not equal
 - Fix walls on more than one node
 - Level set physics
 - Level set rendering
@@ -28,3 +29,4 @@ Later
 - Render on nodes and send 2D images to master
 - Master -> Node messages
 - Load .obj files into simulation
+- VorticityConfinement
