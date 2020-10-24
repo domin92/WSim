@@ -70,7 +70,7 @@ void Master::main() {
 
                 int idx = z_in_grid * gridSize * gridSize + y_in_grid * gridSize + x_in_grid;
 
-                if (y < (1 * fullSize / 10)) {
+                if (y < (5 * fullSize / 10) && y > (4 * fullSize / 10)) {
                     reinterpret_cast<float *>(mainBuffer)[idx * nodeSize * nodeSize * nodeSize + z_in_node * nodeSize * nodeSize + y_in_node * nodeSize + x_in_node] = 1.0f;
                 } else {
                     reinterpret_cast<float *>(mainBuffer)[idx * nodeSize * nodeSize * nodeSize + z_in_node * nodeSize * nodeSize + y_in_node * nodeSize + x_in_node] = 0.0f;

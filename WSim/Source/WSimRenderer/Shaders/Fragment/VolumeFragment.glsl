@@ -52,7 +52,7 @@ void main() {
             break;
         }
     
-        vec3 readPos = vec3(currentPosition.x, currentPosition.y, currentPosition.z); // Flip Y and Z axis
+        vec3 readPos = vec3(currentPosition.x, -currentPosition.y, currentPosition.z); // Flip Y axis
 
         readPos = getWaterTextureCoords(readPos);
 
