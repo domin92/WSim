@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
         Master master(procCount, gridSize, nodeSize, simulationMode);
         master.main();
     } else {
-        Node node(my_rank, gridSize, nodeSize);
+        Node node(my_rank, gridSize, nodeSize, simulationMode);
         node.main();
     }
 

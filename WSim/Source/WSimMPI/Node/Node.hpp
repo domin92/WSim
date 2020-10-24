@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Source/WSimCommon/SimulationMode.h"
 #include <cstdint>
 #include <memory>
 #include <mpi.h>
@@ -92,6 +93,7 @@ private:
 
     // Simulation
     std::unique_ptr<NodeSimulationInterface> simulationInterface;
+    SimulationMode::Enum simulationMode;
 
     // Arrays containing all the pixels (including shared areas)
     uint8_t *sendArray; // Buffer for communication with master
@@ -115,7 +117,7 @@ private:
     void sendToMaster();
 
 public:
-    Node(int rank, int gridSize, int nodeSize);
+    Node(int rank, int gridSize, int nodeSize, SimulationMode::Enum simulationMode);
     ~Node();
 
     void main();

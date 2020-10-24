@@ -68,7 +68,7 @@ ShareBuffers::ShareBuffers(int shSideSize, int shCornerSize, int shEdgeSize) {
     // clang-format on
 }
 
-Node::Node(int rank, int gridSize, int nodeSize)
+Node::Node(int rank, int gridSize, int nodeSize, SimulationMode::Enum simulationMode)
     : shareThickness(15),
       // clang-format off
       shSideSize   (shareThickness * nodeSize       * nodeSize       * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
@@ -85,7 +85,8 @@ Node::Node(int rank, int gridSize, int nodeSize)
       zPosInGrid(convertTo3DRankZ(rank, gridSize)),
       simulationInterface(new NodeSimulationInterfaceWater(*this)),
       sendArray(new uint8_t[nodeVolume]),
-      igatherRequest(MPI_REQUEST_NULL) {
+      igatherRequest(MPI_REQUEST_NULL),
+      simulationMode(simulationMode){
     Logger::get() << "My 3D coords: " << xPosInGrid << ", " << yPosInGrid << ", " << zPosInGrid << std::endl;
 }
 
@@ -249,13 +250,13 @@ void Node::receiveFromMaster() {
 }
 
 void Node::sendToMaster() {
-#ifdef WSIM_TEXT_ONLY
-    MPI_Barrier(MPI_COMM_WORLD)
-#else
-    simulationInterface->preSendToMaster(sendArray);
-    MPI_Wait(&igatherRequest, MPI_STATUS_IGNORE);
-    MPI_Igather(sendArray, nodeVolume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD, &igatherRequest);
-#endif
+    if (simulationMode == SimulationMode::Enum::Text) {
+        MPI_Barrier(MPI_COMM_WORLD);
+    } else {
+        simulationInterface->preSendToMaster(sendArray);
+        MPI_Wait(&igatherRequest, MPI_STATUS_IGNORE);
+        MPI_Igather(sendArray, nodeVolume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD, &igatherRequest);
+    }
 }
 
 void Node::share() {
