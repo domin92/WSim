@@ -17,7 +17,7 @@ NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node)
     const auto centerY = nodeSize / 2.f - node.getYPosInGrid() * nodeSize;
     const auto centerZ = -1.f * node.getZPosInGrid() * nodeSize;
     Logger::get() << centerX << ", " << centerY << ", " << centerZ << std::endl;
-    simulation.applyForce(FloatVec3{centerX, centerY, centerZ}, FloatVec3{50, 50, 0}, 10);
+    //simulation.applyForce(FloatVec3{centerX, centerY, centerZ}, FloatVec3{0, 5, 0}, 1f);
 
     if (node.getXPosInGrid() == 0) {
         simulation.addObstacleWall(Dim::X, End::Lower);
