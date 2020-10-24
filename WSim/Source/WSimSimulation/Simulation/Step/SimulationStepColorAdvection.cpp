@@ -4,7 +4,7 @@
 
 SimulationStepColorAdvection::SimulationStepColorAdvection(Simulation &simulation)
     : SimulationStep(simulation, simulation.getSimulationSize(), simulation.getSimulationSizeWithBorder()),
-      kernelColorAdvection(simulation.getKernelManager()["advection.cl"]["advect"]) {}
+      kernelColorAdvection(simulation.getKernelManager()["advection.cl"]["advectColor"]) {}
 
 void SimulationStepColorAdvection::run(float deltaTimeSeconds) {
     auto &color = simulation.getColor();

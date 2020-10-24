@@ -18,7 +18,7 @@ float4 advectValue(__read_only image3d_t inField,
     return value;
 }
 
-__kernel void advect(__read_only image3d_t inField,
+__kernel void advectColor(__read_only image3d_t inField,
                      __read_only image3d_t inVelocity,
                      int4 inVelocityOffset,
                      float inDeltaTime,
