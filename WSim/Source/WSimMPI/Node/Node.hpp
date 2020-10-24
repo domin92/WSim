@@ -112,6 +112,9 @@ private:
     void shareEdges();
     void share(); // shares everything
 
+    void dumpArrayToFile();
+    std::fstream outputFile;
+
     // Methods for communication with master
     void receiveFromMaster();
     void sendToMaster();

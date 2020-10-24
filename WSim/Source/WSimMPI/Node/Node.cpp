@@ -4,6 +4,7 @@
 #include "Source/WSimMPI/Node/NodeSimulationInterfaceWater.hpp"
 #include "Source/WSimMPI/Utils.hpp"
 
+#include <fstream>
 #include <cstdlib>
 #include <iostream>
 
@@ -88,6 +89,12 @@ Node::Node(int rank, int gridSize, int nodeSize, SimulationMode::Enum simulation
       igatherRequest(MPI_REQUEST_NULL),
       simulationMode(simulationMode){
     Logger::get() << "My 3D coords: " << xPosInGrid << ", " << yPosInGrid << ", " << zPosInGrid << std::endl;
+
+    if (simulationMode == SimulationMode::Enum::Text) {
+        std::string filename = "outputFile" + std::to_string(rank);
+        outputFile.open(filename, std::ios::out | std::ios::binary);
+    }
+
 }
 
 ShareBuffers::~ShareBuffers() {
@@ -147,6 +154,7 @@ ShareBuffers::~ShareBuffers() {
 
 Node::~Node() {
     delete[] sendArray;
+    outputFile.close();
 }
 
 bool Node::isNeighbourInGrid(int neighbourOffsetX, int neighbourOffsetY, int neighbourOffsetZ) {
@@ -249,11 +257,20 @@ void Node::receiveFromMaster() {
     simulationInterface->postReceiveFromMaster(sendArray);
 }
 
+void Node::dumpArrayToFile() {
+    for (int i = 0; i < nodeVolume; i++) {
+        outputFile << sendArray[i];
+    }
+    outputFile << std::endl;
+    outputFile.flush();
+}
+
 void Node::sendToMaster() {
+    simulationInterface->preSendToMaster(sendArray);
     if (simulationMode == SimulationMode::Enum::Text) {
+        dumpArrayToFile();
         MPI_Barrier(MPI_COMM_WORLD);
     } else {
-        simulationInterface->preSendToMaster(sendArray);
         MPI_Wait(&igatherRequest, MPI_STATUS_IGNORE);
         MPI_Igather(sendArray, nodeVolume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD, &igatherRequest);
     }
