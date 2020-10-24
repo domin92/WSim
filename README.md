@@ -16,17 +16,3 @@ Where `<number of processes>` is a number of nodes + master process (n^3 + 1) e.
 
 `<simulation size>` is a size of an edge of the simulation cube e.g. 100 (60 by default).
 
-## TO-DO
-
-Now
-- Fix artifacts - weird things happen
-- Fix appearing water - in -> out sum not equal
-- Fix walls on more than one node
-- Level set physics
-- Level set rendering
-
-Later
-- Render on nodes and send 2D images to master
-- Master -> Node messages
-- Load .obj files into simulation
-- VorticityConfinement
