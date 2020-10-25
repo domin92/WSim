@@ -21,7 +21,7 @@ void LevelSetHelper::initializeToSphere(float *levelSet, Vec3 levelSetSize, Floa
                 const float distanceFromOriginX = x - sphereOrigin.x;
                 const float distanceFromOriginY = y - sphereOrigin.y;
                 const float distanceFromOriginZ = z - sphereOrigin.z;
-                const float distanceFromOrigin = std::sqrtf(distanceFromOriginX * distanceFromOriginX + distanceFromOriginY * distanceFromOriginY);
+                const float distanceFromOrigin = std::sqrtf(distanceFromOriginX * distanceFromOriginX + distanceFromOriginY * distanceFromOriginY + distanceFromOriginZ * distanceFromOriginZ);
                 const float levelSetValue = distanceFromOrigin - sphereRadius;
 
                 const auto indexInLevelSet = IndexHelper::idx(x, y, z, levelSetSize);
