@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
     int fullSize = argumentParser.getArgumentValue<int>({"-s", "--simulationSize"}, DEFAULT_GRID_SIZE); // Size of the edge of the simulation cube
     int blockProcessWithRank = argumentParser.getArgumentValue<int>({"-b", "--block"}, -1);             // -1 means do not block
     bool printPid = argumentParser.getArgumentValue<bool>({"-p", "--printPids"}, 0);                    // print process ids of all MPI processes
+    auto simulationMode = SimulationMode::fromString(argumentParser.getArgumentValue<std::string>({"-m", "--mode"}, "graphical3d"));  // print process ids of all MPI processes
 
     // Verify arguments
     if (fullSize <= 0) {
@@ -70,12 +71,11 @@ int main(int argc, char **argv) {
     int gridSize = my_cbrt(procCount - 1);
     int nodeSize = fullSize / gridSize;
 
-    const auto simulationMode = SimulationMode::Enum::Graphical3D;
     if (my_rank == 0) {
-        Master master(procCount, gridSize, nodeSize, simulationMode);
+        Master master(procCount, gridSize, nodeSize, simulationMode.get()->value);
         master.main();
     } else {
-        Node node(my_rank, gridSize, nodeSize, simulationMode);
+        Node node(my_rank, gridSize, nodeSize, simulationMode.get()->value);
         node.main();
     }
 

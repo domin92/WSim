@@ -113,7 +113,7 @@ private:
     void share(); // shares everything
 
     void dumpArrayToFile();
-    std::fstream outputFile;
+    std::ofstream outputFile;
 
     // Methods for communication with master
     void receiveFromMaster();

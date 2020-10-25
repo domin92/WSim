@@ -258,10 +258,7 @@ void Node::receiveFromMaster() {
 }
 
 void Node::dumpArrayToFile() {
-    for (int i = 0; i < nodeVolume; i++) {
-        outputFile << sendArray[i];
-    }
-    outputFile << std::endl;
+    outputFile.write((const char *)sendArray, nodeVolume);
     outputFile.flush();
 }
 
