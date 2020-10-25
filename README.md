@@ -9,8 +9,8 @@ Run 'build.sh' script.
 
 Use MS-MPI or MPICH
 ```
-mpiexec.exe -n <number of processes> .\WSimMPI.exe <simulation size> // MS-MPI
-mpiexec -np <number of processes> WSimMPI <simulation size> //MPICH
+mpiexec.exe -n <number of processes> .\WSimMPI.exe -s <simulation size> // MS-MPI
+mpiexec -np <number of processes> WSimMPI -s <simulation size> //MPICH
 ```
 Where `<number of processes>` is a number of nodes + master process (n^3 + 1) e.g. 2, 9 or 28.
 
