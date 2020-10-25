@@ -3,7 +3,7 @@
 #include <mpi.h>
 
 void TextRenderer::update(float deltaTime) {
-    MPI_Barrier(MPI_COMM_WORLD);
+    //MPI_Barrier(MPI_COMM_WORLD);
 }
 
 MasterRendererInterfaceText::MasterRendererInterfaceText(Master &master)
