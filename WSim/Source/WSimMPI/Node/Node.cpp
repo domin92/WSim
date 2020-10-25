@@ -266,7 +266,7 @@ void Node::sendToMaster() {
     simulationInterface->preSendToMaster(sendArray);
     if (simulationMode == SimulationMode::Enum::Text) {
         dumpArrayToFile();
-        MPI_Barrier(MPI_COMM_WORLD);
+        //MPI_Barrier(MPI_COMM_WORLD);
     } else {
         MPI_Wait(&igatherRequest, MPI_STATUS_IGNORE);
         MPI_Igather(sendArray, nodeVolume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD, &igatherRequest);
