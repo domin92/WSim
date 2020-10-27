@@ -27,6 +27,14 @@ if (MPI_FOUND)
         set_target_properties(${TARGET_WSIM_MPI} PROPERTIES LINK_FLAGS "${MPI_LINK_FLAGS}")
     endif()
 
+    if(MSVC)
+        set_target_properties(${TARGET_WSIM_MPI} PROPERTIES
+            VS_DEBUGGER_COMMAND "mpiexec.exe"
+            VS_DEBUGGER_COMMAND_ARGUMENTS "-np 9 $<TARGET_FILE:${TARGET_WSIM_MPI}>"
+            VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET_WSIM_MPI}>"
+        )
+    endif()
+
     # Generate run_mpi.sh script
     file(GENERATE OUTPUT ${DIR_ROOT}/run_mpi.sh CONTENT "mpirun -np 9 $<TARGET_FILE:${TARGET_WSIM_MPI}> $@")
 endif()
