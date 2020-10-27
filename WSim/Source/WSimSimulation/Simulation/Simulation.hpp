@@ -30,6 +30,9 @@ public:
         stepSimulation(std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime).count());
     }
 
+    void writeColor(const float* arg);
+    void readColor(float* arg);
+
     void setGravityForce(float force) { this->gravityForce = force; }
 
     void applyForce(float positionX, float positionY, float changeX, float changeY, float radius);

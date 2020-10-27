@@ -45,6 +45,24 @@ void Simulation::stepSimulation(float deltaTimeSeconds) {
     }
 }
 
+void Simulation::writeColor(const float *arg) {
+    OCL::enqueueWriteImage3D(commandQueue,
+                             this->color.getSource(),
+                             CL_BLOCKING,
+                             this->borderOffset,
+                             this->simulationSize,
+                             arg);
+}
+
+void Simulation::readColor(float *arg) {
+    OCL::enqueueReadImage3D(commandQueue,
+                            this->color.getSource(),
+                            CL_BLOCKING,
+                            this->borderOffset,
+                            this->simulationSize,
+                            arg);
+}
+
 void Simulation::applyForce(float positionX, float positionY, float changeX, float changeY, float radius) {
     applyForce(FloatVec3{positionX, positionY, 0}, FloatVec3{changeX, changeY, 0}, radius);
 }
