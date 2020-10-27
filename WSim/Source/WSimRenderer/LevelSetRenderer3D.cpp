@@ -1,11 +1,12 @@
 #include "LevelSetRenderer3D.hpp"
+
 #include <algorithm>
 
 LevelSetRenderer::LevelSetRenderer(LevelSetRendererCallbacks &callbacks, int screenWidth, int screenHeight, Vec3 size)
     : Renderer(GLFW_OPENGL_CORE_PROFILE, screenWidth, screenHeight),
       callbacks(callbacks),
       size(size),
-      screenSize(screenWidth){
+      screenSize(screenWidth) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     loadBuffers();
     loadShaders();
@@ -16,14 +17,13 @@ LevelSetRenderer::LevelSetRenderer(LevelSetRendererCallbacks &callbacks, int scr
     glEnable(GL_CULL_FACE);
 
     glUseProgram(shaderProgram);
-    }
-
+}
 
 glm::mat4 LevelSetRenderer::createMvp() {
-    glm::mat4 projection = glm::perspective(glm::radians(fov), 
-        (float)screenSize / (float)screenSize, 
-        0.1f, 
-        100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(fov),
+                                            (float)screenSize / (float)screenSize,
+                                            0.1f,
+                                            100.0f);
     glm::mat4 view = glm::lookAt(
         cameraPos,               // Eye position
         cameraPos + cameraFront, // Focus point
@@ -95,7 +95,7 @@ void LevelSetRenderer::loadBuffers() {
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-        glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
 }
 
@@ -118,7 +118,6 @@ void LevelSetRenderer::updateCameraFront() {
     cameraFront = glm::normalize(cameraFront);
     mvpDirty = true;
 }
-
 
 void LevelSetRenderer::update(float deltaTimeSeconds) {
     callbacks.updateSimulation(deltaTimeSeconds);
@@ -145,14 +144,12 @@ void LevelSetRenderer::render() {
 
     glUniformMatrix4fv(mvpVertexUniformLocation, 1, GL_FALSE, &mvp[0][0]);
     glUniform3f(mvpFragmentUniformLocation, cameraPos.x, cameraPos.y, cameraPos.z);
-    
+
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 }
 
-
 void LevelSetRenderer::processInput(int button, int action, int mods) {
 }
-
 
 void LevelSetRenderer::processKeyboardInput(int key, int scancode, int action, int mods) {
     float cameraSpeed = 15.0f * getDeltaTime();
@@ -175,6 +172,14 @@ void LevelSetRenderer::processKeyboardInput(int key, int scancode, int action, i
         break;
     case GLFW_KEY_S:
         cameraPos -= cameraSpeed * cameraFront;
+        mvpDirty = true;
+        break;
+    case GLFW_KEY_R:
+        cameraPos += cameraSpeed * cameraUp;
+        mvpDirty = true;
+        break;
+    case GLFW_KEY_F:
+        cameraPos -= cameraSpeed * cameraUp;
         mvpDirty = true;
         break;
     }
