@@ -32,8 +32,9 @@ int main() {
     auto levelSet = std::make_unique<float[]>(size.getRequiredBufferSize(1));
     LevelSetHelper::initializeToSphere(levelSet.get(), size, sphereRadius);
 
-    Simulation simulation{0u, 0u, size};
-    // simulation.setGravityForce(-0.1);
+    Simulation simulation{0u, 0u, size, true};
+    simulation.setGravityForce(0.1f);
+    simulation.addObstacleAllWalls();
 
     LevelSetRendererCallbacksImpl callbacks{simulation, levelSet.get()};
     LevelSetRenderer renderer{callbacks, 400, 400, size};

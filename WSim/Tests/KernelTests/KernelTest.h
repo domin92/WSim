@@ -37,11 +37,11 @@ struct KernelTest : ::testing::Test {
     }
 
     cl_kernel createKernelFromFile(const std::string &programPath, const std::string &kernelName) {
-        return createKernelImpl(OCL::createProgramFromFile(device, context, programPath, true), kernelName);
+        return createKernelImpl(OCL::createProgramFromFile(device, context, programPath, true, ""), kernelName);
     }
 
     cl_kernel createKernelFromSource(const std::string &programSource, const std::string &kernelName) {
-        return createKernelImpl(OCL::createProgramFromSource(device, context, programSource, true), kernelName);
+        return createKernelImpl(OCL::createProgramFromSource(device, context, programSource, true, ""), kernelName);
     }
 
     cl_platform_id platform;

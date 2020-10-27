@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
     if (mode->is2D()) {
         imageSize.z = 1;
     }
-    Simulation simulation{clPlatformIndex, clDeviceIndex, imageSize};
+    Simulation simulation{clPlatformIndex, clDeviceIndex, imageSize, false};
     simulation.addObstacleAllWalls();
     simulation.setGravityForce(1.f);
 

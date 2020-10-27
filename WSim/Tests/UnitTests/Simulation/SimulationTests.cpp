@@ -5,5 +5,5 @@ struct SimulationTest : OclTest {
 };
 
 TEST_F(SimulationTest, givenDefaultParametersWhenCreatingSimulationThenItWorks) {
-    Simulation simulation{0, 0, Vec3{10, 10, 10}};
+    Simulation simulation{0, 0, Vec3{10, 10, 10}, false};
 }

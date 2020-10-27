@@ -6,10 +6,10 @@
 #include "Source/WSimSimulation/Simulation/Step/SimulationStepVorticityConfinement.hpp"
 #include "Source/WSimSimulation/Simulation/Step/SimulationStepVorticityPressure.hpp"
 
-Simulation::Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize)
-    : Simulation(platformIndex, deviceIndex, simulationSize, 0, PositionInGrid{Vec3{0, 0, 0}, Vec3{1, 1, 1}}) {}
+Simulation::Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize, bool isLevelSet)
+    : Simulation(platformIndex, deviceIndex, simulationSize, isLevelSet, 0, PositionInGrid{Vec3{0, 0, 0}, Vec3{1, 1, 1}}) {}
 
-Simulation::Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid)
+Simulation::Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize, bool isLevelSet, size_t borderWidth, PositionInGrid positionInGrid)
     : positionInGrid(positionInGrid),
       simulationSize(simulationSize),
       simulationSizeWithBorder(increaseBorder(simulationSize, positionInGrid, static_cast<int>(borderWidth))),
@@ -21,7 +21,7 @@ Simulation::Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulation
       velocity(context, simulationSizeWithBorder, vectorFieldFormat),
       color(context, simulationSizeWithBorder, colorFieldFormat),
       obstacles(OCL::createReadWriteImage3D(context, simulationSize, vectorFieldFormat)),
-      kernels(device, context),
+      kernels(device, context, (isLevelSet ? "#define LEVELSET\n" : "")),
       kernelInitializeColor(kernels["initialize.cl"]["initializeColor"]),
       kernelAddVelocity(kernels["addVelocity.cl"]["addVelocity"]) {
 

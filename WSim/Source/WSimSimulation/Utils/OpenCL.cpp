@@ -130,7 +130,7 @@ CommandQueue createCommandQueue(cl_context context, cl_device_id device) {
     return commandQueue;
 }
 
-Program createProgramFromFile(cl_device_id device, cl_context context, const std::string &sourceFilePath, bool compilationMustSuceed) {
+Program createProgramFromFile(cl_device_id device, cl_context context, const std::string &sourceFilePath, bool compilationMustSuceed, const std::string &sourcePrefix) {
     std::ifstream file(std::string{SHADERS_DIR} + "/" + sourceFilePath);
     if (!file.good()) {
         wsimErrorIf(compilationMustSuceed);
@@ -138,12 +138,12 @@ Program createProgramFromFile(cl_device_id device, cl_context context, const std
     }
 
     const std::string source{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
-    return createProgramFromSource(device, context, source, compilationMustSuceed);
+    return createProgramFromSource(device, context, source, compilationMustSuceed, sourcePrefix);
 }
-Program createProgramFromSource(cl_device_id device, cl_context context, const std::string &source, bool compilationMustSuceed) {
-    const std::string sourceWithExtensions = "#pragma OPENCL EXTENSION cl_khr_3d_image_writes : enable\n" + source;
-    const char *sourceString = sourceWithExtensions.c_str();
-    const size_t sourceLength = sourceWithExtensions.size();
+Program createProgramFromSource(cl_device_id device, cl_context context, const std::string &source, bool compilationMustSuceed, const std::string &sourcePrefix) {
+    const std::string fullSource = "#pragma OPENCL EXTENSION cl_khr_3d_image_writes : enable\n" + sourcePrefix + source;
+    const char *sourceString = fullSource.c_str();
+    const size_t sourceLength = fullSource.size();
     cl_int retVal{};
     Program program = clCreateProgramWithSource(context, 1, &sourceString, &sourceLength, &retVal);
     ASSERT_CL_SUCCESS(retVal);

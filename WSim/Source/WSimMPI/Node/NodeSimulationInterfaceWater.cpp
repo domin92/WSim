@@ -5,7 +5,7 @@
 NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node)
     : NodeSimulationInterface(node),
       positionInGrid(createPositionInGrid(node)),
-      simulation(0, 0, getNodeSize(node), node.getShareThickness(), positionInGrid),
+      simulation(0, 0, getNodeSize(node), false, node.getShareThickness(), positionInGrid),
       copier(positionInGrid, (cl_command_queue &)simulation.getCommandQueue(), (size_t)node.getShareThickness(), simulation.getSimulationSize()) {
 
     // Gravity

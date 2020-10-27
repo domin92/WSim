@@ -7,7 +7,7 @@
 
 class KernelManager {
 public:
-    KernelManager(OCL::Device &device, OCL::Context &context);
+    KernelManager(OCL::Device &device, OCL::Context &context, const std::string &sourcePrefix);
 
     class ProgramEntry {
     public:
@@ -24,4 +24,5 @@ private:
     OCL::Device &device;
     OCL::Context &context;
     std::unordered_map<std::string, ProgramEntry> programEntries;
+    const std::string sourcePrefix;
 };

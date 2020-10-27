@@ -1,8 +1,9 @@
 #include "KernelManager.hpp"
 
-KernelManager::KernelManager(OCL::Device &device, OCL::Context &context)
+KernelManager::KernelManager(OCL::Device &device, OCL::Context &context, const std::string &sourcePrefix)
     : device(device),
-      context(context) {}
+      context(context),
+      sourcePrefix(sourcePrefix) {}
 
 KernelManager::ProgramEntry &KernelManager::operator[](const std::string &programSourceFile) {
     auto it = programEntries.find(programSourceFile);
@@ -10,7 +11,7 @@ KernelManager::ProgramEntry &KernelManager::operator[](const std::string &progra
         return it->second;
     }
 
-    OCL::Program program = OCL::createProgramFromFile(device, context, programSourceFile, true);
+    OCL::Program program = OCL::createProgramFromFile(device, context, programSourceFile, true, sourcePrefix);
     this->programEntries[programSourceFile] = ProgramEntry(std::move(program));
     return this->programEntries[programSourceFile];
 }

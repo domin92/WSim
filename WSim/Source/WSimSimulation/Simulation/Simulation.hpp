@@ -21,8 +21,8 @@ public:
     constexpr static size_t colorVoxelSize = OCL::getSizeOfTexel(colorFieldFormat);
     constexpr static size_t velocityVoxelSize = OCL::getSizeOfTexel(velocityFieldFormat);
 
-    Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize);
-    Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize, size_t borderWidth, PositionInGrid positionInGrid);
+    Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize, bool isLevelSet);
+    Simulation(size_t platformIndex, size_t deviceIndex, Vec3 simulationSize, bool isLevelSet, size_t borderWidth, PositionInGrid positionInGrid);
 
     void stepSimulation(float deltaTimeSeconds);
     template <typename Rep, typename Period>
