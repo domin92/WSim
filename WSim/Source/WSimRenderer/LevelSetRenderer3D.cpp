@@ -136,7 +136,7 @@ void LevelSetRenderer::render() {
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_3D, waterTexture);
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_RED, size.x, size.y, size.z, 0, GL_RED, GL_FLOAT, levelSetData);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, size.x, size.y, size.z, 0, GL_RED, GL_FLOAT, levelSetData);
     glGenerateMipmap(GL_TEXTURE_3D);
 
     glUniform1i(nodeSizeUniformLocation, size.x);
