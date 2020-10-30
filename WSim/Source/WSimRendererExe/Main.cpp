@@ -73,7 +73,7 @@ public:
 int main(int argc, char **argv) {
     // Parse arguments
     ArgumentParser argumentParser{argc, argv};
-    int procCount = argumentParser.getArgumentValue<int>({"-n", "--numberOfProcesses"}, 2); // Size of the edge of the simulation cube
+    int procCount = argumentParser.getArgumentValue<int>({"-n", "--numberOfProcesses"}, 2);
     int fullSize = argumentParser.getArgumentValue<int>({"-s", "--simulationSize"}, 60);    // Size of the edge of the simulation cube
     int gridSize = my_cbrt(procCount - 1);
     int nodeSize = fullSize / gridSize;
