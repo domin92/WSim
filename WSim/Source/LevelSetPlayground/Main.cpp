@@ -26,9 +26,9 @@ struct LevelSetRendererCallbacksImpl : LevelSetRendererCallbacks {
 };
 
 int main() {
-    const size_t s = 40;
+    const size_t s = 100;
     const Vec3 size = {s, s, s};
-    const float sphereRadius = static_cast<float>(size.x - 1) / 2;
+    const float sphereRadius = static_cast<float>(size.x - 5) / 2;
     auto levelSet = std::make_unique<float[]>(size.getRequiredBufferSize(1));
     LevelSetHelper::initializeToSphere(levelSet.get(), size, sphereRadius);
 

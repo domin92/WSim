@@ -97,6 +97,7 @@ void LevelSetRenderer::loadBuffers() {
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
+    glFrontFace(GL_CW);
 }
 
 void LevelSetRenderer::loadShaders() {
