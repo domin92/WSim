@@ -37,6 +37,6 @@ int main() {
     simulation.addObstacleAllWalls();
 
     LevelSetRendererCallbacksImpl callbacks{simulation, levelSet.get()};
-    LevelSetRenderer renderer{callbacks, 400, 400, size};
+    LevelSetRenderer renderer{callbacks, 600, 600, size};
     renderer.mainLoop();
 }
