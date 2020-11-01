@@ -140,8 +140,7 @@ void LevelSetRenderer::render() {
     // Prepare texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_3D, waterTexture);
-    const auto size = nodeSizeInVoxels * gridSizeInNodes;
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, size, size, size, 0, GL_RED, GL_FLOAT, levelSetData);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nodeSizeInVoxels, nodeSizeInVoxels, nodeSizeInVoxels * gridSizeInNodes * gridSizeInNodes * gridSizeInNodes, 0, GL_RED, GL_FLOAT, levelSetData);
     glGenerateMipmap(GL_TEXTURE_3D);
 
     // Set uniforms and draw
