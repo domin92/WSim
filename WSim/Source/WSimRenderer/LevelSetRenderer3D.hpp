@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Source/WSimCommon/Vec3.hpp"
 #include "Source/WSimRenderer/Renderer.hpp"
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
-#include "Source/WSimCommon/Vec3.hpp"
 
 struct LevelSetRendererCallbacks {
     virtual void updateSimulation(float deltaTimeSeconds) = 0;
@@ -13,7 +14,7 @@ struct LevelSetRendererCallbacks {
 
 class LevelSetRenderer : public Renderer {
 public:
-    LevelSetRenderer(LevelSetRendererCallbacks &callbacks, int screenWidth, int screenHeight, Vec3 size);
+    LevelSetRenderer(LevelSetRendererCallbacks &callbacks, int screenWidth, int screenHeight, int nodeSizeInVoxels, int gridSizeInNodes);
 
     glm::mat4 createMvp();
 
@@ -26,9 +27,8 @@ public:
 protected:
     // Basic data
     LevelSetRendererCallbacks &callbacks;
-    //const int nodeSizeInVoxels;
-    //const int gridSizeInNodes;
-    const Vec3 size;
+    const int nodeSizeInVoxels;
+    const int gridSizeInNodes;
     const int screenSize;
 
     // Buffers for cube
@@ -54,8 +54,8 @@ protected:
     float fov = 45.0f;
     float yaw = -497.6f;
     float pitch = -35.1f;
-    
-        // Cached values for mouse movement
+
+    // Cached values for mouse movement
     bool firstMouse = true;
     float lastX = {};
     float lastY = {};
@@ -66,5 +66,4 @@ protected:
     void processMouseMove(double x, double y) override;
     void update(float deltaTimeSeconds) override;
     void render() override;
-
 };

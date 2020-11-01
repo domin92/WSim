@@ -3,6 +3,7 @@
 #include "Source/WSimCommon/SimulationMode.h"
 #include "Source/WSimMPI/Master/MasterRendererInterface2D.hpp"
 #include "Source/WSimMPI/Master/MasterRendererInterface3D.hpp"
+#include "Source/WSimMPI/Master/MasterRendererInterfaceLevelSet3D.hpp"
 #include "Source/WSimMPI/Master/MasterRendererInterfaceText.hpp"
 
 #include <cstdlib>
@@ -30,6 +31,8 @@ std::unique_ptr<MasterRendererInterface> Master::createRendererInterface(Simulat
         return std::unique_ptr<MasterRendererInterface>{new MasterRendererInterface2D(*this)};
     case SimulationMode::Enum::Graphical3D:
         return std::unique_ptr<MasterRendererInterface>{new MasterRendererInterface3D(*this)};
+    case SimulationMode::Enum::LevelSet3D:
+        return std::unique_ptr<MasterRendererInterface>{new MasterRendererInterfaceLevelSet3D(*this)};
     case SimulationMode::Enum::Text:
         return std::unique_ptr<MasterRendererInterface>{new MasterRendererInterfaceText(*this)};
     default:

@@ -4,8 +4,30 @@ in vec3 worldPos;
 
 uniform sampler3D volume;
 uniform vec3 cameraPosition;
+uniform int nodeSize;
+uniform int gridSize;
 
 out vec4 color;
+
+vec3 getWaterTextureCoords(vec3 readPos) {
+    // This function converts world space coorinates to water texture coordinates. It is needed to properly read multi-node textures.
+
+    int z_in_grid = int(readPos.z * float(gridSize));
+    int y_in_grid = int(readPos.y * float(gridSize));
+    int x_in_grid = int(readPos.x * float(gridSize));
+
+    float nodeOffset = float(z_in_grid * gridSize * gridSize + y_in_grid * gridSize + x_in_grid) / float(gridSize * gridSize * gridSize);
+
+    vec3 waterCoords = readPos;
+
+    waterCoords.x = (readPos.x - float(x_in_grid) / float(gridSize)) * float(gridSize);
+    waterCoords.y = (readPos.y - float(y_in_grid) / float(gridSize)) * float(gridSize);
+    waterCoords.z = (readPos.z - float(z_in_grid) / float(gridSize)) * float(gridSize);
+
+    waterCoords.z = nodeOffset + waterCoords.z / float(gridSize * gridSize * gridSize);
+
+    return waterCoords;
+}
 
 bool isSamplePositionValid(vec3 samplePosition) {
     return samplePosition.x >= 0 && samplePosition.x <= 1 && samplePosition.y >= 0 && samplePosition.y <= 1 && samplePosition.z >= 0 && samplePosition.z <= 1;
@@ -36,7 +58,7 @@ vec3 getNormal(vec3 samplePosition) {
                     continue;
                 }
 
-                float v = texture(volume, xyzSamplePos).r;
+                float v = texture(volume, getWaterTextureCoords(xyzSamplePos)).r;
 
                 if(v > 0.0f){
                     x_sum += sign(x) * abs(v);
@@ -65,7 +87,7 @@ void main(void) {
             break;
         }
 
-        float currentSign = sign(texture(volume, samplePosition).r);
+        float currentSign = sign(texture(volume, getWaterTextureCoords(samplePosition)).r);
 
         if (currentSign < 0.0f) {
 

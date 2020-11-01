@@ -2,10 +2,11 @@
 
 #include <algorithm>
 
-LevelSetRenderer::LevelSetRenderer(LevelSetRendererCallbacks &callbacks, int screenWidth, int screenHeight, Vec3 size)
+LevelSetRenderer::LevelSetRenderer(LevelSetRendererCallbacks &callbacks, int screenWidth, int screenHeight, int nodeSizeInVoxels, int gridSizeInNodes)
     : Renderer(GLFW_OPENGL_CORE_PROFILE, screenWidth, screenHeight),
       callbacks(callbacks),
-      size(size),
+      nodeSizeInVoxels(nodeSizeInVoxels),
+      gridSizeInNodes(gridSizeInNodes),
       screenSize(screenWidth) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     loadBuffers();
@@ -105,9 +106,9 @@ void LevelSetRenderer::loadShaders() {
     OGL::Shader fragmentShader = OGL::createShaderFromFile(GL_FRAGMENT_SHADER, "Fragment/LevelSetFragment.glsl");
 
     this->shaderProgram = OGL::createShaderProgram(vertexShader, fragmentShader);
+
     this->mvpVertexUniformLocation = glGetUniformLocation(shaderProgram, "MVP");
     this->mvpFragmentUniformLocation = glGetUniformLocation(shaderProgram, "cameraPosition");
-
     this->nodeSizeUniformLocation = glGetUniformLocation(shaderProgram, "nodeSize");
     this->gridSizeUniformLocation = glGetUniformLocation(shaderProgram, "gridSize");
 }
@@ -125,27 +126,29 @@ void LevelSetRenderer::update(float deltaTimeSeconds) {
 }
 
 void LevelSetRenderer::render() {
-    float *levelSetData = callbacks.getData(); // render this
+    float *levelSetData = callbacks.getData();
 
     if (mvpDirty) {
         mvp = createMvp();
         mvpDirty = false;
     }
 
+    // Clear
     glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    // Prepare texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_3D, waterTexture);
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, size.x, size.y, size.z, 0, GL_RED, GL_FLOAT, levelSetData);
+    const auto size = nodeSizeInVoxels * gridSizeInNodes;
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, size, size, size, 0, GL_RED, GL_FLOAT, levelSetData);
     glGenerateMipmap(GL_TEXTURE_3D);
 
-    glUniform1i(nodeSizeUniformLocation, size.x);
-    //glUniform1i(gridSizeUniformLocation, gridSizeInNodes);
-
+    // Set uniforms and draw
     glUniformMatrix4fv(mvpVertexUniformLocation, 1, GL_FALSE, &mvp[0][0]);
     glUniform3f(mvpFragmentUniformLocation, cameraPos.x, cameraPos.y, cameraPos.z);
-
+    glUniform1i(nodeSizeUniformLocation, nodeSizeInVoxels);
+    glUniform1i(gridSizeUniformLocation, gridSizeInNodes);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 }
 

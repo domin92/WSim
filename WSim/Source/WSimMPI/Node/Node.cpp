@@ -69,7 +69,7 @@ ShareBuffers::ShareBuffers(int shSideSize, int shCornerSize, int shEdgeSize) {
     // clang-format on
 }
 
-Node::Node(int rank, int gridSize, int nodeSize, SimulationMode::Enum simulationMode)
+Node::Node(int rank, int gridSize, int nodeSize, SimulationMode simulationMode)
     : shareThickness(15),
       // clang-format off
       shSideSize   (shareThickness * nodeSize       * nodeSize       * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
@@ -84,13 +84,13 @@ Node::Node(int rank, int gridSize, int nodeSize, SimulationMode::Enum simulation
       xPosInGrid(convertTo3DRankX(rank, gridSize)),
       yPosInGrid(convertTo3DRankY(rank, gridSize)),
       zPosInGrid(convertTo3DRankZ(rank, gridSize)),
-      simulationInterface(new NodeSimulationInterfaceWater(*this)),
+      simulationInterface(new NodeSimulationInterfaceWater(*this, simulationMode)),
       sendArray(new uint8_t[nodeVolume]),
       igatherRequest(MPI_REQUEST_NULL),
-      simulationMode(simulationMode){
+      simulationMode(simulationMode.value){
     Logger::get() << "My 3D coords: " << xPosInGrid << ", " << yPosInGrid << ", " << zPosInGrid << std::endl;
 
-    if (simulationMode == SimulationMode::Enum::Text) {
+    if (this->simulationMode == SimulationMode::Enum::Text) {
         std::string filename = "outputFile" + std::to_string(rank);
         outputFile.open(filename, std::ios::out | std::ios::binary);
     }

@@ -120,7 +120,7 @@ private:
     void sendToMaster();
 
 public:
-    Node(int rank, int gridSize, int nodeSize, SimulationMode::Enum simulationMode);
+    Node(int rank, int gridSize, int nodeSize, SimulationMode simulationMode);
     ~Node();
 
     void main();

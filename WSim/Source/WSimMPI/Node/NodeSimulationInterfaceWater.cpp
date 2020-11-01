@@ -1,11 +1,12 @@
 #include "NodeSimulationInterfaceWater.hpp"
 
+#include "Source/WSimCommon/LevelSetHelper.h"
 #include "Source/WSimMPI/Node/Node.hpp"
 
-NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node)
+NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node, SimulationMode simulationMode)
     : NodeSimulationInterface(node),
       positionInGrid(createPositionInGrid(node)),
-      simulation(0, 0, getNodeSize(node), false, node.getShareThickness(), positionInGrid),
+      simulation(0, 0, getNodeSize(node), simulationMode.isLevelSet(), node.getShareThickness(), positionInGrid),
       copier(positionInGrid, (cl_command_queue &)simulation.getCommandQueue(), (size_t)node.getShareThickness(), simulation.getSimulationSize()) {
 
     // Gravity
@@ -18,6 +19,15 @@ NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node)
     const auto centerZ = -1.f * node.getZPosInGrid() * nodeSize;
     Logger::get() << centerX << ", " << centerY << ", " << centerZ << std::endl;
     //simulation.applyForce(FloatVec3{centerX, centerY, centerZ}, FloatVec3{0, 5, 0}, 1f);
+
+    if (simulationMode.isLevelSet()) {
+        const float sphereRadius = static_cast<float>(simulation.getSimulationSize().x - 5) / 2;
+        auto levelSet = std::make_unique<float[]>(simulation.getSimulationSize().getRequiredBufferSize(1));
+        LevelSetHelper::initializeToSphere(levelSet.get(), simulation.getSimulationSize(), sphereRadius);
+        simulation.writeColor(levelSet.get());
+
+        simulation.setGravityForce(0.1f);
+    }
 
     if (node.getXPosInGrid() == 0) {
         simulation.addObstacleWall(Dim::X, End::Lower);
@@ -44,7 +54,7 @@ void NodeSimulationInterfaceWater::postReceiveFromMaster(const uint8_t *received
     const auto &image = simulation.getColor().getSource();
     const auto offset = simulation.getBorderOffset();
     const auto size = simulation.getSimulationSize();
-    OCL::enqueueWriteImage3D(commandQueue, image, CL_TRUE, offset, size, receivedArray);
+//    OCL::enqueueWriteImage3D(commandQueue, image, CL_TRUE, offset, size, receivedArray);
 }
 
 void NodeSimulationInterfaceWater::preSendToMaster(uint8_t *arrayToSend) {

@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
         LevelSetHelper::initializeToSphere(levelSet.get(), imageSize, sphereRadius);
 
         LevelSetRendererCallbacksImpl callbacks{simulation, levelSet.get()};
-        LevelSetRenderer renderer{callbacks, 600, 600, imageSize};
+        LevelSetRenderer renderer{callbacks, 600, 600, static_cast<int>(simulation.getSimulationSize().x), 1};
         renderer.setFpsCallback(fpsCallback);
         renderer.mainLoop();
         break;
