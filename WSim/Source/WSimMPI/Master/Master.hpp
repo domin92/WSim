@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Source/WSimCommon/SimulationMode.h"
+
 #include <cstdint>
 #include <memory>
 
@@ -19,6 +21,7 @@ class Master {
     uint8_t *mainBuffer;
 
     // Renderer
+    SimulationMode simulationMode;
     std::unique_ptr<MasterRendererInterface> rendererInterface;
 
 public:

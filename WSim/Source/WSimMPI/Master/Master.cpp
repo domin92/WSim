@@ -19,6 +19,7 @@ Master::Master(int procCount, int gridSizeInNodes, int nodeSize, SimulationMode 
       nodeVolume(nodeSize * nodeSize * nodeSize * Simulation::colorVoxelSize),
       mainBuffer(new uint8_t[(procCount - 1) * nodeVolume]),
       mappedBuffer(new uint8_t *[procCount - 1]),
+      simulationMode(simulationMode),
       rendererInterface(createRendererInterface(simulationMode)) {
     for (int i = 0; i < procCount - 1; i++) {
         mappedBuffer[i] = mainBuffer + i * nodeVolume;
@@ -58,32 +59,34 @@ void Master::receiveFromNodes() {
 }
 
 void Master::main() {
-    // Initialize main buffer
-    for (int z = 0; z < fullSize; z++) {
-        for (int y = 0; y < fullSize; y++) {
-            for (int x = 0; x < fullSize; x++) {
+    if (!simulationMode.isLevelSet()) {
+        // Initialize main buffer
+        for (int z = 0; z < fullSize; z++) {
+            for (int y = 0; y < fullSize; y++) {
+                for (int x = 0; x < fullSize; x++) {
 
-                int z_in_node = z % nodeSize;
-                int y_in_node = y % nodeSize;
-                int x_in_node = x % nodeSize;
+                    int z_in_node = z % nodeSize;
+                    int y_in_node = y % nodeSize;
+                    int x_in_node = x % nodeSize;
 
-                int z_in_grid = z / nodeSize;
-                int y_in_grid = y / nodeSize;
-                int x_in_grid = x / nodeSize;
+                    int z_in_grid = z / nodeSize;
+                    int y_in_grid = y / nodeSize;
+                    int x_in_grid = x / nodeSize;
 
-                int idx = z_in_grid * gridSize * gridSize + y_in_grid * gridSize + x_in_grid;
-                int offset = idx * nodeSize * nodeSize * nodeSize + z_in_node * nodeSize * nodeSize + y_in_node * nodeSize + x_in_node;
+                    int idx = z_in_grid * gridSize * gridSize + y_in_grid * gridSize + x_in_grid;
+                    int offset = idx * nodeSize * nodeSize * nodeSize + z_in_node * nodeSize * nodeSize + y_in_node * nodeSize + x_in_node;
 
-                if (y > (4 * fullSize / 10) && y < (5 * fullSize / 10)) {
-                    reinterpret_cast<float *>(mainBuffer)[offset] = 1.0f;
-                } else {
-                    reinterpret_cast<float *>(mainBuffer)[offset] = 0.0f;
+                    if (y > (4 * fullSize / 10) && y < (5 * fullSize / 10)) {
+                        reinterpret_cast<float *>(mainBuffer)[offset] = 1.0f;
+                    } else {
+                        reinterpret_cast<float *>(mainBuffer)[offset] = 0.0f;
+                    }
                 }
             }
         }
+
+        sendToNodes();
     }
 
-    // Initialize values in nodes and start rendering
-    sendToNodes();
     rendererInterface->mainLoop();
 }

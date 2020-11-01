@@ -93,7 +93,7 @@ private:
 
     // Simulation
     std::unique_ptr<NodeSimulationInterface> simulationInterface;
-    SimulationMode::Enum simulationMode;
+    SimulationMode simulationMode;
 
     // Arrays containing all the pixels (including shared areas)
     uint8_t *sendArray; // Buffer for communication with master

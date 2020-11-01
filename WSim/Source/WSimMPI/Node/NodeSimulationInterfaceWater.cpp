@@ -54,7 +54,7 @@ void NodeSimulationInterfaceWater::postReceiveFromMaster(const uint8_t *received
     const auto &image = simulation.getColor().getSource();
     const auto offset = simulation.getBorderOffset();
     const auto size = simulation.getSimulationSize();
-//    OCL::enqueueWriteImage3D(commandQueue, image, CL_TRUE, offset, size, receivedArray);
+    OCL::enqueueWriteImage3D(commandQueue, image, CL_TRUE, offset, size, receivedArray);
 }
 
 void NodeSimulationInterfaceWater::preSendToMaster(uint8_t *arrayToSend) {

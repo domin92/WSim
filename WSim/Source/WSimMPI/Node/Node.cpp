@@ -4,8 +4,8 @@
 #include "Source/WSimMPI/Node/NodeSimulationInterfaceWater.hpp"
 #include "Source/WSimMPI/Utils.hpp"
 
-#include <fstream>
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 
 ShareBuffers::ShareBuffers(int shSideSize, int shCornerSize, int shEdgeSize) {
@@ -87,14 +87,13 @@ Node::Node(int rank, int gridSize, int nodeSize, SimulationMode simulationMode)
       simulationInterface(new NodeSimulationInterfaceWater(*this, simulationMode)),
       sendArray(new uint8_t[nodeVolume]),
       igatherRequest(MPI_REQUEST_NULL),
-      simulationMode(simulationMode.value){
+      simulationMode(simulationMode) {
     Logger::get() << "My 3D coords: " << xPosInGrid << ", " << yPosInGrid << ", " << zPosInGrid << std::endl;
 
-    if (this->simulationMode == SimulationMode::Enum::Text) {
+    if (simulationMode.value == SimulationMode::Enum::Text) {
         std::string filename = "outputFile" + std::to_string(rank);
         outputFile.open(filename, std::ios::out | std::ios::binary);
     }
-
 }
 
 ShareBuffers::~ShareBuffers() {
@@ -264,7 +263,7 @@ void Node::dumpArrayToFile() {
 
 void Node::sendToMaster() {
     simulationInterface->preSendToMaster(sendArray);
-    if (simulationMode == SimulationMode::Enum::Text) {
+    if (simulationMode.value == SimulationMode::Enum::Text) {
         dumpArrayToFile();
         //MPI_Barrier(MPI_COMM_WORLD);
     } else {
@@ -280,7 +279,10 @@ void Node::share() {
 }
 
 void Node::main() {
-    receiveFromMaster();
+    if (!simulationMode.isLevelSet()) {
+        receiveFromMaster();
+    }
+
     while (true) {
         // Sharing
         simulationInterface->preShareCopy();
