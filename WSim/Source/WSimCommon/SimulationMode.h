@@ -9,6 +9,7 @@ struct SimulationMode {
     enum class Enum {
         Graphical2D,
         Graphical3D,
+        LevelSet3D,
         Text,
     } value;
     SimulationMode(Enum value) : value(value) {}
@@ -18,6 +19,8 @@ struct SimulationMode {
             return std::make_unique<SimulationMode>(Enum::Graphical2D);
         } else if (modeString == "graphical3d") {
             return std::make_unique<SimulationMode>(Enum::Graphical3D);
+        } else if (modeString == "levelset3d") {
+            return std::make_unique<SimulationMode>(Enum::LevelSet3D);
         } else if (modeString == "text") {
             return std::make_unique<SimulationMode>(Enum::Text);
         } else {
@@ -35,12 +38,18 @@ struct SimulationMode {
         }
     }
 
+    bool isLevelSet() const {
+        return value == Enum::LevelSet3D;
+    }
+
     std::string toString() const {
         switch (value) {
         case Enum::Graphical2D:
             return "Graphical2D";
         case Enum::Graphical3D:
             return "Graphical3D";
+        case Enum::LevelSet3D:
+            return "LevelSet3D";
         case Enum::Text:
             return "Text";
         default:
