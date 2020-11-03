@@ -48,7 +48,7 @@ protected:
     // Model-view-projection matrix
     bool mvpDirty = true;
     glm::mat4 mvp = {};
-    glm::vec3 cameraPos = glm::vec3(1.88f, 1.88f, 1.88f);
+    glm::vec3 cameraPos = glm::vec3(2.0f, 2.0f, 2.0f);
     glm::vec3 cameraFront = {};
     const glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
     float fov = 45.0f;

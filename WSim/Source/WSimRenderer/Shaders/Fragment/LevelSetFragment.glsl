@@ -37,8 +37,6 @@ vec3 lightPos = vec3(-1.0f, 2.0f, -2.0f);
 vec3 waterColor = vec3(212.0f / 255.0f, 241.0f / 255.0f, 249.0f / 255.0f); //https://encycolorpedia.com/d4f1f9
 float ambientLightPower = 0.25f;
 
-int simSize = 100;
-
 vec3 getNormal(vec3 samplePosition) {
     float x_sum = 0.0f;
     float y_sum = 0.0f;
@@ -60,7 +58,7 @@ vec3 getNormal(vec3 samplePosition) {
 
                 float v = texture(volume, getWaterTextureCoords(xyzSamplePos)).r;
 
-                if(v > 0.0f){
+                if(v < 0.0f){
                     x_sum += sign(x) * abs(v);
                     y_sum += sign(y) * abs(v);
                     z_sum += sign(z) * abs(v);
@@ -69,20 +67,20 @@ vec3 getNormal(vec3 samplePosition) {
         }
     }
 
-    return normalize(vec3(x_sum, y_sum, z_sum));
+    return normalize(vec3(-x_sum, -y_sum, -z_sum));
 }
 
 void main(void) {
     vec3 rayDirection = worldPos - cameraPosition;
     rayDirection = normalize(rayDirection);
-    vec3 marchingStep = rayDirection / float(2 * simSize);
+    vec3 marchingStep = rayDirection / float(2 * nodeSize * gridSize);
     vec3 samplePosition = worldPos;
 
     // First step
     samplePosition += marchingStep;
 
     // Next steps
-    for (float i = 0; i < 4 * simSize; i++) {
+    for (float i = 0; i < 4 * nodeSize * gridSize; i++) {
         if (!isSamplePositionValid(samplePosition)) {
             break;
         }
@@ -112,5 +110,5 @@ void main(void) {
     }
 
     // Not found water
-    color = vec4(0.0f, 0.9f, 0.0f, 1.0f);
+    color = vec4(0.9f, 0.9f, 0.9f, 1.0f);
 }
