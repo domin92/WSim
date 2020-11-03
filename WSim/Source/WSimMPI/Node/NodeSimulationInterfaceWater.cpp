@@ -21,11 +21,13 @@ NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node, Simulatio
     //simulation.applyForce(FloatVec3{centerX, centerY, centerZ}, FloatVec3{0, 5, 0}, 1f);
 
     if (simulationMode.isLevelSet()) {
+        const auto sphereOriginOffset = node.getNodeSize() * node.getGridSize() / 2;
         const FloatVec3 sphereOrigin{
-            (node.getXPosInGrid() - (node.getGridSize() - 1.f) / 2.f) * node.getNodeSize() + node.getNodeSize() / 2.f,
-            (node.getYPosInGrid() - (node.getGridSize() - 1.f) / 2.f) * node.getNodeSize() + node.getNodeSize() / 2.f,
-            (node.getZPosInGrid() - (node.getGridSize() - 1.f) / 2.f) * node.getNodeSize() + node.getNodeSize() / 2.f};
-        const float sphereRadius = static_cast<float>(simulation.getSimulationSize().x - 5) / 2;
+            -static_cast<float>(nodeSize) * node.getXPosInGrid() + sphereOriginOffset,
+            -static_cast<float>(nodeSize) * node.getYPosInGrid() + sphereOriginOffset,
+            -static_cast<float>(nodeSize) * node.getZPosInGrid() + sphereOriginOffset,
+        };
+        const float sphereRadius = node.getGridSize() * static_cast<float>(simulation.getSimulationSize().x - 5) / 2;
         auto levelSet = std::make_unique<float[]>(simulation.getSimulationSize().getRequiredBufferSize(1));
         LevelSetHelper::initializeToSphere(levelSet.get(), simulation.getSimulationSize(), sphereOrigin, sphereRadius);
         simulation.writeColor(levelSet.get());
