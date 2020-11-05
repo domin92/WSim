@@ -9,6 +9,11 @@ uniform int gridSize;
 
 out vec4 color;
 
+vec3 lightPos = vec3(-1.0f, 2.0f, -2.0f);
+vec3 waterColor = vec3(212.0f / 255.0f, 241.0f / 255.0f, 249.0f / 255.0f); //https://encycolorpedia.com/d4f1f9
+float ambientLightPower = 0.25f;
+float simSize = float(nodeSize * gridSize);
+
 vec3 getWaterTextureCoords(vec3 readPos) {
     // This function converts world space coorinates to water texture coordinates. It is needed to properly read multi-node textures.
 
@@ -33,24 +38,18 @@ bool isSamplePositionValid(vec3 samplePosition) {
     return samplePosition.x >= 0 && samplePosition.x <= 1 && samplePosition.y >= 0 && samplePosition.y <= 1 && samplePosition.z >= 0 && samplePosition.z <= 1;
 }
 
-vec3 lightPos = vec3(-1.0f, 2.0f, -2.0f);
-vec3 waterColor = vec3(212.0f / 255.0f, 241.0f / 255.0f, 249.0f / 255.0f); //https://encycolorpedia.com/d4f1f9
-float ambientLightPower = 0.25f;
-
 vec3 getNormal(vec3 samplePosition) {
-    float x_sum = 0.0f;
-    float y_sum = 0.0f;
-    float z_sum = 0.0f;
+    vec3 normal = vec3(0.0f);
 
     // 5x5x5
-    for(int x=-2;x<3;x++){
-        for(int y=-2;y<3;y++){
-            for(int z=-2;z<3;z++){
+    for(int x=-1;x<=1;x++){
+        for(int y=-1;y<=1;y++){
+            for(int z=-1;z<=1;z++){
 
                 vec3 xyzSamplePos = samplePosition;
-                xyzSamplePos.x += float(x) / 100.0f;
-                xyzSamplePos.y += float(y) / 100.0f;
-                xyzSamplePos.z += float(z) / 100.0f;
+                xyzSamplePos.x += float(x) / simSize;
+                xyzSamplePos.y += float(y) / simSize;
+                xyzSamplePos.z += float(z) / simSize;
                 
                 if(!isSamplePositionValid(xyzSamplePos)){
                     continue;
@@ -59,28 +58,27 @@ vec3 getNormal(vec3 samplePosition) {
                 float v = texture(volume, getWaterTextureCoords(xyzSamplePos)).r;
 
                 if(v < 0.0f){
-                    x_sum += sign(x) * abs(v);
-                    y_sum += sign(y) * abs(v);
-                    z_sum += sign(z) * abs(v);
+                    normal.x += sign(x) * abs(v);
+                    normal.y += sign(y) * abs(v);
+                    normal.z += sign(z) * abs(v);
                 }
             }
         }
     }
 
-    return normalize(vec3(-x_sum, -y_sum, -z_sum));
+    return normalize(-normal);
 }
 
 void main(void) {
-    vec3 rayDirection = worldPos - cameraPosition;
-    rayDirection = normalize(rayDirection);
-    vec3 marchingStep = rayDirection / float(2 * nodeSize * gridSize);
+    vec3 rayDirection = normalize(worldPos - cameraPosition);
+    vec3 marchingStep = rayDirection / float(2 * simSize);
     vec3 samplePosition = worldPos;
 
     // First step
     samplePosition += marchingStep;
 
     // Next steps
-    for (float i = 0; i < 4 * nodeSize * gridSize; i++) {
+    for (float i = 0; i < 4 * simSize; i++) {
         if (!isSamplePositionValid(samplePosition)) {
             break;
         }

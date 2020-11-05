@@ -12,7 +12,7 @@ void MasterRendererInterfaceLevelSet3D::mainLoop() {
 }
 
 std::unique_ptr<Renderer> MasterRendererInterfaceLevelSet3D::createRenderer(Master &master) {
-    auto result = new LevelSetRenderer(rendererCallbacks, 600, 600, master.getNodeSize(), master.getGridSize());
+    auto result = new LevelSetRenderer(rendererCallbacks, 800, 800, master.getNodeSize(), master.getGridSize());
     return std::unique_ptr<Renderer>{result};
 }
 
