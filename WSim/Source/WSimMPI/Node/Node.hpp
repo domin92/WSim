@@ -98,9 +98,6 @@ private:
     // Arrays containing all the pixels (including shared areas)
     uint8_t *sendArray; // Buffer for communication with master
 
-    // MPI_Request used to block Igather
-    MPI_Request igatherRequest;
-
     // Helpers for checking neigbours
     int getNeighbourRank(int neighbourOffsetX, int neighbourOffsetY, int neighbourOffsetZ);
     bool isNeighbourInGrid(int neighbourOffsetX, int neighbourOffsetY, int neighbourOffsetZ);

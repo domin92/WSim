@@ -86,7 +86,6 @@ Node::Node(int rank, int gridSize, int nodeSize, SimulationMode simulationMode)
       zPosInGrid(convertTo3DRankZ(rank, gridSize)),
       simulationInterface(new NodeSimulationInterfaceWater(*this, simulationMode)),
       sendArray(new uint8_t[nodeVolume]),
-      igatherRequest(MPI_REQUEST_NULL),
       simulationMode(simulationMode) {
     Logger::get() << "My rank: " << rank << std::endl;
     Logger::get() << "My 3D coords: " << xPosInGrid << ", " << yPosInGrid << ", " << zPosInGrid << std::endl;
@@ -268,8 +267,7 @@ void Node::sendToMaster() {
         dumpArrayToFile();
         //MPI_Barrier(MPI_COMM_WORLD);
     } else {
-        MPI_Wait(&igatherRequest, MPI_STATUS_IGNORE);
-        MPI_Igather(sendArray, nodeVolume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD, &igatherRequest);
+        MPI_Gather(sendArray, nodeVolume, MPI_CHAR, MPI_IN_PLACE, 0, MPI_CHAR, 0, MPI_COMM_WORLD);
     }
 }
 
