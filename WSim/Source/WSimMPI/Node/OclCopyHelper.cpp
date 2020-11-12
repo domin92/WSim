@@ -57,7 +57,7 @@ void OclCopyHelper::preShareCopyEdge(cl_mem image, size_t numberOfImagesToSkip, 
     OCL::enqueueReadImage3D(commandQueue, image, CL_FALSE, offset, size, readAddress);
 }
 
-void OclCopyHelper::preShareCopyCorner(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, void *outputBuffer, End endX, End endY, End endZ) {
+void OclCopyHelper::preShareCopyCorner(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, void *outputBuffer, End endZ, End endY, End endX) {
     if (shouldNotShare(Dim::X, endX) || shouldNotShare(Dim::Y, endY) || shouldNotShare(Dim::Z, endZ)) {
         return;
     }
@@ -118,7 +118,7 @@ void OclCopyHelper::postShareCopyEdge(cl_mem image, size_t numberOfImagesToSkip,
     OCL::enqueueWriteImage3D(commandQueue, image, CL_FALSE, offset, size, writeAddress);
 }
 
-void OclCopyHelper::postShareCopyCorner(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, const void *inputBuffer, End endX, End endY, End endZ) {
+void OclCopyHelper::postShareCopyCorner(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, const void *inputBuffer, End endZ, End endY, End endX) {
     if (shouldNotShare(Dim::X, endX) || shouldNotShare(Dim::Y, endY) || shouldNotShare(Dim::Z, endZ)) {
         return;
     }

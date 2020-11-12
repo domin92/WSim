@@ -10,11 +10,11 @@ public:
 
     void preShareCopySide(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, void *outputBuffer, Dim dimension, End end);
     void preShareCopyEdge(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, void *outputBuffer, Dim dimension1, End end1, Dim dimension2, End end2);
-    void preShareCopyCorner(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, void *outputBuffer, End endX, End endY, End endZ);
+    void preShareCopyCorner(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, void *outputBuffer, End endZ, End endY, End endX);
 
     void postShareCopySide(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, const void *inputBuffer, Dim dimension, End end);
     void postShareCopyEdge(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, const void *inputBuffer, Dim dimension1, End end1, Dim dimension2, End end2);
-    void postShareCopyCorner(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, const void *inputBuffer, End endX, End endY, End endZ);
+    void postShareCopyCorner(cl_mem image, size_t numberOfImagesToSkip, size_t skipPixelSize, const void *inputBuffer, End endZ, End endY, End endX);
 
 private:
     bool shouldNotShare(Dim dimension, End end);
