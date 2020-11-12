@@ -7,6 +7,7 @@
 
 #include <cstdlib>
 #include <mpi.h>
+#include <sstream>
 
 #define DEFAULT_GRID_SIZE 60
 
@@ -27,6 +28,19 @@ int my_cbrt(int a) {
     default:
         return 0;
     }
+}
+
+std::string getLogFileNameSuffix(int rank, int gridSize) {
+    if (rank == 0) {
+        return "0_master";
+    }
+
+    const auto x = convertTo3DRankX(rank, gridSize);
+    const auto y = convertTo3DRankY(rank, gridSize);
+    const auto z = convertTo3DRankZ(rank, gridSize);
+    std::ostringstream result{};
+    result << rank << "_node_" << x << y << z;
+    return result.str();
 }
 
 int main(int argc, char **argv) {
@@ -63,13 +77,13 @@ int main(int argc, char **argv) {
             ; // for debugging purposes
     }
 
-    Logger::createFileLogger("log_file", my_rank);
-
     if (my_cbrt(procCount - 1) == 0) {
         return 1;
     }
     int gridSize = my_cbrt(procCount - 1);
     int nodeSize = fullSize / gridSize;
+
+    Logger::createFileLogger("log_file", getLogFileNameSuffix(my_rank, gridSize));
 
     if (my_rank == 0) {
         Master master(procCount, gridSize, nodeSize, simulationMode.get()->value);

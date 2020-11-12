@@ -88,6 +88,7 @@ Node::Node(int rank, int gridSize, int nodeSize, SimulationMode simulationMode)
       sendArray(new uint8_t[nodeVolume]),
       igatherRequest(MPI_REQUEST_NULL),
       simulationMode(simulationMode) {
+    Logger::get() << "My rank: " << rank << std::endl;
     Logger::get() << "My 3D coords: " << xPosInGrid << ", " << yPosInGrid << ", " << zPosInGrid << std::endl;
 
     if (simulationMode.value == SimulationMode::Enum::Text) {

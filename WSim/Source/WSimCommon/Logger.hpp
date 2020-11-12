@@ -2,8 +2,8 @@
 
 #include <fstream>
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
 class Logger {
     static inline std::unique_ptr<Logger> logger = {};
@@ -38,8 +38,8 @@ public:
         logger.reset(new Logger(fileName));
     }
 
-    static void createFileLogger(const std::string &fileName, int suffix) {
-        createFileLogger(fileName + std::to_string(suffix));
+    static void createFileLogger(const std::string &fileName, const std::string &suffix) {
+        createFileLogger(fileName + suffix);
     }
 
     static void createStdoutLogger() {
