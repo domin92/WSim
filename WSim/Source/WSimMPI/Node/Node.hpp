@@ -109,6 +109,10 @@ private:
     void shareEdges();
     void share(); // shares everything
 
+    bool benchmark;
+    double startSimTime;
+    double lastFrameTime;
+
     void dumpArrayToFile();
     std::ofstream outputFile;
 
@@ -117,7 +121,7 @@ private:
     void sendToMaster();
 
 public:
-    Node(int rank, int gridSize, int nodeSize, SimulationMode simulationMode);
+    Node(int rank, int gridSize, int nodeSize, SimulationMode simulationMode, bool benchmark);
     ~Node();
 
     void main();

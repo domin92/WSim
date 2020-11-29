@@ -8,7 +8,7 @@ class Renderer;
 
 class MasterRendererInterfaceLevelSet3D : public MasterRendererInterface {
 public:
-    MasterRendererInterfaceLevelSet3D(Master &master);
+    MasterRendererInterfaceLevelSet3D(Master &master, bool benchmark);
 
     // For MPI
     virtual void mainLoop() override;
@@ -25,7 +25,7 @@ public:
     };
 
 private:
-    std::unique_ptr<Renderer> createRenderer(Master &master);
+    std::unique_ptr<Renderer> createRenderer(Master &master, bool benchmark);
 
     LevelSetRendererCallbacksImpl rendererCallbacks;
     std::unique_ptr<Renderer> renderer;

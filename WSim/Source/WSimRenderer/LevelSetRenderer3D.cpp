@@ -2,12 +2,14 @@
 
 #include <algorithm>
 
-LevelSetRenderer::LevelSetRenderer(LevelSetRendererCallbacks &callbacks, int screenWidth, int screenHeight, int nodeSizeInVoxels, int gridSizeInNodes)
+LevelSetRenderer::LevelSetRenderer(LevelSetRendererCallbacks &callbacks, int screenWidth, int screenHeight, int nodeSizeInVoxels, int gridSizeInNodes, bool benchmark)
     : Renderer(GLFW_OPENGL_CORE_PROFILE, screenWidth, screenHeight),
       callbacks(callbacks),
       nodeSizeInVoxels(nodeSizeInVoxels),
       gridSizeInNodes(gridSizeInNodes),
-      screenSize(screenWidth) {
+      screenSize(screenWidth),
+      benchmark(benchmark),
+      lastTime(static_cast<double>(clock())) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     loadBuffers();
     loadShaders();
@@ -126,6 +128,11 @@ void LevelSetRenderer::update(float deltaTimeSeconds) {
 }
 
 void LevelSetRenderer::render() {
+
+    if (benchmark) {
+        lastTime = static_cast<double>(clock());
+    }
+
     float *levelSetData = callbacks.getData();
 
     if (mvpDirty) {
@@ -149,6 +156,12 @@ void LevelSetRenderer::render() {
     glUniform1i(nodeSizeUniformLocation, nodeSizeInVoxels);
     glUniform1i(gridSizeUniformLocation, gridSizeInNodes);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+    if (benchmark) {
+        double currentTime = static_cast<double>(clock());
+        double deltaTime = currentTime - lastTime;
+        Logger::get() << "Render time (ms): " << deltaTime << std::endl;
+    }
 }
 
 void LevelSetRenderer::processInput(int button, int action, int mods) {

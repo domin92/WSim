@@ -24,9 +24,11 @@ class Master {
     SimulationMode simulationMode;
     std::unique_ptr<MasterRendererInterface> rendererInterface;
 
+    bool benchmark;
+
 public:
     // General
-    Master(int procCount, int gridSizeInNodes, int nodeSize, SimulationMode simulationMode);
+    Master(int procCount, int gridSizeInNodes, int nodeSize, SimulationMode simulationMode, bool benchmark);
     ~Master();
     void main();
 

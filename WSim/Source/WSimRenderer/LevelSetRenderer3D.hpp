@@ -14,7 +14,7 @@ struct LevelSetRendererCallbacks {
 
 class LevelSetRenderer : public Renderer {
 public:
-    LevelSetRenderer(LevelSetRendererCallbacks &callbacks, int screenWidth, int screenHeight, int nodeSizeInVoxels, int gridSizeInNodes);
+    LevelSetRenderer(LevelSetRendererCallbacks &callbacks, int screenWidth, int screenHeight, int nodeSizeInVoxels, int gridSizeInNodes, bool benchmark);
 
     glm::mat4 createMvp();
 
@@ -30,6 +30,9 @@ protected:
     const int nodeSizeInVoxels;
     const int gridSizeInNodes;
     const int screenSize;
+
+    bool benchmark;
+    double lastTime;
 
     // Buffers for cube
     GLuint VAO{};

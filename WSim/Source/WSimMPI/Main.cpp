@@ -47,9 +47,10 @@ int main(int argc, char **argv) {
     // Parse arguments
     ArgumentParser argumentParser{argc, argv};
     int fullSize = argumentParser.getArgumentValue<int>({"-s", "--simulationSize"}, DEFAULT_GRID_SIZE);                             // Size of the edge of the simulation cube
-    int blockProcessWithRank = argumentParser.getArgumentValue<int>({"-b", "--block"}, -1);                                         // -1 means do not block
+    int blockProcessWithRank = argumentParser.getArgumentValue<int>({"-d", "--debug"}, -1);                                         // -1 means do not block
     bool printPid = argumentParser.getArgumentValue<bool>({"-p", "--printPids"}, 0);                                                // print process ids of all MPI processes
     auto simulationMode = SimulationMode::fromString(argumentParser.getArgumentValue<std::string>({"-m", "--mode"}, "levelset3d")); // select type of the simulation
+    bool benchmark = argumentParser.getArgumentValue<bool>({"-b", "--benchmark"}, 0);                                               // print FPS
 
     // Verify arguments
     if (fullSize <= 0) {
@@ -86,10 +87,10 @@ int main(int argc, char **argv) {
     Logger::createFileLogger("log_file", getLogFileNameSuffix(my_rank, gridSize));
 
     if (my_rank == 0) {
-        Master master(procCount, gridSize, nodeSize, simulationMode.get()->value);
+        Master master(procCount, gridSize, nodeSize, simulationMode.get()->value, benchmark);
         master.main();
     } else {
-        Node node(my_rank, gridSize, nodeSize, *simulationMode);
+        Node node(my_rank, gridSize, nodeSize, *simulationMode, benchmark);
         node.main();
     }
 

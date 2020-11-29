@@ -69,7 +69,7 @@ ShareBuffers::ShareBuffers(int shSideSize, int shCornerSize, int shEdgeSize) {
     // clang-format on
 }
 
-Node::Node(int rank, int gridSize, int nodeSize, SimulationMode simulationMode)
+Node::Node(int rank, int gridSize, int nodeSize, SimulationMode simulationMode, bool benchmark)
     : shareThickness(15),
       // clang-format off
       shSideSize   (shareThickness * nodeSize       * nodeSize       * (Simulation::colorVoxelSize + Simulation::velocityVoxelSize)),
@@ -86,7 +86,9 @@ Node::Node(int rank, int gridSize, int nodeSize, SimulationMode simulationMode)
       zPosInGrid(convertTo3DRankZ(rank, gridSize)),
       simulationInterface(new NodeSimulationInterfaceWater(*this, simulationMode)),
       sendArray(new uint8_t[nodeVolume]),
-      simulationMode(simulationMode) {
+      simulationMode(simulationMode),
+      benchmark(benchmark),
+      lastFrameTime(static_cast<double>(clock())) {
     Logger::get() << "My rank: " << rank << std::endl;
     Logger::get() << "My 3D coords: " << xPosInGrid << ", " << yPosInGrid << ", " << zPosInGrid << std::endl;
 
@@ -278,11 +280,12 @@ void Node::share() {
 }
 
 void Node::main() {
-    if (!simulationMode.isLevelSet()) {
-        receiveFromMaster();
-    }
-
     while (true) {
+
+        if (benchmark) {
+            startSimTime = static_cast<double>(clock());
+        }
+
         // Sharing
         simulationInterface->preShareCopy();
         share();
@@ -290,6 +293,15 @@ void Node::main() {
 
         // Step iteration
         simulationInterface->iter();
+
+        if (benchmark) {
+            double currentTime = static_cast<double>(clock());
+            double deltaSimTime = currentTime - startSimTime;
+            double deltaFrameTime = currentTime - lastFrameTime;
+            lastFrameTime = static_cast<double>(clock());
+            Logger::get() << "Simulation time (ms): " << deltaSimTime << std::endl;
+            Logger::get() << "Frame time (ms): " << deltaFrameTime << std::endl;
+        }
 
         // Gather results in master
         sendToMaster();
