@@ -36,5 +36,5 @@ if (MPI_FOUND)
     endif()
 
     # Generate run_mpi.sh script
-    file(GENERATE OUTPUT ${DIR_ROOT}/run_mpi.sh CONTENT "mpirun -np 9 $<TARGET_FILE:${TARGET_WSIM_MPI}> $@")
+    file(GENERATE OUTPUT ${DIR_ROOT}/run_mpi.sh CONTENT "mpirun -np 2 $<TARGET_FILE:${TARGET_WSIM_MPI}> $@")
 endif()
