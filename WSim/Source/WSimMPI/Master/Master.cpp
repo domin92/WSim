@@ -20,14 +20,14 @@ Master::Master(int procCount, int gridSizeInNodes, int nodeSize, SimulationMode 
       mainBuffer(new uint8_t[(procCount - 1) * nodeVolume]),
       mappedBuffer(new uint8_t *[procCount - 1]),
       simulationMode(simulationMode),
-      rendererInterface(createRendererInterface(simulationMode)),
-      benchmark(benchmark) {
+      benchmark(benchmark),
+      rendererInterface(createRendererInterface(simulationMode, benchmark)) {
     for (int i = 0; i < procCount - 1; i++) {
         mappedBuffer[i] = mainBuffer + i * nodeVolume;
     }
 }
 
-std::unique_ptr<MasterRendererInterface> Master::createRendererInterface(SimulationMode simulationMode) {
+std::unique_ptr<MasterRendererInterface> Master::createRendererInterface(SimulationMode simulationMode, bool benchmark) {
     switch (simulationMode.value) {
     case SimulationMode::Enum::Graphical2D:
         return std::unique_ptr<MasterRendererInterface>{new MasterRendererInterface2D(*this)};

@@ -33,7 +33,7 @@ public:
     void main();
 
     // Creation helpers
-    std::unique_ptr<MasterRendererInterface> createRendererInterface(SimulationMode simulationMode);
+    std::unique_ptr<MasterRendererInterface> createRendererInterface(SimulationMode simulationMode, bool benchmark);
 
     // Nodes communication
     void sendToNodes();

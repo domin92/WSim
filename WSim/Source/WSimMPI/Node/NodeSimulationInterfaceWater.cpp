@@ -10,7 +10,7 @@ NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node, Simulatio
       copier(positionInGrid, (cl_command_queue &)simulation.getCommandQueue(), (size_t)node.getShareThickness(), simulation.getSimulationSize()) {
 
     // Gravity
-    simulation.setGravityForce(5.f);
+    simulation.setGravityForce(2.f);
 
     // For testing
     const auto nodeSize = node.getNodeSize();
@@ -18,7 +18,7 @@ NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node, Simulatio
     const auto centerY = nodeSize / 2.f - node.getYPosInGrid() * nodeSize;
     const auto centerZ = -1.f * node.getZPosInGrid() * nodeSize;
     Logger::get() << centerX << ", " << centerY << ", " << centerZ << std::endl;
-    //simulation.applyForce(FloatVec3{centerX, centerY, centerZ}, FloatVec3{0, 5, 0}, 1f);
+    //simulation.applyForce(FloatVec3{centerX, centerY, centerZ}, FloatVec3{5, 0, 0}, 50.0f);
 
     if (simulationMode.isLevelSet()) {
         const auto sphereOriginOffset = node.getNodeSize() * node.getGridSize() / 2;
@@ -27,7 +27,7 @@ NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node, Simulatio
             -static_cast<float>(nodeSize) * node.getYPosInGrid() + sphereOriginOffset,
             -static_cast<float>(nodeSize) * node.getZPosInGrid() + sphereOriginOffset,
         };
-        const float sphereRadius = node.getGridSize() * static_cast<float>(simulation.getSimulationSize().x - 5) / 2;
+        const float sphereRadius = node.getGridSize() * static_cast<float>(simulation.getSimulationSize().x - ((float)nodeSize * 0.55f)) / 2;
         auto levelSet = std::make_unique<float[]>(simulation.getSimulationSize().getRequiredBufferSize(1));
         LevelSetHelper::initializeToSphere(levelSet.get(), simulation.getSimulationSize(), sphereOrigin, sphereRadius);
         simulation.writeColor(levelSet.get());

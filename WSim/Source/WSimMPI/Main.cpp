@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
     int blockProcessWithRank = argumentParser.getArgumentValue<int>({"-d", "--debug"}, -1);                                         // -1 means do not block
     bool printPid = argumentParser.getArgumentValue<bool>({"-p", "--printPids"}, 0);                                                // print process ids of all MPI processes
     auto simulationMode = SimulationMode::fromString(argumentParser.getArgumentValue<std::string>({"-m", "--mode"}, "levelset3d")); // select type of the simulation
-    bool benchmark = argumentParser.getArgumentValue<bool>({"-b", "--benchmark"}, 0);                                               // print FPS
+    bool benchmark = argumentParser.getArgumentValue<bool>({"-b", "--benchmark"}, false);                                           // print FPS
 
     // Verify arguments
     if (fullSize <= 0) {
