@@ -29,7 +29,8 @@ protected:
     LevelSetRendererCallbacks &callbacks;
     const int nodeSizeInVoxels;
     const int gridSizeInNodes;
-    const int screenSize;
+    const int screenWidth;
+    const int screenHeight;
 
     bool benchmark;
     double lastTime;

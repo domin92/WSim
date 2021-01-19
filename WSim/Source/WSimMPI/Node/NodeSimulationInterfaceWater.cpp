@@ -27,7 +27,7 @@ NodeSimulationInterfaceWater::NodeSimulationInterfaceWater(Node &node, Simulatio
             -static_cast<float>(nodeSize) * node.getYPosInGrid() + sphereOriginOffset,
             -static_cast<float>(nodeSize) * node.getZPosInGrid() + sphereOriginOffset,
         };
-        const float sphereRadius = node.getGridSize() * static_cast<float>(simulation.getSimulationSize().x - ((float)nodeSize * 0.55f)) / 2;
+        const float sphereRadius = node.getGridSize() * static_cast<float>(simulation.getSimulationSize().x - 15.0f) / 2;
         auto levelSet = std::make_unique<float[]>(simulation.getSimulationSize().getRequiredBufferSize(1));
         LevelSetHelper::initializeToSphere(levelSet.get(), simulation.getSimulationSize(), sphereOrigin, sphereRadius);
         simulation.writeColor(levelSet.get());

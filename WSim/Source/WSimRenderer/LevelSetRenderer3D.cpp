@@ -7,7 +7,8 @@ LevelSetRenderer::LevelSetRenderer(LevelSetRendererCallbacks &callbacks, int scr
       callbacks(callbacks),
       nodeSizeInVoxels(nodeSizeInVoxels),
       gridSizeInNodes(gridSizeInNodes),
-      screenSize(screenWidth),
+      screenWidth(screenWidth),
+      screenHeight(screenHeight),
       benchmark(benchmark),
       lastTime(static_cast<double>(clock())) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -24,7 +25,7 @@ LevelSetRenderer::LevelSetRenderer(LevelSetRendererCallbacks &callbacks, int scr
 
 glm::mat4 LevelSetRenderer::createMvp() {
     glm::mat4 projection = glm::perspective(glm::radians(fov),
-                                            (float)screenSize / (float)screenSize,
+                                            (float)screenWidth / (float)screenHeight,
                                             0.1f,
                                             100.0f);
     glm::mat4 view = glm::lookAt(
